@@ -456,7 +456,7 @@ function mkButton(canvas, id, w, h, top, left, label, fontSize, action) {
 // </editor-fold>      END MAKE BUTTON /////////////////////////////
 
 // <editor-fold>       <<<< MAKE JSPANEL >>>> --------------------- //
-function mkPanel(panelid, canvas, w, h, title, a_posArr, a_headerSize, a_onwindowresize, a_contentOverflow) {
+function mkPanel(canvas, w, h, title, a_posArr, a_headerSize, a_onwindowresize, a_contentOverflow) {
   let posArr = a_posArr || ['center-top', '0px', '0px', 'none'];
   let onwindowresize = a_onwindowresize || false;
   let headerSize = a_headerSize || 'xs';
@@ -474,7 +474,6 @@ function mkPanel(panelid, canvas, w, h, title, a_posArr, a_headerSize, a_onwindo
       offsetY: offsetY,
       autoposition: autoposition
     },
-    id: panelid,
     contentSize: w.toString() + " " + h.toString(),
     header: 'auto-show-hide',
     headerControls: {
@@ -501,22 +500,20 @@ function mkPanel(panelid, canvas, w, h, title, a_posArr, a_headerSize, a_onwindo
 // </editor-fold>      END MAKE JSPANEL /////////////////////////////
 
 // <editor-fold>       <<<< MAKE CANVAS DIV >>>> ------------------ //
-function mkCanvasDiv(canvasID, w, h, clr) {
+function mkCanvasDiv(w, h, clr) {
   let t_div = document.createElement("div");
   t_div.style.width = w.toString() + "px";
   t_div.style.height = h.toString() + "px";
   t_div.style.background = clr;
-  t_div.id = canvasID;
   return t_div;
 }
 // </editor-fold>      END MAKE CANVAS DIV ///////////////////////////
 
 // <editor-fold>       <<<< MAKE SVG CANVAS >>>> ------------------ //
-function mkSVGcanvas(canvasID, w, h) {
+function mkSVGcanvas(w, h) {
   let tsvgCanvas = document.createElementNS(SVG_NS, "svg");
   tsvgCanvas.setAttributeNS(null, "width", w);
   tsvgCanvas.setAttributeNS(null, "height", h);
-  tsvgCanvas.setAttributeNS(null, "id", canvasID);
   tsvgCanvas.style.backgroundColor = "black";
   return tsvgCanvas;
 }
@@ -650,7 +647,7 @@ function mkClockPanel(clockDiv) {
   jsPanel.create({
     position: 'right-top',
     id: "clockPanel",
-    contentSize: "65 20",
+    contentSize: "64 20",
     header: 'auto-show-hide',
     headerControls: {
       minimize: 'remove',
