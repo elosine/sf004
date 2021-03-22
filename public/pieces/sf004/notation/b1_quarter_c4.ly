@@ -34,7 +34,7 @@
         % \omit BarLine
         %\omit Clef
         \omit KeySignature
-        \override StaffSymbol.thickness = #2
+        \override StaffSymbol.thickness = #1
       }
 
       {
@@ -66,12 +66,36 @@
         
         
         
-        \startStaff
-        \override Staff.Clef.transparent =##f
-        \override Staff.BarLine.transparent =##f
+     
  
         \repeat volta 2{
+          
+          \startStaff
+          \override NoteHead.transparent = ##f
+          \override NoteHead.no-ledgers = ##f
+          \override Script.transparent = ##f
+          \override Stem.transparent = ##f  
+          \override TupletBracket.bracket-visibility = ##t
+          \override TupletNumber.transparent = ##f
+          \override Staff.Clef.transparent =##t
+          \override Staff.BarLine.transparent =##t
+          
           c'4
+          
+          \stopStaff
+          \override NoteHead.transparent = ##t
+          \override NoteHead.no-ledgers = ##t 
+          \override Script.transparent = ##t
+          \override Stem.transparent = ##t  
+          \override TupletBracket.bracket-visibility = ##f
+          \override TupletNumber.transparent = ##t
+          \override Staff.Clef.transparent =##t
+          \override Staff.BarLine.transparent =##t
+          
+          
+          
+          
+          
           \tuplet 5/4 {    f16\hide-> f f f f }            
           \tuplet 5/4 {c'''16\hide-> c'''c'''c'''c'''}                
           c'4

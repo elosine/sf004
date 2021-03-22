@@ -344,7 +344,7 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   // }
   //</editor-fold> BOUNCING BALL                 END
   //<editor-fold>  < NOTATION >                    //
-  //69px difference between beats
+/*
   let noteCoordsByBeat_set = [
     [0, 0],
     [0, 69],
@@ -385,14 +385,27 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   console.log(notesObj);
   notesObj.rest[3].setAttributeNS(null, "visibility", 'visible');
 
+*/
 
-
-  var emptyStaff = document.createElementNS(SVG_NS, "image");
+  let emptyStaff = document.createElementNS(SVG_NS, "image");
   emptyStaff.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/emptyStaff.svg');
-  emptyStaff.setAttributeNS(null, "y", 0);
+  emptyStaff.setAttributeNS(null, "y", -85);
   emptyStaff.setAttributeNS(null, "x", 0);
   emptyStaff.setAttributeNS(null, "visibility", 'visible');
   lowerCanvas.appendChild(emptyStaff);
+
+  let in1 = document.createElementNS(SVG_NS, "image");
+  in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b1_quarter_c4.svg');
+  in1.setAttributeNS(null, "y", -85);
+  in1.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in1);
+  var in2 = document.createElementNS(SVG_NS, "image");
+  in2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b2_quarter_c4.svg');
+  in2.setAttributeNS(null, "y", -85);
+  in2.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in2);
+
+
   /*
   var in1 = document.createElementNS(SVG_NS, "image");
   in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
