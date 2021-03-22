@@ -149,8 +149,8 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   const UPPERPANEL_W = 300;
   const UPPERPANEL_HALFW = UPPERPANEL_W / 2;
   const UPPERPANEL_H = 400;
-  const LOWERPANEL_W = 400;
-  const LOWERPANEL_H = 160;
+  const LOWERPANEL_W = 605;
+  const LOWERPANEL_H = 197;
   const MAX_W = UPPERPANEL_W > LOWERPANEL_W ? UPPERPANEL_W : LOWERPANEL_W;
   // RUNWAYLENGTH see global vars
   const HALFRUNWAYLENGTH = RUNWAYLENGTH / 2;
@@ -228,6 +228,7 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   let upperPanel = mkPanel(upperCanvas, UPPERPANEL_W, UPPERPANEL_H, "Player " + playerNum.toString(), ['center-top', upperPanel_offsetX, '0px', 'none']);
   notationObj['upperPanel'] = upperPanel;
   let lowerCanvas = mkSVGcanvas(LOWERPANEL_W, LOWERPANEL_H);
+  lowerCanvas.style.backgroundColor = 'white';
   notationObj['lowerCanvas'] = lowerCanvas;
   let lowerPanel = mkPanel(lowerCanvas, LOWERPANEL_W, LOWERPANEL_H, "Player " + playerNum.toString(), ['center-top', lowerPanel_offsetX, lowerPanel_offsetY, 'none']);
   notationObj['lowerPanel'] = lowerPanel;
@@ -313,105 +314,241 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   }
   //</editor-fold> END GO FRET                    END
   //<editor-fold>  < GO FRET NOTATION PANEL >      //
-  let goFretNotationPanelGeometry = new THREE.PlaneGeometry(GOFRETNOTATIONPANEL_W, GOFRETNOTATIONPANEL_H, 32);
-  for (let gfIx = 0; gfIx < 4; gfIx++) {
-    let t_goFretNotationPanelMaterial = new THREE.MeshLambertMaterial({
-      color: 'white'
-    });
-    let newGoNotationPanel = new THREE.Mesh(goFretNotationPanelGeometry, t_goFretNotationPanelMaterial);
-    // not sure why I need the -3 below, maybe camera angle?
-    newGoNotationPanel.position.z = -HALFGOFRETNOTATIONPANEL_H - 2;
-    newGoNotationPanel.position.y = -ENDOFRUNWAY_ADJ;
-    newGoNotationPanel.position.x = getTrackPosX(gfIx);
-    newGoNotationPanel.rotation.x = rads(-68); // plane face is straight up and
-    // down facing 90 degrees compensating for camera angle
-    scene.add(newGoNotationPanel);
-  }
+  // upperCanvas
+  // let bbRectY = UPPERPANEL_H - GOFRETNOTATIONPANEL_H;
+  // getTrackPosX(trIx)
+  // for (let trIx = 0; trIx < 4; trIx++) {
+  // var bbRect = document.createElementNS(SVG_NS, "rect");
+  // bbRect.setAttributeNS(null, "x", "0");
+  // bbRect.setAttributeNS(null, "y", CRV_W.toString());
+  // bbRect.setAttributeNS(null, "width", CRV_W);
+  // bbRect.setAttributeNS(null, "height", 0);
+  // bbRect.setAttributeNS(null, "fill", "rgba(255, 21, 160, 0.5)");
+  // bbRect.setAttributeNS(null, "id", id + "crvFollowRect");
+  // bbRect.appendChild(tcrvFollowRect);
+  // }
   //</editor-fold> GO FRET NOTATION PANEL        END
   //<editor-fold>  < BOUNCING BALL >               //
-  const bbGeom = new THREE.SphereGeometry(9, 64, 64);
-  const bbMatl = new THREE.MeshBasicMaterial({
-    color: 'red'
-  });
-  for (let trIx = 0; trIx < 4; trIx++) {
-    const newBb = new THREE.Mesh(bbGeom, bbMatl);
-    newBb.position.z = -HALFGOFRETNOTATIONPANEL_H - 2;
-    newBb.position.y = 0;
-    newBb.rotation.y = rads(10);
-    newBb.position.x = getTrackPosX(trIx);
-    // newBb.rotation.x = rads(-22);
-    scene.add(newBb);
-  }
+  // const bbGeom = new THREE.SphereGeometry(9, 64, 64);
+  // const bbMatl = new THREE.MeshBasicMaterial({
+  //   color: 'red'
+  // });
+  // for (let trIx = 0; trIx < 4; trIx++) {
+  //   const newBb = new THREE.Mesh(bbGeom, bbMatl);
+  //   newBb.position.z = -HALFGOFRETNOTATIONPANEL_H - 2;
+  //   newBb.position.y = 0;
+  //   newBb.rotation.y = rads(10);
+  //   newBb.position.x = getTrackPosX(trIx);
+  //   // newBb.rotation.x = rads(-22);
+  //   scene.add(newBb);
+  // }
+  //</editor-fold> BOUNCING BALL                 END
+  //<editor-fold>  < NOTATION >                    //
+  //69px difference between beats
+  let noteCoordsByBeat_set = [
+    [0, 0],
+    [0, 69],
+    [0, 135],
+    [0, 204],
+    [0, 280],
+    [0, 349],
+    [0, 418],
+    [0, 487],
+    [100, 0],
+    [100, 63],
+    [100, 132],
+    [100, 199],
+    [100, 275],
+    [100, 343],
+    [100, 411],
+    [100, 479]
+  ];
+  let noteType = ['rest', 'quarter_c4']
+  let notesObj = {};
+  noteType.forEach((noteTp) => {
+    let t_noteArr = [];
+    noteCoordsByBeat_set.forEach((coordsArr, beat) => {
+      let tx = coordsArr[1];
+      let ty = coordsArr[0];
+      let t_n = document.createElementNS(SVG_NS, "image");
+      t_n.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/' + noteTp + '.svg');
+      t_n.setAttributeNS(null, "x", tx);
+      t_n.setAttributeNS(null, "y", ty);
+      t_n.setAttributeNS(null, "visibility", 'hidden');
+      lowerCanvas.appendChild(t_n);
+      t_noteArr.push(t_n);
+    });
 
-//</editor-fold> BOUNCING BALL                 END
-// </editor-fold> END NOTATION OBJECT - STATIC ELEMENTS     END
-//<editor-fold> < NOTATION OBJECT - MESHES FOR ANIMATION >   //
-// MAKE ENOUGH MESHES TO FILL RUNWAY LENGTHWISE
-// make them not visible
-let maxNumBeatFrets = Math.ceil((RUNWAYLENGTH / SMALLEST_MESH_LENGTH) * NUMTRACKS);
-for (let meshIx = 0; meshIx < maxNumBeatFrets; meshIx++) {
-  let t_fretGeometry = new THREE.CubeGeometry(FRETWIDTH, FRETHEIGHT, FRETLENGTH);
-  let t_fretMaterial = new THREE.MeshLambertMaterial({
-    color: neonMagenta
+    notesObj[noteTp] = t_noteArr;
   });
-  let newBeatFret = new THREE.Mesh(t_fretGeometry, t_fretMaterial);
-  newBeatFret.position.z = GO_Z + 9999;
-  newBeatFret.position.y = HALFTRACKDIAMETER + BEATFRET_H;
-  newBeatFret.position.x = 9999;
-  newBeatFret.visible = false;
-  scene.add(newBeatFret);
-  beatFretMeshes.push(newBeatFret);
-}
-//</editor-fold> END NOTATION OBJECT - MESHES FOR ANIMATION END
-//<editor-fold> < NOTATION OBJECT - ANIMATE >                //
-notationObj['animate'] = function(now_pieceTimeMS, a_framect) {
-  // Hide all meshes
-  beatFretMeshes.forEach((mesh) => {
-    mesh.visible = false;
-  });
-  let framect = a_framect < 0 ? 0 : a_framect; // for negative a_framect
-  // Find the eventsObj for this frame
-  let t_eventsObj = partScore_byFrame_byType[framect];
-  //<editor-fold> RUNWAY_BEATFRETS --------------- >
-  if ('runway_beatFret' in t_eventsObj) {
-    t_eventsObj.runway_beatFret.forEach((event, evtIx) => {
-      let t_goTime = event.goTime;
-      let t_goFrame = event.goFrame;
-      let t_trackNum = event.trackNum;
-      let t_meshToUse = beatFretMeshes[evtIx];
-      // Calc Pos z
-      let t_timeTilGo_MS = t_goTime - now_pieceTimeMS;
-      let t_pxTilGo = t_timeTilGo_MS * PXPERMS;
-      // What Color material
-      let t_matl = (t_trackNum % 2) == 0 ? FRET_MATL_MAGENTA : FRET_MATL_NEONGREEN
-      t_meshToUse.position.z = GO_Z - t_pxTilGo;
-      t_meshToUse.material = t_matl; // bf color
-      t_meshToUse.position.x = getTrackPosX(t_trackNum);
-      t_meshToUse.visible = true;
-      // EVENT GO
-      if (!(a_framect < 0)) { //for negative a_framect
-        if (t_goFrame == framect) {
-          goFretAnimations[t_trackNum].startFrame = a_framect;
-          goFretAnimations[t_trackNum].endFrame = a_framect + 5;
+
+  console.log(notesObj);
+  notesObj.rest[3].setAttributeNS(null, "visibility", 'visible');
+
+
+
+  var emptyStaff = document.createElementNS(SVG_NS, "image");
+  emptyStaff.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/emptyStaff.svg');
+  emptyStaff.setAttributeNS(null, "y", 0);
+  emptyStaff.setAttributeNS(null, "x", 0);
+  emptyStaff.setAttributeNS(null, "visibility", 'visible');
+  lowerCanvas.appendChild(emptyStaff);
+  /*
+  var in1 = document.createElementNS(SVG_NS, "image");
+  in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in1.setAttributeNS(null, "y", 0);
+  in1.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in1);
+  var in2 = document.createElementNS(SVG_NS, "image");
+  in2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in2.setAttributeNS(null, "y", 0);
+  in2.setAttributeNS(null, "x", 69);
+  lowerCanvas.appendChild(in2);
+  var in3 = document.createElementNS(SVG_NS, "image");
+  in3.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in3.setAttributeNS(null, "y", 0);
+  in3.setAttributeNS(null, "x", 135);
+  lowerCanvas.appendChild(in3);
+  var in4 = document.createElementNS(SVG_NS, "image");
+  in4.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in4.setAttributeNS(null, "y", 0);
+  in4.setAttributeNS(null, "x", 204);
+  lowerCanvas.appendChild(in4);
+  var in5 = document.createElementNS(SVG_NS, "image");
+  in5.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in5.setAttributeNS(null, "y", 0);
+  in5.setAttributeNS(null, "x", 280);
+  lowerCanvas.appendChild(in5);
+  var in6 = document.createElementNS(SVG_NS, "image");
+  in6.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in6.setAttributeNS(null, "y", 0);
+  in6.setAttributeNS(null, "x", 349);
+  lowerCanvas.appendChild(in6);
+  var in7 = document.createElementNS(SVG_NS, "image");
+  in7.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in7.setAttributeNS(null, "y", 0);
+  in7.setAttributeNS(null, "x", 418);
+  lowerCanvas.appendChild(in7);
+  var in8 = document.createElementNS(SVG_NS, "image");
+  in8.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  in8.setAttributeNS(null, "y", 0);
+  in8.setAttributeNS(null, "x", 487);
+  lowerCanvas.appendChild(in8);
+  var sam = document.createElementNS(SVG_NS, "image");
+  sam.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/sampleFilledStaff5.svg');
+  sam.setAttributeNS(null, "y", 0);
+  sam.setAttributeNS(null, "x", 0);
+  // lowerCanvas.appendChild(sam);
+  var r2_1 = document.createElementNS(SVG_NS, "image");
+  r2_1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_1.setAttributeNS(null, "y", 100);
+  r2_1.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(r2_1);
+  var r2_2 = document.createElementNS(SVG_NS, "image");
+  r2_2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_2.setAttributeNS(null, "y", 100);
+  r2_2.setAttributeNS(null, "x", 63);
+  lowerCanvas.appendChild(r2_2);
+  var r2_3 = document.createElementNS(SVG_NS, "image");
+  r2_3.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_3.setAttributeNS(null, "y", 100);
+  r2_3.setAttributeNS(null, "x", 132);
+  lowerCanvas.appendChild(r2_3);
+  var r2_4 = document.createElementNS(SVG_NS, "image");
+  r2_4.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_4.setAttributeNS(null, "y", 100);
+  r2_4.setAttributeNS(null, "x", 199);
+  lowerCanvas.appendChild(r2_4);
+  var r2_5 = document.createElementNS(SVG_NS, "image");
+  r2_5.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_5.setAttributeNS(null, "y", 100);
+  r2_5.setAttributeNS(null, "x", 275);
+  lowerCanvas.appendChild(r2_5);
+  var r2_6 = document.createElementNS(SVG_NS, "image");
+  r2_6.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_6.setAttributeNS(null, "y", 100);
+  r2_6.setAttributeNS(null, "x", 343);
+  lowerCanvas.appendChild(r2_6);
+  var r2_7 = document.createElementNS(SVG_NS, "image");
+  r2_7.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_7.setAttributeNS(null, "y", 100);
+  r2_7.setAttributeNS(null, "x", 411);
+  lowerCanvas.appendChild(r2_7);
+  var r2_8 = document.createElementNS(SVG_NS, "image");
+  r2_8.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
+  r2_8.setAttributeNS(null, "y", 100);
+  r2_8.setAttributeNS(null, "x", 479);
+  lowerCanvas.appendChild(r2_8);
+  */
+  //</editor-fold> NOTATION                       END
+  //</editor-fold> END NOTATION OBJECT - STATIC ELEMENTS      END
+  //<editor-fold> < NOTATION OBJECT - MESHES FOR ANIMATION >   //
+  // MAKE ENOUGH MESHES TO FILL RUNWAY LENGTHWISE
+  // make them not visible
+  let maxNumBeatFrets = Math.ceil((RUNWAYLENGTH / SMALLEST_MESH_LENGTH) * NUMTRACKS);
+  for (let meshIx = 0; meshIx < maxNumBeatFrets; meshIx++) {
+    let t_fretGeometry = new THREE.CubeGeometry(FRETWIDTH, FRETHEIGHT, FRETLENGTH);
+    let t_fretMaterial = new THREE.MeshLambertMaterial({
+      color: neonMagenta
+    });
+    let newBeatFret = new THREE.Mesh(t_fretGeometry, t_fretMaterial);
+    newBeatFret.position.z = GO_Z + 9999;
+    newBeatFret.position.y = HALFTRACKDIAMETER + BEATFRET_H;
+    newBeatFret.position.x = 9999;
+    newBeatFret.visible = false;
+    scene.add(newBeatFret);
+    beatFretMeshes.push(newBeatFret);
+  }
+  //</editor-fold> END NOTATION OBJECT - MESHES FOR ANIMATION END
+  //<editor-fold> < NOTATION OBJECT - ANIMATE >                //
+  notationObj['animate'] = function(now_pieceTimeMS, a_framect) {
+    // Hide all meshes
+    beatFretMeshes.forEach((mesh) => {
+      mesh.visible = false;
+    });
+    let framect = a_framect < 0 ? 0 : a_framect; // for negative a_framect
+    // Find the eventsObj for this frame
+    let t_eventsObj = partScore_byFrame_byType[framect];
+    //<editor-fold> RUNWAY_BEATFRETS --------------- >
+    if ('runway_beatFret' in t_eventsObj) {
+      t_eventsObj.runway_beatFret.forEach((event, evtIx) => {
+        let t_goTime = event.goTime;
+        let t_goFrame = event.goFrame;
+        let t_trackNum = event.trackNum;
+        let t_meshToUse = beatFretMeshes[evtIx];
+        // Calc Pos z
+        let t_timeTilGo_MS = t_goTime - now_pieceTimeMS;
+        let t_pxTilGo = t_timeTilGo_MS * PXPERMS;
+        // What Color material
+        let t_matl = (t_trackNum % 2) == 0 ? FRET_MATL_MAGENTA : FRET_MATL_NEONGREEN
+        t_meshToUse.position.z = GO_Z - t_pxTilGo;
+        t_meshToUse.material = t_matl; // bf color
+        t_meshToUse.position.x = getTrackPosX(t_trackNum);
+        t_meshToUse.visible = true;
+        // EVENT GO
+        if (!(a_framect < 0)) { //for negative a_framect
+          if (t_goFrame == framect) {
+            goFretAnimations[t_trackNum].startFrame = a_framect;
+            goFretAnimations[t_trackNum].endFrame = a_framect + 5;
+          }
         }
+      });
+    }
+    //</editor-fold> RUNWAY_BEATFRETS END
+    //<editor-fold> GO FRET ANIMATION -------------- >
+    goFretAnimations.forEach((gfObj, trIx) => {
+      if (a_framect >= 0 && gfObj.endFrame >= a_framect) {
+        gfObj.mesh.material = FRET_MATL_YELLOW;
+      } else {
+        gfObj.mesh.material = FRET_MATL_SAFETYORANGE;
       }
     });
+    //</editor-fold> GO FRET ANIMATION END
   }
-  //</editor-fold> RUNWAY_BEATFRETS END
-  //<editor-fold> GO FRET ANIMATION -------------- >
-  goFretAnimations.forEach((gfObj, trIx) => {
-    if (a_framect >= 0 && gfObj.endFrame >= a_framect) {
-      gfObj.mesh.material = FRET_MATL_YELLOW;
-    } else {
-      gfObj.mesh.material = FRET_MATL_SAFETYORANGE;
-    }
-  });
-  //</editor-fold> GO FRET ANIMATION END
-}
-//</editor-fold> END NOTATION OBJECT - ANIMATE              END
-// RENDER ---------------------------------- >
-renderer.render(scene, camera);
-return notationObj;
+  //</editor-fold> END NOTATION OBJECT - ANIMATE              END
+  // RENDER ---------------------------------- >
+  renderer.render(scene, camera);
+  return notationObj;
 }
 //</editor-fold> >> END NOTATION OBJECT  //////////////////////////////////////
 
