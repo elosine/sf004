@@ -344,48 +344,48 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   // }
   //</editor-fold> BOUNCING BALL                 END
   //<editor-fold>  < NOTATION >                    //
-/*
-  let noteCoordsByBeat_set = [
-    [0, 0],
-    [0, 69],
-    [0, 135],
-    [0, 204],
-    [0, 280],
-    [0, 349],
-    [0, 418],
-    [0, 487],
-    [100, 0],
-    [100, 63],
-    [100, 132],
-    [100, 199],
-    [100, 275],
-    [100, 343],
-    [100, 411],
-    [100, 479]
-  ];
-  let noteType = ['rest', 'quarter_c4']
-  let notesObj = {};
-  noteType.forEach((noteTp) => {
-    let t_noteArr = [];
-    noteCoordsByBeat_set.forEach((coordsArr, beat) => {
-      let tx = coordsArr[1];
-      let ty = coordsArr[0];
-      let t_n = document.createElementNS(SVG_NS, "image");
-      t_n.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/' + noteTp + '.svg');
-      t_n.setAttributeNS(null, "x", tx);
-      t_n.setAttributeNS(null, "y", ty);
-      t_n.setAttributeNS(null, "visibility", 'hidden');
-      lowerCanvas.appendChild(t_n);
-      t_noteArr.push(t_n);
+  /*
+    let noteCoordsByBeat_set = [
+      [0, 0],
+      [0, 69],
+      [0, 135],
+      [0, 204],
+      [0, 280],
+      [0, 349],
+      [0, 418],
+      [0, 487],
+      [100, 0],
+      [100, 63],
+      [100, 132],
+      [100, 199],
+      [100, 275],
+      [100, 343],
+      [100, 411],
+      [100, 479]
+    ];
+    let noteType = ['rest', 'quarter_c4']
+    let notesObj = {};
+    noteType.forEach((noteTp) => {
+      let t_noteArr = [];
+      noteCoordsByBeat_set.forEach((coordsArr, beat) => {
+        let tx = coordsArr[1];
+        let ty = coordsArr[0];
+        let t_n = document.createElementNS(SVG_NS, "image");
+        t_n.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/' + noteTp + '.svg');
+        t_n.setAttributeNS(null, "x", tx);
+        t_n.setAttributeNS(null, "y", ty);
+        t_n.setAttributeNS(null, "visibility", 'hidden');
+        lowerCanvas.appendChild(t_n);
+        t_noteArr.push(t_n);
+      });
+
+      notesObj[noteTp] = t_noteArr;
     });
 
-    notesObj[noteTp] = t_noteArr;
-  });
+    console.log(notesObj);
+    notesObj.rest[3].setAttributeNS(null, "visibility", 'visible');
 
-  console.log(notesObj);
-  notesObj.rest[3].setAttributeNS(null, "visibility", 'visible');
-
-*/
+  */
 
   let emptyStaff = document.createElementNS(SVG_NS, "image");
   emptyStaff.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/emptyStaff.svg');
@@ -395,68 +395,65 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   lowerCanvas.appendChild(emptyStaff);
 
   let in1 = document.createElementNS(SVG_NS, "image");
-  in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b1_quarter_c4.svg');
+  in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b1_rest.svg');
   in1.setAttributeNS(null, "y", -85);
   in1.setAttributeNS(null, "x", 0);
   lowerCanvas.appendChild(in1);
+
   var in2 = document.createElementNS(SVG_NS, "image");
   in2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b2_quarter_c4.svg');
   in2.setAttributeNS(null, "y", -85);
   in2.setAttributeNS(null, "x", 0);
   lowerCanvas.appendChild(in2);
 
+  var in3 = document.createElementNS(SVG_NS, "image");
+  in3.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b3_quarter_c4.svg');
+  in3.setAttributeNS(null, "y", -85);
+  in3.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in3);
+
+  var in4 = document.createElementNS(SVG_NS, "image");
+  in4.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b4_quarter_c4.svg');
+  in4.setAttributeNS(null, "y", -85);
+  in4.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in4);
+
+  var in5 = document.createElementNS(SVG_NS, "image");
+  in5.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b5_quarter_c4.svg');
+  in5.setAttributeNS(null, "y", -85);
+  in5.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in5);
+
+  var in6 = document.createElementNS(SVG_NS, "image");
+  in6.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b6_quarter_c4.svg');
+  in6.setAttributeNS(null, "y", -85);
+  in6.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in6);
+
+  var in7 = document.createElementNS(SVG_NS, "image");
+  in7.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b7_quarter_c4.svg');
+  in7.setAttributeNS(null, "y", -85);
+  in7.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in7);
+
+  var in8 = document.createElementNS(SVG_NS, "image");
+  in8.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b8_quarter_c4.svg');
+  in8.setAttributeNS(null, "y", -85);
+  in8.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(in8);
+
+  var r2_1 = document.createElementNS(SVG_NS, "image");
+  r2_1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b9_quarter_c4.svg');
+  r2_1.setAttributeNS(null, "y", -85);
+  r2_1.setAttributeNS(null, "x", 0);
+  lowerCanvas.appendChild(r2_1);
 
   /*
-  var in1 = document.createElementNS(SVG_NS, "image");
-  in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in1.setAttributeNS(null, "y", 0);
-  in1.setAttributeNS(null, "x", 0);
-  lowerCanvas.appendChild(in1);
-  var in2 = document.createElementNS(SVG_NS, "image");
-  in2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in2.setAttributeNS(null, "y", 0);
-  in2.setAttributeNS(null, "x", 69);
-  lowerCanvas.appendChild(in2);
-  var in3 = document.createElementNS(SVG_NS, "image");
-  in3.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in3.setAttributeNS(null, "y", 0);
-  in3.setAttributeNS(null, "x", 135);
-  lowerCanvas.appendChild(in3);
-  var in4 = document.createElementNS(SVG_NS, "image");
-  in4.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in4.setAttributeNS(null, "y", 0);
-  in4.setAttributeNS(null, "x", 204);
-  lowerCanvas.appendChild(in4);
-  var in5 = document.createElementNS(SVG_NS, "image");
-  in5.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in5.setAttributeNS(null, "y", 0);
-  in5.setAttributeNS(null, "x", 280);
-  lowerCanvas.appendChild(in5);
-  var in6 = document.createElementNS(SVG_NS, "image");
-  in6.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in6.setAttributeNS(null, "y", 0);
-  in6.setAttributeNS(null, "x", 349);
-  lowerCanvas.appendChild(in6);
-  var in7 = document.createElementNS(SVG_NS, "image");
-  in7.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in7.setAttributeNS(null, "y", 0);
-  in7.setAttributeNS(null, "x", 418);
-  lowerCanvas.appendChild(in7);
-  var in8 = document.createElementNS(SVG_NS, "image");
-  in8.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  in8.setAttributeNS(null, "y", 0);
-  in8.setAttributeNS(null, "x", 487);
-  lowerCanvas.appendChild(in8);
   var sam = document.createElementNS(SVG_NS, "image");
   sam.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/sampleFilledStaff5.svg');
   sam.setAttributeNS(null, "y", 0);
   sam.setAttributeNS(null, "x", 0);
   // lowerCanvas.appendChild(sam);
-  var r2_1 = document.createElementNS(SVG_NS, "image");
-  r2_1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
-  r2_1.setAttributeNS(null, "y", 100);
-  r2_1.setAttributeNS(null, "x", 0);
-  lowerCanvas.appendChild(r2_1);
   var r2_2 = document.createElementNS(SVG_NS, "image");
   r2_2.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/quarter_c4.svg');
   r2_2.setAttributeNS(null, "y", 100);
