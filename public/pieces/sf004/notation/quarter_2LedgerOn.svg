@@ -6,15 +6,15 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   id="svg1063"
+   id="svg2287"
    version="1.1"
-   viewBox="0 0 2.0623665 13.167796"
+   viewBox="0 0 3.0594583 13.167796"
    height="13.167796mm"
-   width="2.0623665mm">
+   width="3.0594583mm">
   <defs
-     id="defs1057" />
+     id="defs2281" />
   <metadata
-     id="metadata1060">
+     id="metadata2284">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -26,29 +26,47 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-88.053479,-139.51495)"
+     transform="translate(-82.201666,-113.58616)"
      id="layer1">
     <g
-       transform="matrix(1.7572994,0,0,1.7572994,74.392058,113.15546)"
-       id="g909">
+       transform="matrix(1.7572994,0,0,1.7572994,-4.4931171,83.71207)"
+       id="g935">
       <rect
-         id="rect658"
+         id="rect612"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="48.764999"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect614"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="48.764999"
+         transform="translate(0.5691,24)" />
+      <rect
+         id="rect638"
          fill="currentColor"
          ry="0.039999999"
          height="6.8401999"
          width="0.13"
-         y="-5"
+         y="-3"
          x="-0.064999998"
-         transform="translate(8.8697,20)" />
+         transform="translate(50.7199,20)" />
       <a
-         id="a662"
-         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:79:10:11"
+         id="a652"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:84:10:11"
          style="color:inherit">
         <path
-           id="path660"
+           id="path650"
            fill="currentColor"
            d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
-           transform="matrix(0.0036,0,0,-0.0036,7.7741,22)" />
+           transform="matrix(0.0036,0,0,-0.0036,49.6242,24)" />
       </a>
     </g>
   </g>

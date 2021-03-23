@@ -1,0 +1,2298 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="individualNotes.svg"
+   id="svg898"
+   viewBox="0 0 85.561929 91.918134"
+   height="161.52768mm"
+   width="150.35793mm"
+   version="1.2">
+  <metadata
+     id="metadata904">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs902" />
+  <sodipodi:namedview
+     inkscape:current-layer="svg898"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="1228"
+     inkscape:cy="459.43868"
+     inkscape:cx="286.44176"
+     inkscape:zoom="1.7412891"
+     showgrid="false"
+     id="namedview900"
+     inkscape:window-height="1006"
+     inkscape:window-width="1228"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <style
+     id="style586"
+     text="style/css"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <text
+     y="-1.7827196"
+     x="-3.0978053"
+     id="text590"
+     fill="currentColor"
+     text-anchor="start"
+     font-size="2.2001px"
+     font-family="serif"><tspan
+       id="tspan588" /></text>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g942">
+    <rect
+       transform="translate(0.5691,23)"
+       x="58.984001"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect608" />
+    <rect
+       transform="translate(0.5691,24)"
+       x="58.984001"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect610" />
+    <rect
+       transform="translate(60.9389,20)"
+       x="-0.064999998"
+       y="-2.5"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect632" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:85:10:11"
+       id="a636">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,59.8433,24.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path634" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g935">
+    <rect
+       transform="translate(0.5691,23)"
+       x="48.764999"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect612" />
+    <rect
+       transform="translate(0.5691,24)"
+       x="48.764999"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect614" />
+    <rect
+       transform="translate(50.7199,20)"
+       x="-0.064999998"
+       y="-3"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect638" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:84:10:11"
+       id="a652">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,49.6242,24)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path650" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g950">
+    <rect
+       transform="translate(0.5691,23)"
+       x="69.203102"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect604" />
+    <rect
+       transform="translate(0.5691,24)"
+       x="69.318298"
+       y="-0.1"
+       width="1.6258"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect606" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:86:10:11"
+       id="a642">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,70.0623,24.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path640" />
+    </a>
+    <path
+       transform="matrix(0.004,0,0,-0.004,68.6123,24.5)"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       fill="currentColor"
+       id="path648" />
+    <rect
+       transform="translate(71.158,20)"
+       x="-0.064999998"
+       y="-2.5"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect654" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g909">
+    <rect
+       transform="translate(8.8697,20)"
+       x="-0.064999998"
+       y="-5"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect658" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:79:10:11"
+       id="a662">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,7.7741,22)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path660" />
+    </a>
+  </g>
+  <g
+     transform="translate(-9.903265,-15.661674)"
+     id="g2645">
+    <rect
+       x="27.6721"
+       y="22.9"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect618" />
+    <rect
+       x="28.992901"
+       y="16"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect676" />
+    <path
+       id="path678"
+       fill="currentColor"
+       d="m 28.7362,22.5068 c 0.2052,0 0.3996,0.1044 0.3996,0.3312 0,0.2556 -0.1944,0.432 -0.3636,0.5328 -0.126,0.0756 -0.2664,0.1224 -0.4104,0.1224 -0.2052,0 -0.3996,-0.1044 -0.3996,-0.3312 0,-0.2556 0.1944,-0.432 0.3636,-0.5328 0.126,-0.0756 0.2664,-0.1224 0.4104,-0.1224 z"
+       style="stroke-width:0.0036" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g2591">
+    <rect
+       x="19.0238"
+       y="14.5"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect656" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:80:10:11"
+       id="a666">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,17.9931,21.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path664" />
+    </a>
+    <path
+       d="m 17.4071,22.748 c 0,0.04 -0.032,0.076 -0.072,0.076 -0.04,0 -0.076,-0.036 -0.076,-0.076 v -0.58 l -0.332,0.124 v 0.632 c 0,0.04 -0.036,0.076 -0.076,0.076 -0.04,0 -0.072,-0.036 -0.072,-0.076 v -0.58 l -0.128,0.048 c -0.008,0.004 -0.02,0.004 -0.028,0.004 -0.044,0 -0.08,-0.036 -0.08,-0.08 v -0.24 c 0,-0.032 0.02,-0.064 0.052,-0.076 l 0.184,-0.064 v -0.64 l -0.128,0.044 c -0.008,0.004 -0.02,0.004 -0.028,0.004 -0.044,0 -0.08,-0.036 -0.08,-0.08 v -0.24 c 0,-0.032 0.02,-0.06 0.052,-0.072 l 0.184,-0.068 v -0.632 c 0,-0.04 0.032,-0.076 0.072,-0.076 0.04,0 0.076,0.036 0.076,0.076 v 0.58 l 0.332,-0.124 v -0.632 c 0,-0.04 0.036,-0.076 0.076,-0.076 0.04,0 0.072,0.036 0.072,0.076 v 0.58 l 0.128,-0.048 c 0.008,-0.004 0.02,-0.004 0.028,-0.004 0.044,0 0.08,0.036 0.08,0.08 v 0.24 c 0,0.032 -0.02,0.064 -0.052,0.076 l -0.184,0.064 v 0.64 l 0.128,-0.044 c 0.008,-0.004 0.02,-0.004 0.028,-0.004 0.044,0 0.08,0.036 0.08,0.08 v 0.24 c 0,0.032 -0.02,0.06 -0.052,0.072 l -0.184,0.068 z m -0.48,-1.508 v 0.64 l 0.332,-0.12 v -0.64 z"
+       fill="currentColor"
+       id="path682"
+       style="stroke-width:0.004" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g928">
+    <rect
+       transform="translate(0.5691,23)"
+       x="37.437199"
+       y="-0.1"
+       width="1.6258"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect616" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:82:10:11"
+       id="a672">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,38.1812,23)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path670" />
+    </a>
+    <rect
+       transform="translate(39.2769,20)"
+       x="-0.064999998"
+       y="-4"
+       width="0.13"
+       height="6.8401999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect674" />
+    <path
+       transform="matrix(0.004,0,0,-0.004,36.7312,23)"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       fill="currentColor"
+       id="path684" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g1018">
+    <rect
+       transform="translate(0.5691,38)"
+       x="30.7665"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect710" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:91:10:11"
+       id="a724">
+      <path
+         transform="matrix(0.004,0,0,-0.004,26.6387,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path722" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:91:14:15"
+       id="a734">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,31.6257,38)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path732" />
+    </a>
+    <rect
+       transform="translate(32.7214,35)"
+       x="-0.064999998"
+       y="-3.8099999"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect736" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:91:13:14"
+       id="a772">
+      <polygon
+         transform="translate(27.0737,31.19)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon770" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g1028">
+    <path
+       transform="matrix(0.004,0,0,-0.004,20.0409,36.5)"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       fill="currentColor"
+       id="path730" />
+    <rect
+       transform="translate(22.5866,35)"
+       x="-0.064999998"
+       y="-5.1900001"
+       width="0.13"
+       height="6.5302"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect742" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:90:14:15"
+       id="a746">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,21.4909,36.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path744" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:90:13:14"
+       id="a776">
+      <polygon
+         transform="translate(16.9389,29.81)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon774" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:90:10:11"
+       id="a790">
+      <path
+         transform="matrix(0.004,0,0,-0.004,16.5039,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path788" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g1008">
+    <rect
+       transform="translate(0.5691,38)"
+       x="41.016499"
+       y="-0.1"
+       width="1.6258"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect708" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:92:13:14"
+       id="a768">
+      <polygon
+         transform="translate(37.2085,31.19)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon766" />
+    </a>
+    <rect
+       transform="translate(42.8562,35)"
+       x="-0.064999998"
+       y="-3.8099999"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect782" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:92:10:11"
+       id="a786">
+      <path
+         transform="matrix(0.004,0,0,-0.004,36.7735,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path784" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:92:14:15"
+       id="a794">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,41.7605,38)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path792" />
+    </a>
+    <path
+       transform="matrix(0.004,0,0,-0.004,40.3105,38)"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       fill="currentColor"
+       id="path796" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g986">
+    <rect
+       transform="translate(0.5691,38)"
+       x="62.4025"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect700" />
+    <rect
+       transform="translate(0.5691,39)"
+       x="62.4025"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect702" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:95:13:14"
+       id="a760">
+      <polygon
+         transform="translate(58.7097,32.81)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon758" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:95:10:11"
+       id="a804">
+      <path
+         transform="matrix(0.004,0,0,-0.004,58.2747,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path802" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:95:14:15"
+       id="a810">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,63.2618,39.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path808" />
+    </a>
+    <rect
+       transform="translate(64.3574,35)"
+       x="-0.064999998"
+       y="-2.1900001"
+       width="0.13"
+       height="6.5302"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect812" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g997">
+    <rect
+       transform="translate(0.5691,38)"
+       x="52.2677"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect704" />
+    <rect
+       transform="translate(0.5691,39)"
+       x="52.2677"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect706" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:94:13:14"
+       id="a764">
+      <polygon
+         transform="translate(48.5749,32.19)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon762" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:94:10:11"
+       id="a800">
+      <path
+         transform="matrix(0.004,0,0,-0.004,48.1399,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path798" />
+    </a>
+    <rect
+       transform="translate(54.2226,35)"
+       x="-0.064999998"
+       y="-2.8099999"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect806" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:94:14:15"
+       id="a822">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,53.127,39)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path820" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g2749">
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:89:10:11"
+       id="a728">
+      <path
+         transform="matrix(0.004,0,0,-0.004,6.3691,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path726" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:89:14:15"
+       id="a740">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,11.3561,37)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path738" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:89:13:14"
+       id="a780">
+      <polygon
+         transform="translate(6.8041,30.19)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="5.6727,0.2 0.04,0.2 0.04,-0.2 5.6727,-0.2 "
+         id="polygon778" />
+    </a>
+    <rect
+       x="12.3868"
+       y="30.190001"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect834" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g963">
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:97:13:14"
+       id="a752">
+      <polygon
+         transform="translate(78.9793,30.19)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 8.2269,-0.2 8.2269,0.2 0.04,0.2 "
+         id="polygon748" />
+      <polygon
+         transform="translate(84.562,31)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 2.6442,-0.2 2.6442,0.2 0.04,0.2 "
+         id="polygon750" />
+    </a>
+    <rect
+       transform="translate(84.627,35)"
+       x="-0.064999998"
+       y="-4.8099999"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect824" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:97:10:11"
+       id="a828">
+      <path
+         transform="matrix(0.004,0,0,-0.004,78.5443,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path826" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:97:14:15"
+       id="a832">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,83.5314,37)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path830" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:97:19:20"
+       id="a838">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,86.0856,37)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path836" />
+    </a>
+    <rect
+       transform="translate(87.1812,35)"
+       x="-0.064999998"
+       y="-4.8099999"
+       width="0.13"
+       height="6.6501999"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect840" />
+  </g>
+  <g
+     transform="translate(-6.3571,-14.5)"
+     id="g975">
+    <rect
+       transform="translate(0.5691,38)"
+       x="72.5373"
+       y="-0.1"
+       width="1.7410001"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect696" />
+    <rect
+       transform="translate(0.5691,39)"
+       x="72.652496"
+       y="-0.1"
+       width="1.6258"
+       height="0.2"
+       ry="0.1"
+       fill="currentColor"
+       id="rect698" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:96:13:14"
+       id="a756">
+      <polygon
+         transform="translate(68.8445,32.81)"
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.08"
+         fill="currentColor"
+         stroke="currentColor"
+         points="0.04,-0.2 5.6727,-0.2 5.6727,0.2 0.04,0.2 "
+         id="polygon754" />
+    </a>
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:96:10:11"
+       id="a816">
+      <path
+         transform="matrix(0.004,0,0,-0.004,68.4095,35)"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         fill="currentColor"
+         id="path814" />
+    </a>
+    <path
+       transform="matrix(0.004,0,0,-0.004,71.9466,39.5)"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       fill="currentColor"
+       id="path842" />
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:96:14:15"
+       id="a846">
+      <path
+         transform="matrix(0.0036,0,0,-0.0036,73.3966,39.5)"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         fill="currentColor"
+         id="path844" />
+    </a>
+    <rect
+       transform="translate(74.4922,35)"
+       x="-0.064999998"
+       y="-2.1900001"
+       width="0.13"
+       height="6.5302"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect848" />
+  </g>
+  <text
+     style="stroke-width:1"
+     y="39.123367"
+     x="-1.4319688"
+     font-family="serif"
+     font-size="2.20009px"
+     text-anchor="start"
+     fill="currentColor"
+     id="text4412"><tspan
+       style="stroke-width:1"
+       id="tspan4410" /></text>
+  <g
+     transform="translate(-1.5119419,38.614755)"
+     id="g5055">
+    <rect
+       id="rect4442"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="44.868198"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4444"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="44.868198"
+       transform="translate(0.5691,24)" />
+    <rect
+       id="rect4446"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="42.305599"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4448"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="42.305599"
+       transform="translate(0.5691,24)" />
+    <a
+       id="a4504"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:14:15"
+       style="color:inherit">
+      <path
+         id="path4502"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,43.1648,24)" />
+    </a>
+    <rect
+       id="rect4506"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-2.8099999"
+       x="-0.064999998"
+       transform="translate(44.2605,20)" />
+    <a
+       id="a4510"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:18:19"
+       style="color:inherit">
+      <path
+         id="path4508"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,45.7274,24)" />
+    </a>
+    <rect
+       id="rect4512"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-2.8099999"
+       x="-0.064999998"
+       transform="translate(46.8231,20)" />
+    <a
+       id="a4516"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:10:11"
+       style="color:inherit">
+      <path
+         id="path4514"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,38.161,20)" />
+    </a>
+    <a
+       id="a4546"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4542"
+         points="0.04,0.2 0.04,-0.2 8.2521,-0.2 8.2521,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(38.596,17.19)" />
+      <polygon
+         id="polygon4544"
+         points="0.04,0.2 0.04,-0.2 2.6526,-0.2 2.6526,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(44.1955,18)" />
+    </a>
+  </g>
+  <g
+     id="g4977"
+     transform="translate(-6.172896,29.448278)">
+    <rect
+       id="rect4474"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.5302"
+       width="0.13"
+       y="-5.1900001"
+       x="-0.064999998"
+       transform="translate(16.4361,20)" />
+    <a
+       id="a4478"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:100:21:22"
+       style="color:inherit">
+      <path
+         id="path4476"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,15.3405,21.5)" />
+    </a>
+    <path
+       id="path4480"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,11.3279,21.5)" />
+    <rect
+       id="rect4482"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.5302"
+       width="0.13"
+       y="-5.1900001"
+       x="-0.064999998"
+       transform="translate(13.8736,20)" />
+    <a
+       id="a4496"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:100:14:15"
+       style="color:inherit">
+      <path
+         id="path4494"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,12.7779,21.5)" />
+    </a>
+    <a
+       id="a4500"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:100:10:11"
+       style="color:inherit">
+      <path
+         id="path4498"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,7.7741,20)" />
+    </a>
+    <a
+       id="a4564"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:100:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4560"
+         points="8.2521,-0.2 8.2521,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(8.2091,14.81)" />
+      <polygon
+         id="polygon4562"
+         points="2.6526,-0.2 2.6526,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(13.8086,15.62)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-4.4912043,39.131006)"
+     id="g5038">
+    <rect
+       id="rect4454"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="24.610201"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4456"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="22.047701"
+       transform="translate(0.5691,23)" />
+    <a
+       id="a4472"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:101:10:11"
+       style="color:inherit">
+      <path
+         id="path4470"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,17.9031,20)" />
+    </a>
+    <a
+       id="a4486"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:101:14:15"
+       style="color:inherit">
+      <path
+         id="path4484"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,22.9069,23)" />
+    </a>
+    <rect
+       id="rect4488"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(24.0025,20)" />
+    <a
+       id="a4558"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:101:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4554"
+         points="0.04,0.2 0.04,-0.2 8.2521,-0.2 8.2521,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(18.3381,16.19)" />
+      <polygon
+         id="polygon4556"
+         points="0.04,0.2 0.04,-0.2 2.6526,-0.2 2.6526,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(23.9375,17)" />
+    </a>
+    <rect
+       id="rect4566"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(26.5651,20)" />
+    <a
+       id="a4580"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:101:19:20"
+       style="color:inherit">
+      <path
+         id="path4578"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,25.4695,23)" />
+    </a>
+  </g>
+  <g
+     id="g4993"
+     transform="translate(-2.356117,28.028081)">
+    <rect
+       id="rect4450"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="34.739201"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4452"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.6258"
+       y="-0.1"
+       x="32.291801"
+       transform="translate(0.5691,23)" />
+    <a
+       id="a4552"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:102:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4548"
+         points="8.2521,-0.2 8.2521,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(28.467,16.19)" />
+      <polygon
+         id="polygon4550"
+         points="2.6526,-0.2 2.6526,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(34.0665,17)" />
+    </a>
+    <a
+       id="a4570"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:102:10:11"
+       style="color:inherit">
+      <path
+         id="path4568"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,28.032,20)" />
+    </a>
+    <a
+       id="a4574"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:102:14:15"
+       style="color:inherit">
+      <path
+         id="path4572"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,33.0359,23)" />
+    </a>
+    <rect
+       id="rect4576"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(34.1315,20)" />
+    <path
+       id="path4582"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,31.5859,23)" />
+    <a
+       id="a4586"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:102:21:22"
+       style="color:inherit">
+      <path
+         id="path4584"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,35.5984,23)" />
+    </a>
+    <rect
+       id="rect4588"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(36.6941,20)" />
+  </g>
+  <g
+     id="g5010"
+     transform="translate(-3.687552,25.542736)">
+    <rect
+       id="rect4434"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="56.230999"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4436"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="56.230999"
+       transform="translate(0.5691,24)" />
+    <rect
+       id="rect4438"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="53.6684"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4440"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="53.6684"
+       transform="translate(0.5691,24)" />
+    <a
+       id="a4540"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:105:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4536"
+         points="8.2521,-0.2 8.2521,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(49.9588,18)" />
+      <polygon
+         id="polygon4538"
+         points="2.6526,-0.2 2.6526,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(55.5583,18.81)" />
+    </a>
+    <a
+       id="a4592"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:105:14:15"
+       style="color:inherit">
+      <path
+         id="path4590"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,54.5277,24.5)" />
+    </a>
+    <rect
+       id="rect4594"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(55.6233,20)" />
+    <a
+       id="a4598"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:105:18:19"
+       style="color:inherit">
+      <path
+         id="path4596"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,57.0902,24.5)" />
+    </a>
+    <rect
+       id="rect4600"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(58.1859,20)" />
+    <a
+       id="a4616"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:105:10:11"
+       style="color:inherit">
+      <path
+         id="path4614"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,49.5238,20)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-4.4195735,41.352)"
+     id="g5087">
+    <a
+       id="a4492"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:108:23:24"
+       style="color:inherit">
+      <path
+         id="path4490"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,85.2859,20)" />
+    </a>
+    <a
+       id="a4522"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:108:17:18"
+       style="color:inherit">
+      <polygon
+         id="polygon4518"
+         points="0.04,-0.2 4.6195,-0.2 4.6195,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(81.1915,14.81)" />
+      <polygon
+         id="polygon4520"
+         points="0.04,-0.2 2.6526,-0.2 2.6526,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(81.1915,15.62)" />
+    </a>
+    <a
+       id="a4630"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:108:10:11"
+       style="color:inherit">
+      <path
+         id="path4628"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,80.1608,21.5)" />
+    </a>
+    <rect
+       id="rect4632"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.5302"
+       width="0.13"
+       y="-5.1900001"
+       x="-0.064999998"
+       transform="translate(81.2565,20)" />
+    <path
+       id="path4634"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,78.7108,21.5)" />
+    <a
+       id="a4638"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:108:18:19"
+       style="color:inherit">
+      <path
+         id="path4636"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,82.7234,21.5)" />
+    </a>
+    <rect
+       id="rect4640"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.5302"
+       width="0.13"
+       y="-5.1900001"
+       x="-0.064999998"
+       transform="translate(83.819,20)" />
+  </g>
+  <g
+     transform="translate(-3.5549125,38.254056)"
+     id="g5073">
+    <rect
+       id="rect4426"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="66.360001"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4428"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="66.360001"
+       transform="translate(0.5691,24)" />
+    <rect
+       id="rect4430"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="63.797401"
+       transform="translate(0.5691,23)" />
+    <rect
+       id="rect4432"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.6258"
+       y="-0.1"
+       x="63.912601"
+       transform="translate(0.5691,24)" />
+    <a
+       id="a4534"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:106:13:14"
+       style="color:inherit">
+      <polygon
+         id="polygon4530"
+         points="0.04,0.2 0.04,-0.2 8.2521,-0.2 8.2521,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(60.0878,18)" />
+      <polygon
+         id="polygon4532"
+         points="0.04,0.2 0.04,-0.2 2.6526,-0.2 2.6526,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(65.6873,18.81)" />
+    </a>
+    <a
+       id="a4604"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:106:10:11"
+       style="color:inherit">
+      <path
+         id="path4602"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,59.6528,20)" />
+    </a>
+    <a
+       id="a4608"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:106:14:15"
+       style="color:inherit">
+      <path
+         id="path4606"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,64.6566,24.5)" />
+    </a>
+    <rect
+       id="rect4610"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(65.7523,20)" />
+    <path
+       id="path4642"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,63.2066,24.5)" />
+    <a
+       id="a4646"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:106:20:21"
+       style="color:inherit">
+      <path
+         id="path4644"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,67.2192,24.5)" />
+    </a>
+    <rect
+       id="rect4648"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(68.3149,20)" />
+  </g>
+  <g
+     id="g5023"
+     transform="translate(-4.042601,27.584269)">
+    <a
+       id="a4528"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:107:15:16"
+       style="color:inherit">
+      <polygon
+         id="polygon4524"
+         points="4.6195,-0.2 4.6195,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(71.0625,15.19)" />
+      <polygon
+         id="polygon4526"
+         points="2.6526,-0.2 2.6526,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(71.0625,16)" />
+    </a>
+    <a
+       id="a4620"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:107:16:17"
+       style="color:inherit">
+      <path
+         id="path4618"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,72.5944,22)" />
+    </a>
+    <rect
+       id="rect4622"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-4.8099999"
+       x="-0.064999998"
+       transform="translate(73.69,20)" />
+    <a
+       id="a4626"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:107:19:20"
+       style="color:inherit">
+      <path
+         id="path4624"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,75.157,20)" />
+    </a>
+    <rect
+       id="rect4650"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-4.8099999"
+       x="-0.064999998"
+       transform="translate(71.1275,20)" />
+    <a
+       id="a4654"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:107:10:11"
+       style="color:inherit">
+      <path
+         id="path4652"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,70.0318,22)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-5.2867798,50.191031)"
+     id="g5135">
+    <rect
+       id="rect4686"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="28.0156"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4688"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="28.0156"
+       transform="translate(0.5691,39)" />
+    <rect
+       id="rect4690"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="25.488001"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4692"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="25.488001"
+       transform="translate(0.5691,39)" />
+    <a
+       id="a4712"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:112:10:11"
+       style="color:inherit">
+      <path
+         id="path4710"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,26.3472,39)" />
+    </a>
+    <rect
+       id="rect4714"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-2.8099999"
+       x="-0.064999998"
+       transform="translate(27.4429,35)" />
+    <a
+       id="a4718"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:112:15:16"
+       style="color:inherit">
+      <path
+         id="path4716"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,28.8748,39)" />
+    </a>
+    <rect
+       id="rect4720"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-2.8099999"
+       x="-0.064999998"
+       transform="translate(29.9705,35)" />
+    <a
+       id="a4724"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:112:17:18"
+       style="color:inherit">
+      <path
+         id="path4722"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,31.4024,35)" />
+    </a>
+    <a
+       id="a4796"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:112:14:15"
+       style="color:inherit">
+      <polygon
+         id="polygon4792"
+         points="4.5495,0.2 0.04,0.2 0.04,-0.2 4.5495,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(27.3779,32.19)" />
+      <polygon
+         id="polygon4794"
+         points="2.6176,0.2 0.04,0.2 0.04,-0.2 2.6176,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(27.3779,33)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-4.5628352,40.551333)"
+     id="g5118">
+    <rect
+       id="rect4694"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="18.026501"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4696"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.6258"
+       y="-0.1"
+       x="15.6141"
+       transform="translate(0.5691,38)" />
+    <a
+       id="a4738"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:111:10:11"
+       style="color:inherit">
+      <path
+         id="path4736"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,16.3581,38)" />
+    </a>
+    <rect
+       id="rect4740"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(17.4538,35)" />
+    <path
+       id="path4742"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,14.9081,38)" />
+    <a
+       id="a4746"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:111:18:19"
+       style="color:inherit">
+      <path
+         id="path4744"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,18.8858,38)" />
+    </a>
+    <rect
+       id="rect4748"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(19.9814,35)" />
+    <a
+       id="a4752"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:111:23:24"
+       style="color:inherit">
+      <path
+         id="path4750"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,21.4134,35)" />
+    </a>
+    <a
+       id="a4802"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:111:17:18"
+       style="color:inherit">
+      <polygon
+         id="polygon4798"
+         points="4.5495,0.2 0.04,0.2 0.04,-0.2 4.5495,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(17.3888,31.19)" />
+      <polygon
+         id="polygon4800"
+         points="2.6176,0.2 0.04,0.2 0.04,-0.2 2.6176,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(17.3888,32)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-4.595051,38.863971)"
+     id="g5152">
+    <rect
+       id="rect4678"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="38.0047"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4680"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="38.0047"
+       transform="translate(0.5691,39)" />
+    <rect
+       id="rect4682"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="35.4771"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4684"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="35.4771"
+       transform="translate(0.5691,39)" />
+    <a
+       id="a4728"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:113:10:11"
+       style="color:inherit">
+      <path
+         id="path4726"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,36.3363,39.5)" />
+    </a>
+    <rect
+       id="rect4730"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(37.432,35)" />
+    <a
+       id="a4790"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:113:14:15"
+       style="color:inherit">
+      <polygon
+         id="polygon4786"
+         points="4.5495,0.2 0.04,0.2 0.04,-0.2 4.5495,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(37.367,33)" />
+      <polygon
+         id="polygon4788"
+         points="2.6176,0.2 0.04,0.2 0.04,-0.2 2.6176,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(37.367,33.81)" />
+    </a>
+    <a
+       id="a4816"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:113:15:16"
+       style="color:inherit">
+      <path
+         id="path4814"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,38.8639,39.5)" />
+    </a>
+    <rect
+       id="rect4818"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(39.9596,35)" />
+    <a
+       id="a4822"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:113:17:18"
+       style="color:inherit">
+      <path
+         id="path4820"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,41.3915,35)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-6.1514408,41.198557)"
+     id="g5163">
+    <a
+       id="a4778"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:116:14:15"
+       style="color:inherit">
+      <polygon
+         id="polygon4774"
+         points="0.04,-0.2 8.1865,-0.2 8.1865,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(58.9895,30.19)" />
+      <polygon
+         id="polygon4776"
+         points="0.04,-0.2 1.125,-0.2 1.125,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(66.051,31)" />
+    </a>
+    <a
+       id="a4832"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:116:10:11"
+       style="color:inherit">
+      <path
+         id="path4830"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,58.5545,35)" />
+    </a>
+    <path
+       id="path4834"
+       fill="currentColor"
+       d="M 0,0 C 0,31 25,56 56,56 87,56 112,31 112,0 112,-31 87,-56 56,-56 25,-56 0,-31 0,0 Z"
+       transform="matrix(0.004,0,0,-0.004,60.0045,34.5)" />
+    <a
+       id="a4838"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:116:15:16"
+       style="color:inherit">
+      <path
+         id="path4836"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,66.0553,37)" />
+    </a>
+    <rect
+       id="rect4840"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-4.8099999"
+       x="-0.064999998"
+       transform="translate(67.151,35)" />
+  </g>
+  <g
+     id="g5102"
+     transform="translate(-3.822238,51.578291)">
+    <rect
+       id="rect4698"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="8.0374002"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect4700"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="5.5098"
+       transform="translate(0.5691,38)" />
+    <a
+       id="a4734"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:110:10:11"
+       style="color:inherit">
+      <path
+         id="path4732"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,6.3691,38)" />
+    </a>
+    <a
+       id="a4808"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:110:15:16"
+       style="color:inherit">
+      <polygon
+         id="polygon4804"
+         points="0.04,0.2 0.04,-0.2 4.5495,-0.2 4.5495,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(7.3997,31.19)" />
+      <polygon
+         id="polygon4806"
+         points="0.04,0.2 0.04,-0.2 2.6176,-0.2 2.6176,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(7.3997,32)" />
+    </a>
+    <a
+       id="a4812"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:110:19:20"
+       style="color:inherit">
+      <path
+         id="path4810"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,11.4243,35)" />
+    </a>
+    <rect
+       id="rect4842"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(9.9923,35)" />
+    <rect
+       id="rect4850"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998"
+       transform="translate(7.4647,35)" />
+    <a
+       id="a4872"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:110:16:17"
+       style="color:inherit">
+      <path
+         id="path4870"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,8.8967,38)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-2.865729,53.130878)"
+     id="g5175">
+    <a
+       id="a4772"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:117:14:15"
+       style="color:inherit">
+      <polygon
+         id="polygon4768"
+         points="8.1865,0.2 0.04,0.2 0.04,-0.2 8.1865,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(69.0179,29.81)" />
+      <polygon
+         id="polygon4770"
+         points="1.125,0.2 0.04,0.2 0.04,-0.2 1.125,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(76.0794,30.62)" />
+    </a>
+    <a
+       id="a4846"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:117:10:11"
+       style="color:inherit">
+      <path
+         id="path4844"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,68.5829,35)" />
+    </a>
+    <path
+       id="path4848"
+       fill="currentColor"
+       d="M 0,0 C 0,31 25,56 56,56 87,56 112,31 112,0 112,-31 87,-56 56,-56 25,-56 0,-31 0,0 Z"
+       transform="matrix(0.004,0,0,-0.004,70.0329,34.5)" />
+    <a
+       id="a4854"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:117:15:16"
+       style="color:inherit">
+      <path
+         id="path4852"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,76.0837,36.5)" />
+    </a>
+    <rect
+       id="rect4856"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.5302"
+       width="0.13"
+       y="-5.1900001"
+       x="-0.064999998"
+       transform="translate(77.1794,35)" />
+    <path
+       id="path4874"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,74.6337,36.5)" />
+  </g>
+  <g
+     transform="translate(-3.5574578,41.198556)"
+     id="g5187">
+    <rect
+       id="rect4668"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="85.252899"
+       transform="translate(0.5691,38)" />
+    <a
+       id="a4766"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:118:14:15"
+       style="color:inherit">
+      <polygon
+         id="polygon4762"
+         points="0.04,0.2 0.04,-0.2 8.1865,-0.2 8.1865,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(79.0463,31.19)" />
+      <polygon
+         id="polygon4764"
+         points="0.04,0.2 0.04,-0.2 1.125,-0.2 1.125,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(86.1078,32)" />
+    </a>
+    <a
+       id="a4866"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:118:15:16"
+       style="color:inherit">
+      <path
+         id="path4864"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,86.1122,38)" />
+    </a>
+    <rect
+       transform="translate(87.2078,35)"
+       id="rect4868"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.6501999"
+       width="0.13"
+       y="-3.8099999"
+       x="-0.064999998" />
+    <path
+       id="path4876"
+       fill="currentColor"
+       d="M 0,0 C 0,31 25,56 56,56 87,56 112,31 112,0 112,-31 87,-56 56,-56 25,-56 0,-31 0,0 Z"
+       transform="matrix(0.004,0,0,-0.004,80.0613,34.5)" />
+    <a
+       id="a4880"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:118:10:11"
+       style="color:inherit">
+      <path
+         id="path4878"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,78.6113,35)" />
+    </a>
+  </g>
+  <g
+     transform="translate(-4.1590038,49.631761)"
+     id="g7184">
+    <rect
+       id="rect6900"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="50.233799"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect6902"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="50.233799"
+       transform="translate(0.5691,39)" />
+    <rect
+       id="rect6904"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.7410001"
+       y="-0.1"
+       x="47.7062"
+       transform="translate(0.5691,38)" />
+    <rect
+       id="rect6906"
+       fill="currentColor"
+       ry="0.1"
+       height="0.2"
+       width="1.6258"
+       y="-0.1"
+       x="47.8214"
+       transform="translate(0.5691,39)" />
+    <path
+       id="path6984"
+       fill="currentColor"
+       d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+       transform="matrix(0.004,0,0,-0.004,47.1154,39.5)" />
+    <a
+       id="a6988"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:115:17:18"
+       style="color:inherit">
+      <path
+         id="path6986"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,51.093,39.5)" />
+    </a>
+    <rect
+       id="rect6990"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(52.1887,35)" />
+    <a
+       id="a7014"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:115:16:17"
+       style="color:inherit">
+      <polygon
+         id="polygon7010"
+         points="0.04,-0.2 4.5495,-0.2 4.5495,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(49.5961,33)" />
+      <polygon
+         id="polygon7012"
+         points="0.04,-0.2 2.6176,-0.2 2.6176,0.2 0.04,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(49.5961,33.81)" />
+    </a>
+    <a
+       id="a7056"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:115:10:11"
+       style="color:inherit">
+      <path
+         id="path7054"
+         fill="currentColor"
+         d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+         transform="matrix(0.0036,0,0,-0.0036,48.5654,39.5)" />
+    </a>
+    <rect
+       id="rect7058"
+       fill="currentColor"
+       ry="0.039999999"
+       height="6.3401999"
+       width="0.13"
+       y="-2"
+       x="-0.064999998"
+       transform="translate(49.6611,35)" />
+    <a
+       id="a7092"
+       xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:115:21:22"
+       style="color:inherit">
+      <path
+         id="path7090"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,53.6206,35)" />
+    </a>
+  </g>
+</svg>

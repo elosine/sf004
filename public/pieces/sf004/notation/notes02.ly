@@ -112,7 +112,7 @@
           a16 [a r8] % 16th-16th-8thR 2 ledgers on
           g16 [g r8] % 16th-16th-8thR 2 ledgers below
           
-          gis16 [gis] r8 % 16th-16th-8thR sharp 2 ledgers below
+          gis16 [gis r8]% 16th-16th-8thR sharp 2 ledgers below
           r8. [e'16]  % Dt8thR-16th
           r8. [fis'16]  % Dt8thR-16th sharp
           r8. [c'16]  % Dt8thR-16th 1 ledger on
