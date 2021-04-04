@@ -344,56 +344,160 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   // }
   //</editor-fold> BOUNCING BALL                 END
   //<editor-fold>  < NOTATION >                    //
+  // eventData should generate beatNum/Pitch/Rhythm
+  ////Beat number will give x and initial y
+  ////Pitch will give y refinement & give initial info for rhythmic motive
+  ////Rhythm will select Rhythmic motive make dictionary of names
+  //Draw all and then figure out way to make/visible
+  //Draw all motives at each beat
+  //Inscore call will be a string that is peaced together
+  let newNotes = [];
+  let newNote = {};
+  newNote['beatNum'] = 3;
+  newNote['pitch'] = 'gis3';
+  newNote['motive'] = 'eighthR_two16ths';
+  let notationSvgPaths = [
+    "/pieces/sf004/notationSVGs/quintuplet_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quintuplet_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quintuplet_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quintuplet_sharp_1Ledger.svg",
+    "/pieces/sf004/notationSVGs/quintuplet_1Ledger.svg",
+    "/pieces/sf004/notationSVGs/quintuplet_sharp.svg",
+    "/pieces/sf004/notationSVGs/quintuplet.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quadruplet_sharp.svg",
+    "/pieces/sf004/notationSVGs/quadruplet.svg",
+    "/pieces/sf004/notationSVGs/triplet_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/triplet_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/triplet_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/triplet_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/triplet_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/triplet_sharp.svg",
+    "/pieces/sf004/notationSVGs/triplet.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th_sharp.svg",
+    "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_sharp.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_1Ledger.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR_sharp_1Ledger.svg",
+    "/pieces/sf004/notationSVGs/two16th_8thR.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_sharp.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th_sharp.svg",
+    "/pieces/sf004/notationSVGs/eighthR_8th.svg",
+    "/pieces/sf004/notationSVGs/quarter_sharp_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quarter_2LedgerBelow.svg",
+    "/pieces/sf004/notationSVGs/quarter_sharp_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quarter_2LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quarter_1LedgerOn.svg",
+    "/pieces/sf004/notationSVGs/quarter_sharp.svg",
+    "/pieces/sf004/notationSVGs/quarter.svg"
+  ];
+  // Create dictionary, store each svg on each beat as:
+  //// notation.beat5.cis4.eighthR_two16ths
+  var seekString = "notationSVGs/";
+
+  let str = "/pieces/sf004/notationSVGs/quarter.svg";
+
+  var idx = str.indexOf(seekString);
+
+  if (idx !== -1) {
+    var result = str.substring(idx + seekString.length, str.length);
+    console.log(result);
+  }
+  let notationPerBeat = [];
+  //Add Motive name first then pitchesDict
+  let t_pitchesDict = {
+    g3: {},
+    gis3: {},
+    a3: {},
+    c4: {},
+    cis4: {},
+    g4: {},
+    gis4: {},
+    a4: {}
+  }
+  for (let beatNum = 0; beatNum < 8; beatNum++) {
+    let t_key = 'b' + beatNum;
+    notationPerBeat.push(Object.assign({}, t_pitchesDict));
+  }
+  console.log(notationPerBeat);
+//make svgs for each pitch with all beats in lilypond
+//b1 x=52; y=21
+//// b1 quarter_2LedgerBelow.svg y31 x49
+//// quarter_sharp_2LedgerBelow y31 x42
+//// quarter_2LedgerOn y28 x49
+//// quarter_1LedgerOn y21 x49
+//// quarter_sharp_1LedgerOn y21 x42
+//// g4 quarter y8 x52
+//// gis4 quarter_sharp y9 x43
+//// a4 quarter y5 x52
+
+//// g3 quintuplet_2LedgerBelow y22 x49
+//// gis3 quintuplet_sharp_2LedgerBelow y22 x42
+//// a3 quintuplet_2LedgerOn y17 x50
+//// c4 quintuplet_1Ledger y10 x49
+//b2 x=119
+//b3 x=186
+//b4 x=254
+//b5 x=329
+//b6 x=396
+//b7 x=464
+//b8 x=531
+//b9  x=42; y=121
+//b10 x=110
+//b11 x=177
+//b12 x=244
+//b13 x=320
+//b14 x=387
+//b15 x=454
+//b16 x=521
+
+
+  // let emptyStaff = document.createElementNS(SVG_NS, "image");
+  // emptyStaff.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/emptyStaff.svg');
+  // emptyStaff.setAttributeNS(null, "y", -85);
+  // emptyStaff.setAttributeNS(null, "x", 0);
+  // emptyStaff.setAttributeNS(null, "visibility", 'visible');
+  // lowerCanvas.appendChild(emptyStaff);
+
+
+
+    let allq = document.createElementNS(SVG_NS, "image");
+    allq.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/allQtrs_c4.svg');
+    allq.setAttributeNS(null, "y", -85);
+    allq.setAttributeNS(null, "x", 0);
+    allq.setAttributeNS(null, "visibility", 'visible');
+    lowerCanvas.appendChild(allq);
+
+    let tn = document.createElementNS(SVG_NS, "image");
+    tn.setAttributeNS(XLINK_NS, 'xlink:href', "/pieces/sf004/notationSVGs/quintuplet_1Ledger.svg");
+    tn.setAttributeNS(null, "y", 10);
+    tn.setAttributeNS(null, "x", 49);
+    tn.setAttributeNS(null, "visibility", 'visible');
+    lowerCanvas.appendChild(tn);
   /*
-    let noteCoordsByBeat_set = [
-      [0, 0],
-      [0, 69],
-      [0, 135],
-      [0, 204],
-      [0, 280],
-      [0, 349],
-      [0, 418],
-      [0, 487],
-      [100, 0],
-      [100, 63],
-      [100, 132],
-      [100, 199],
-      [100, 275],
-      [100, 343],
-      [100, 411],
-      [100, 479]
-    ];
-    let noteType = ['rest', 'quarter_c4']
-    let notesObj = {};
-    noteType.forEach((noteTp) => {
-      let t_noteArr = [];
-      noteCoordsByBeat_set.forEach((coordsArr, beat) => {
-        let tx = coordsArr[1];
-        let ty = coordsArr[0];
-        let t_n = document.createElementNS(SVG_NS, "image");
-        t_n.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/' + noteTp + '.svg');
-        t_n.setAttributeNS(null, "x", tx);
-        t_n.setAttributeNS(null, "y", ty);
-        t_n.setAttributeNS(null, "visibility", 'hidden');
-        lowerCanvas.appendChild(t_n);
-        t_noteArr.push(t_n);
-      });
-
-      notesObj[noteTp] = t_noteArr;
-    });
-
-    console.log(notesObj);
-    notesObj.rest[3].setAttributeNS(null, "visibility", 'visible');
-
-  */
-
-  let emptyStaff = document.createElementNS(SVG_NS, "image");
-  emptyStaff.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/emptyStaff.svg');
-  emptyStaff.setAttributeNS(null, "y", -85);
-  emptyStaff.setAttributeNS(null, "x", 0);
-  emptyStaff.setAttributeNS(null, "visibility", 'visible');
-  lowerCanvas.appendChild(emptyStaff);
-
   let in1 = document.createElementNS(SVG_NS, "image");
   in1.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/b1_rest.svg');
   in1.setAttributeNS(null, "y", -85);
