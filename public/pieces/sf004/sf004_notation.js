@@ -351,6 +351,12 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   //Draw all and then figure out way to make/visible
   //Draw all motives at each beat
   //Inscore call will be a string that is peaced together
+  //NEW WORKFLOW
+  //// NEED TO DRAW ALL NOTATION AND THEN JUST MAKE IT VISIBLE/INVISIBLE
+  //// IDENTIFIER: beatNum:[0].cis4.qunituplet
+  ////// Array of 8 beats
+  //////// Dict: g3, gis3, a3, c4, cis4, g4, gis4, a4
+  //////// Dict containing appropriate notation string
   let newNotes = [];
   let newNote = {};
   newNote['beatNum'] = 3;
