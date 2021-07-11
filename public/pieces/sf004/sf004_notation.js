@@ -488,6 +488,9 @@ function mkNotationObject(playerNum, ptrIX, partScore_byFrame_byType) {
   // emptyStaff.setAttributeNS(null, "visibility", 'visible');
   // lowerCanvas.appendChild(emptyStaff);
 
+//Make one beat with all of the motives, then one full staff with one motive
+// Then figure out if there is a system using objects that you can implement, don't forget the arguments assignable on the fly from webaudio_analyze sounefileforpitches
+
 
 
     let allq = document.createElementNS(SVG_NS, "image");
