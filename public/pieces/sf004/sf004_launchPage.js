@@ -1,6 +1,6 @@
 // <editor-fold> Panel Dimensions
 let w = 420;
-let h = 265;
+let h = 254;
 let center = w / 2;
 // </editor-fold> END Panel Dimensions
 
@@ -77,3 +77,10 @@ let selectPartsCBs = mkCheckboxesHoriz({
   lblClr: 'rgb(153,255,0)'
 });
 // </editor-fold> END Select Parts Checkboxes
+
+// <editor-fold> Launch Button
+let btnW = w-40;
+let launchBtn = mkButton({canvas:canvas,w:btnW,h:45,top:175,left:20,label:'Launch Score',fontSize:24});
+let btnPosX = center - (btnW / 2)-7;
+launchBtn.style.left = btnPosX.toString() + 'px';
+// </editor-fold> END Launch Button

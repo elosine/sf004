@@ -93,3 +93,39 @@ body {
   outline-style: inset;
   outline-color: orange;
 }
+
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+ display: none;
+ position: absolute;
+ background-color: #f1f1f1;
+ overflow:scroll;
+ box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+ z-index: 1;
+}
+
+
+/* Links inside the dropdown */
+.dropdown-content a {
+ color: black;
+ /* padding: 12px 16px; */
+ padding-top: 11px;
+ /* padding-bottom: 7px; */
+ padding-left: 14px;
+ padding-right: 8px;
+ text-decoration: none;
+ display: block;
+ font-family: 'Lato';
+ font-size: 13px;
+ font-variant: small-caps;
+ height: 28px;
+}
+
+/* Change color of dropdown links on hover */
+/* .dropdown-content a:hover {background-color: #ddd} */
+.dropdown-content a:hover {background-color: #24b662}
+
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
