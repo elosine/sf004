@@ -49,8 +49,8 @@ let pieceIDinstructions = mkSpan({
 
 // <editor-fold> checkInputs
 let checkInputs = function() {
-  if (pieceIDisEntered && partsCBsAreChecked){
-console.log('ready to launch');
+  if (pieceIDisEntered && partsCBsAreChecked) {
+    console.log('ready to launch');
   }
 }
 // </editor-fold> END checkInputs
@@ -96,15 +96,20 @@ let selectPartsCBs = mkCheckboxesHoriz({
   left: 20,
   lblArray: ['1', '2', '3', '4', '5'],
   lblClr: 'rgb(153,255,0)',
-  clickAction: function(){
-  selectPartsCBs.forEach((cbDict,cbDictIx) => {
-    let tempCB = cbDict.cb;
+  clickAction: function() {
 
-    console.log(tempCB.value);
+    console.log(arguments[0].value + "-" + arguments[1]);
 
-  });
+
   }
+
 });
+  window.onclick = function(event) {
+    selectPartsCBs.forEach((it, i) => {
+      console.log(it.cb.checked);
+    });
+
+  }
 // </editor-fold> END Select Parts Checkboxes
 
 // <editor-fold> Launch Button
@@ -117,7 +122,9 @@ let launchBtn = mkButton({
   left: 20,
   label: 'Launch Score',
   fontSize: 24,
-  action: function(){if(launchBtnIsActive)console.log('i am launch score');}
+  action: function() {
+    if (launchBtnIsActive) console.log('i am launch score');
+  }
 });
 let btnPosX = center - (btnW / 2) - 7;
 launchBtn.style.left = btnPosX.toString() + 'px';

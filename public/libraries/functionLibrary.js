@@ -375,8 +375,8 @@ function mkInputField({
   left = 0,
   color = 'yellow',
   fontSize = 11,
-  clickAction = function(){},
-  keyUpAction = function(){}
+  clickAction = function() {},
+  keyUpAction = function() {}
 } = {
   canvas,
   id: 'inputField',
@@ -386,8 +386,8 @@ function mkInputField({
   left: 0,
   color: 'yellow',
   fontSize: 11,
-  clickAction: function(){},
-  keyUpAction: function(){}
+  clickAction: function() {},
+  keyUpAction: function() {}
 }) {
   let inputField = document.createElement("input");
   inputField.type = 'text';
@@ -406,7 +406,7 @@ function mkInputField({
 }
 // </editor-fold> END mkInputField
 
-// <editor-fold> mkCheckboxesHoriz(canvas,numBoxes:3,boxSz:18,gap:7,top:0,left:0,lblArray:[0,1,2,3],lblClr:'rgb(153,255,0)',lblFontSz:18,clickAction:function(){})
+// <editor-fold> mkCheckboxesHoriz(canvas,numBoxes:3,boxSz:18,gap:7,top:0,left:0,lblArray:[0,1,2,3],lblClr:'rgb(153,255,0)',lblFontSz:18,clickAction:function(){},onFocus)
 let mkCheckboxesHoriz = function({
   canvas,
   numBoxes = 3,
@@ -417,7 +417,8 @@ let mkCheckboxesHoriz = function({
   lblArray = ['0', '1', '2', '3'],
   lblClr = 'rgb(153,255,0)',
   lblFontSz = 18,
-  clickAction = function(){}
+  clickAction = function() {},
+  onFocus = function () {}
 } = {
   canvas,
   numBoxes: 3,
@@ -428,9 +429,13 @@ let mkCheckboxesHoriz = function({
   lblArray: ['0', '1', '2', '3'],
   lblClr: 'rgb(153,255,0)',
   lblFontSz: 18,
-  clickAction:function(){}
+  clickAction: function() {},
+  onFocus: function () {}
 }) {
   let cbArray = [];
+  function mouseUpFunc(currCb, currCbIx){
+    clickAction.apply(this, arguments);
+  }
   // Make Checkboxes
   for (let cbix = 0; cbix < numBoxes; cbix++) {
     let cbDict = {};
@@ -446,9 +451,11 @@ let mkCheckboxesHoriz = function({
     cb.style.padding = '0px';
     cb.style.margin = '0px';
     cb.style.borderWidth = '0px';
-    cb.addEventListener('mouseup', clickAction);
+    cb.addEventListener('mouseup', function(){mouseUpFunc(cb, cbix)});
+    // cb.addEventListener('focus', onFocus(cb));
     canvas.appendChild(cb);
     cbDict['cb'] = cb;
+
 
     // Make Labels
     let lTop = top + boxSz;
@@ -550,13 +557,13 @@ function mkButton({
   action = {}
 } = {
   canvas,
-  w:50,
-  h:50,
-  top:15,
-  left:15,
-  label:'Press Me Hard',
-  fontSize:13,
-  action:{}
+  w: 50,
+  h: 50,
+  top: 15,
+  left: 15,
+  label: 'Press Me Hard',
+  fontSize: 13,
+  action: {}
 }) {
   let btn = document.createElement("BUTTON");
   btn.className = 'btn btn-1';
