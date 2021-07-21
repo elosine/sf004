@@ -1,7 +1,13 @@
-// <editor-fold> Panel Dimensions
+// <editor-fold> VARS: Panel Dimensions
 let w = 420;
 let h = 254;
 let center = w / 2;
+// </editor-fold> END Panel Dimensions
+
+// <editor-fold> VARS: Launch Btn Booleans
+let pieceIDisEntered = false;
+let partsCBsAreChecked = false;
+let launchBtnIsActive = false;
 // </editor-fold> END Panel Dimensions
 
 // <editor-fold> Main Panel
@@ -41,6 +47,14 @@ let pieceIDinstructions = mkSpan({
 });
 // </editor-fold> END Piece ID Caption
 
+// <editor-fold> checkInputs
+let checkInputs = function() {
+  if (pieceIDisEntered && partsCBsAreChecked){
+console.log('ready to launch');
+  }
+}
+// </editor-fold> END checkInputs
+
 //<editor-fold> PieceID Input Field
 let pieceIDinput = mkInputField({
   canvas: canvas,
@@ -50,8 +64,15 @@ let pieceIDinput = mkInputField({
   top: 43,
   left: 302,
   color: 'black',
-  fontSize: 22
+  fontSize: 22,
+  keyUpAction: function() {
+    if (pieceIDinput.value.length != 0) {
+      pieceIDisEntered = true;
+    }
+    checkInputs();
+  }
 });
+
 // </editor-fold> END PieceID Input Field
 
 // <editor-fold> Select Parts Caption
@@ -67,20 +88,38 @@ let selectPartsCaption = mkSpan({
 
 // <editor-fold> Select Parts Checkboxes
 let selectPartsCBs = mkCheckboxesHoriz({
-  canvas:canvas,
+  canvas: canvas,
   numBoxes: 5,
   boxSz: 25,
   gap: 20,
   top: 122,
   left: 20,
-  lblArray: ['1','2','3','4', '5'],
-  lblClr: 'rgb(153,255,0)'
+  lblArray: ['1', '2', '3', '4', '5'],
+  lblClr: 'rgb(153,255,0)',
+  clickAction: function(){
+  selectPartsCBs.forEach((cbDict,cbDictIx) => {
+    let tempCB = cbDict.cb;
+
+    console.log(tempCB.value);
+
+  });
+  }
 });
 // </editor-fold> END Select Parts Checkboxes
 
 // <editor-fold> Launch Button
-let btnW = w-40;
-let launchBtn = mkButton({canvas:canvas,w:btnW,h:45,top:175,left:20,label:'Launch Score',fontSize:24});
-let btnPosX = center - (btnW / 2)-7;
+let btnW = w - 40;
+let launchBtn = mkButton({
+  canvas: canvas,
+  w: btnW,
+  h: 45,
+  top: 175,
+  left: 20,
+  label: 'Launch Score',
+  fontSize: 24,
+  action: function(){if(launchBtnIsActive)console.log('i am launch score');}
+});
+let btnPosX = center - (btnW / 2) - 7;
 launchBtn.style.left = btnPosX.toString() + 'px';
+launchBtn.className = 'btn btn-1_inactive';
 // </editor-fold> END Launch Button
