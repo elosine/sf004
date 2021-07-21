@@ -1,14 +1,13 @@
-// <editor-fold> VARS: Panel Dimensions
+// <editor-fold> VARS
+// Panel Dimensions
 let w = 420;
 let h = 254;
 let center = w / 2;
-// </editor-fold> END Panel Dimensions
 
-// <editor-fold> VARS: Launch Btn Booleans
-let pieceIDisEntered = false;
-let partsCBsAreChecked = false;
 let launchBtnIsActive = false;
-// </editor-fold> END Panel Dimensions
+let partsToRunAsString = "";
+let pieceIdString = "";
+// </editor-fold> END Vars
 
 // <editor-fold> Main Panel
 let panel = mkPanel({
@@ -48,11 +47,7 @@ let pieceIDinstructions = mkSpan({
 // </editor-fold> END Piece ID Caption
 
 // <editor-fold> checkInputs
-let checkInputs = function() {
-  if (pieceIDisEntered && partsCBsAreChecked) {
-    console.log('ready to launch');
-  }
-}
+
 // </editor-fold> END checkInputs
 
 //<editor-fold> PieceID Input Field
@@ -65,12 +60,6 @@ let pieceIDinput = mkInputField({
   left: 302,
   color: 'black',
   fontSize: 22,
-  keyUpAction: function() {
-    if (pieceIDinput.value.length != 0) {
-      pieceIDisEntered = true;
-    }
-    checkInputs();
-  }
 });
 
 // </editor-fold> END PieceID Input Field
@@ -96,20 +85,8 @@ let selectPartsCBs = mkCheckboxesHoriz({
   left: 20,
   lblArray: ['1', '2', '3', '4', '5'],
   lblClr: 'rgb(153,255,0)',
-  clickAction: function() {
-
-    console.log(arguments[0].value + "-" + arguments[1]);
-
-
-  }
 
 });
-  window.onclick = function(event) {
-    selectPartsCBs.forEach((it, i) => {
-      console.log(it.cb.checked);
-    });
-
-  }
 // </editor-fold> END Select Parts Checkboxes
 
 // <editor-fold> Launch Button
@@ -123,10 +100,49 @@ let launchBtn = mkButton({
   label: 'Launch Score',
   fontSize: 24,
   action: function() {
-    if (launchBtnIsActive) console.log('i am launch score');
+    if (launchBtnIsActive) {
+      location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString;
+    }
   }
 });
 let btnPosX = center - (btnW / 2) - 7;
 launchBtn.style.left = btnPosX.toString() + 'px';
 launchBtn.className = 'btn btn-1_inactive';
 // </editor-fold> END Launch Button
+
+// <editor-fold> Window Event Listeners
+
+//Only activate launch score button if there are inputs to id and parts to display cbs
+// <editor-fold> checkInputs Func
+let checkInputs = function() {
+  let pieceIDisEntered = false;
+  let partsCbsAreChecked = false;
+  if (pieceIDinput.value.length != 0) pieceIDisEntered = true;
+  selectPartsCBs.forEach((cbDic, cbix) => {
+    if (cbDic.cb.checked) partsCbsAreChecked = true;
+  });
+  if (pieceIDisEntered && partsCbsAreChecked) {
+    launchBtn.className = 'btn btn-1';
+    launchBtnIsActive = true;
+    pieceIdString = pieceIDinput.value;
+    partsToRunAsString = "";
+    selectPartsCBs.forEach((cbDic, cbix) => {
+      if (cbDic.cb.checked) partsToRunAsString = partsToRunAsString + cbix + ';';
+    });
+    partsToRunAsString = partsToRunAsString.slice(0, -1); //remove final semi-colon
+  } else {
+    launchBtnIsActive = false;
+
+    launchBtn.className = 'btn btn-1_inactive';
+  }
+
+}
+// </editor-fold> END checkInputs Func
+
+window.onclick = function(event) {
+  checkInputs();
+}
+window.onkeyup = function(event) {
+  checkInputs();
+}
+// </editor-fold> END Window Event Listeners

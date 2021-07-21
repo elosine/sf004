@@ -406,7 +406,7 @@ function mkInputField({
 }
 // </editor-fold> END mkInputField
 
-// <editor-fold> mkCheckboxesHoriz(canvas,numBoxes:3,boxSz:18,gap:7,top:0,left:0,lblArray:[0,1,2,3],lblClr:'rgb(153,255,0)',lblFontSz:18,clickAction:function(){},onFocus)
+// <editor-fold> mkCheckboxesHoriz(canvas,numBoxes:3,boxSz:18,gap:7,top:0,left:0,lblArray:[0,1,2,3],lblClr:'rgb(153,255,0)',lblFontSz:18)
 let mkCheckboxesHoriz = function({
   canvas,
   numBoxes = 3,
@@ -416,9 +416,7 @@ let mkCheckboxesHoriz = function({
   left = 0,
   lblArray = ['0', '1', '2', '3'],
   lblClr = 'rgb(153,255,0)',
-  lblFontSz = 18,
-  clickAction = function() {},
-  onFocus = function () {}
+  lblFontSz = 18
 } = {
   canvas,
   numBoxes: 3,
@@ -428,14 +426,9 @@ let mkCheckboxesHoriz = function({
   left: 0,
   lblArray: ['0', '1', '2', '3'],
   lblClr: 'rgb(153,255,0)',
-  lblFontSz: 18,
-  clickAction: function() {},
-  onFocus: function () {}
+  lblFontSz: 18
 }) {
   let cbArray = [];
-  function mouseUpFunc(currCb, currCbIx){
-    clickAction.apply(this, arguments);
-  }
   // Make Checkboxes
   for (let cbix = 0; cbix < numBoxes; cbix++) {
     let cbDict = {};
@@ -451,8 +444,6 @@ let mkCheckboxesHoriz = function({
     cb.style.padding = '0px';
     cb.style.margin = '0px';
     cb.style.borderWidth = '0px';
-    cb.addEventListener('mouseup', function(){mouseUpFunc(cb, cbix)});
-    // cb.addEventListener('focus', onFocus(cb));
     canvas.appendChild(cb);
     cbDict['cb'] = cb;
 
