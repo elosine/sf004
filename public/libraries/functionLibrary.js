@@ -569,3 +569,15 @@ function mkButton({
   return btn;
 }
 // </editor-fold>END mkButton
+
+// <editor-fold> getUrlArgs()
+function getUrlArgs() {
+  let args = {};
+  let parts = window.location.href.replace(
+  /[?&]+([^=&]+)=([^&]*)/gi,
+  function(m, key, value) {
+    args[key] = value;
+  });
+  return args;
+}
+// </editor-fold> END getUrlArgs()

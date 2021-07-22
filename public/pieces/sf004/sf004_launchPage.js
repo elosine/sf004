@@ -3,8 +3,9 @@
 let w = 420;
 let h = 254;
 let center = w / 2;
-
+// Boolean
 let launchBtnIsActive = false;
+//URL Args
 let partsToRunAsString = "";
 let pieceIdString = "";
 // </editor-fold> END Vars
@@ -45,10 +46,6 @@ let pieceIDinstructions = mkSpan({
   color: 'white'
 });
 // </editor-fold> END Piece ID Caption
-
-// <editor-fold> checkInputs
-
-// </editor-fold> END checkInputs
 
 //<editor-fold> PieceID Input Field
 let pieceIDinput = mkInputField({
@@ -111,7 +108,6 @@ launchBtn.className = 'btn btn-1_inactive';
 // </editor-fold> END Launch Button
 
 // <editor-fold> Window Event Listeners
-
 //Only activate launch score button if there are inputs to id and parts to display cbs
 // <editor-fold> checkInputs Func
 let checkInputs = function() {
