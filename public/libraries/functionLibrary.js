@@ -1,4 +1,4 @@
-// <editor-fold> mkDivCanvas(w:200,h:200,clr:'black')
+// <editor-fold> mkDivCanvas
 let mkDivCanvas = function({
   w = 200,
   h = 200,
@@ -16,7 +16,7 @@ let mkDivCanvas = function({
 }
 // </editor-fold> END MAKE CANVAS DIV
 
-// <editor-fold> mkSVGcanvas(w:200,h:200,clr:'black')
+// <editor-fold> mkSVGcanvas
 let mkSVGcanvas = function({
   w = 200,
   h = 200,
@@ -183,9 +183,11 @@ let mkPanel = function({
   headerSize = 'xs',
   onwindowresize = false,
   contentOverflow = 'hidden',
-  clr = 'black'
+  clr = 'black',
+  onsmallified = function() {},
+  onunsmallified = function() {}
 } = {
-  canvasType: 0,
+  canvasType: 0, // 0=div;1=svg
   w: 200,
   h: 200,
   title: 'panel',
@@ -196,7 +198,9 @@ let mkPanel = function({
   headerSize: 'xs',
   onwindowresize: false,
   contentOverflow: 'hidden',
-  clr: 'black'
+  clr: 'black',
+  onsmallified: function() {},
+  onunsmallified: function() {}
 }) {
   let tempPanel;
   let canvas;
@@ -242,6 +246,8 @@ let mkPanel = function({
       resize: function(panel, paneldata, e) {}
     },
     onwindowresize: onwindowresize,
+    onsmallified: onsmallified,
+    onunsmallified: onunsmallified,
     callback: function() {
       tempPanel = this;
     }
@@ -251,7 +257,7 @@ let mkPanel = function({
 }
 // </editor-fold> END mkPanel
 
-// <editor-fold> mkSpan(canvas,top:0,left:0,text:'welcome to the thunderdome',fontSize:14,color:'green',bgClr:'black')
+// <editor-fold> mkSpan
 // <editor-fold> span Notes
 /*
 Inline Elements
@@ -332,7 +338,7 @@ let mkSpan = function({
 }
 // </editor-fold> END mkSpan
 
-// <editor-fold> mkDiv(canvas,w:50,h:20,top:0,left:0,text:'welcome to the thunderdome',fontSize:14,color:'green')
+// <editor-fold> mkDiv
 let mkDiv = function({
   canvas,
   w = 50,
@@ -365,7 +371,7 @@ let mkDiv = function({
 }
 // </editor-fold> END mkDiv
 
-//<editor-fold> mkInputField(canvas,id:'inputField',w:50,h:20,top:0,left:0,color:'yellow',fontSize:11,clickAction:{},keyUpAction:{})
+//<editor-fold> mkInputField
 function mkInputField({
   canvas,
   id = 'inputField',
@@ -406,7 +412,7 @@ function mkInputField({
 }
 // </editor-fold> END mkInputField
 
-// <editor-fold> mkCheckboxesHoriz(canvas,numBoxes:3,boxSz:18,gap:7,top:0,left:0,lblArray:[0,1,2,3],lblClr:'rgb(153,255,0)',lblFontSz:18)
+// <editor-fold> mkCheckboxesHoriz
 let mkCheckboxesHoriz = function({
   canvas,
   numBoxes = 3,
@@ -469,7 +475,7 @@ let mkCheckboxesHoriz = function({
 }
 // </editor-fold> END mkCheckBoxesHoriz
 
-// <editor-fold> mkMenu({canvas,w:200,h:100,top:15,left:15,menuLbl_ActionArray:[{label:one,action:function(){console.log('one');}label: two,action:function(){console.log('two');})
+// <editor-fold> mkMenu
 function mkMenu({
   canvas,
   w = 200,
@@ -536,7 +542,7 @@ function mkMenu({
 }
 // </editor-fold> END mkMenu
 
-// <editor-fold> mkButton({canvas,w:50,h:50,top:15,left:15,label:'Press Me Hard',fontSize:13,action:{})
+// <editor-fold> mkButton
 function mkButton({
   canvas,
   w = 50,
@@ -570,14 +576,33 @@ function mkButton({
 }
 // </editor-fold>END mkButton
 
-// <editor-fold> getUrlArgs()
+// <editor-fold> getUrlArgs
 function getUrlArgs() {
   let args = {};
   let parts = window.location.href.replace(
-  /[?&]+([^=&]+)=([^&]*)/gi,
-  function(m, key, value) {
-    args[key] = value;
-  });
+    /[?&]+([^=&]+)=([^&]*)/gi,
+    function(m, key, value) {
+      args[key] = value;
+    });
   return args;
 }
 // </editor-fold> END getUrlArgs()
+
+// <editor-fold> rrand
+function rrand(min, max) {
+  return Math.random() * (max - min) + min;
+}
+// </editor-fold> END rrand
+
+// <editor-fold> rrandInt
+let rrandInt = function(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+// </editor-fold> END rrandInt
+
+// <editor-fold> choose
+let choose = function(choices) {
+  let randpick = rrandInt(0, arguments.length - 1);
+  return arguments[randpick];
+}
+// </editor-fold> END choose
