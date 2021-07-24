@@ -200,6 +200,9 @@ let init = function() {
   scoreDataManagerPanel.smallify();
   // </editor-fold> END SCORE DATA MANAGER
 
+  // <editor-fold> MAKE WORLD
+  // </editor-fold> END MAKE WORLD
+
 } // END init
 // </editor-fold> END INIT
 
