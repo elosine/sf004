@@ -185,7 +185,8 @@ let mkPanel = function({
   contentOverflow = 'hidden',
   clr = 'black',
   onsmallified = function() {},
-  onunsmallified = function() {}
+  onunsmallified = function() {},
+  canresize = false
 } = {
   canvasType: 0, // 0=div;1=svg
   w: 200,
@@ -200,7 +201,8 @@ let mkPanel = function({
   contentOverflow: 'hidden',
   clr: 'black',
   onsmallified: function() {},
-  onunsmallified: function() {}
+  onunsmallified: function() {},
+  canresize: false
 }) {
   let tempPanel;
   let canvas;
@@ -248,6 +250,9 @@ let mkPanel = function({
     onwindowresize: onwindowresize,
     onsmallified: onsmallified,
     onunsmallified: onunsmallified,
+    resizeit: {
+        disable: !canresize
+    },
     callback: function() {
       tempPanel = this;
     }
@@ -483,11 +488,11 @@ function mkMenu({
   top = 15,
   left = 15,
   menuLbl_ActionArray = [{
-    label: one,
+    label: 'one',
     action: function() {
       console.log('one');
     },
-    label: two,
+    label: 'two',
     action: function() {
       console.log('two');
     }
@@ -515,13 +520,14 @@ function mkMenu({
   menuDiv.style.top = top.toString() + "px";
   menuDiv.style.left = left.toString() + "px";
   menuDiv.style.maxHeight = h.toString() + "px";
+  // menuDiv.style.minHeight = h.toString() + "px";
   canvas.appendChild(menuDiv);
   //menuLbl_ActionArray = [{label:, action:}]
-  menuLbl_ActionArray.forEach(function(listLabel_Action) {
+  menuLbl_ActionArray.forEach((labelActionArray) => {
     let tempAtag = document.createElement('a');
-    tempAtag.textContent = listLabelActionArray.label;
+    tempAtag.textContent = labelActionArray.label;
     tempAtag.style.fontFamily = "lato";
-    tempAtag.addEventListener("click", listLabel_Action.action);
+    tempAtag.addEventListener("click", labelActionArray.action);
     menuDiv.appendChild(tempAtag);
   });
   // Close the dropdown menu if the user clicks outside of it
@@ -606,3 +612,98 @@ let choose = function(choices) {
   return arguments[randpick];
 }
 // </editor-fold> END choose
+
+// <editor-fold> generateFileNameWdate
+let generateFileNameWdate = function(name) {
+  let t_now = new Date();
+  let month = t_now.getMonth() + 1;
+  let fileName = name + '_' + t_now.getFullYear() + "_" + month + "_" + t_now.getUTCDate() + "_" + t_now.getHours() + "-" + t_now.getMinutes() + "-" + t_now.getSeconds() + '.txt';
+  return fileName
+}
+// </editor-fold> END generateFileNameWdate
+
+// <editor-fold> downloadStrToHD
+// download('the content of the file', 'filename.txt', 'text/plain');
+let downloadStrToHD = function(strData, strFileName, strMimeType) {
+  let D = document,
+    A = arguments,
+    a = D.createElement("a"),
+    d = A[0],
+    n = A[1],
+    t = A[2] || "text/plain";
+
+  //build download link:
+  a.href = "data:" + strMimeType + "charset=utf-8," + escape(strData);
+
+  if (window.MSBlobBuilder) { // IE10
+    let bb = new MSBlobBuilder();
+    bb.append(strData);
+    return navigator.msSaveBlob(bb, strFileName);
+  } /* end if(window.MSBlobBuilder) */
+
+  if ('download' in a) { //FF20, CH19
+    a.setAttribute("download", n);
+    a.innerHTML = "downloading...";
+    D.body.appendChild(a);
+    setTimeout(function() {
+      let e = D.createEvent("MouseEvents");
+      e.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      a.dispatchEvent(e);
+      D.body.removeChild(a);
+    }, 66);
+    return true;
+  }; /* end if('download' in a) */
+
+  //do iframe dataURL download: (older W3)
+  let f = D.createElement("iframe");
+  D.body.appendChild(f);
+  f.src = "data:" + (A[2] ? A[2] : "application/octet-stream") + (window.btoa ? ";base64" : "") + "," + (window.btoa ? window.btoa : escape)(strData);
+  setTimeout(function() {
+    D.body.removeChild(f);
+  }, 333);
+  return true;
+}
+// </editor-fold> END downloadStrToHD
+
+// <editor-fold> retrieveFileFromPath
+// USAGE: let data = await retrieveFileFromPath(path)
+// Every line after await will execute after file is retrived or the Promise is resolved
+// Text will be available as data.fileData
+function retrieveFileFromPath(path) {
+  return new Promise((resolve, reject) => {
+    let request = new XMLHttpRequest();
+    request.open('GET', path, true);
+    request.responseType = 'text';
+    request.onload = () => resolve({
+      fileData: request.response
+    });
+    request.onerror = reject;
+    request.send();
+  })
+}
+// </editor-fold> END retrieveFileFromPath
+
+// <editor-fold> retrieveFileFromFinder
+let retrieveFileFromFinder = async function() {
+  return new Promise((resolve, reject) => {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+      let file = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsText(file, 'UTF-8');
+      reader.onload = readerEvent => {
+        let content = readerEvent.target.result;
+        resolve(content);
+      }
+    }
+    input.click();
+  })
+}
+
+// </editor-fold> END retrieveFileFromFinder
+
+
+
+// <editor-fold>
+// </editor-fold> END
