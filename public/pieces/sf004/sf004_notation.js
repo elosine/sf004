@@ -1,5 +1,6 @@
 // <editor-fold> Global Vars
 let partsToRun = [];
+let totalNumPartsToRun;
 let pieceId;
 let scoreData;
 // </editor-fold> END Global Vars
@@ -24,6 +25,7 @@ let init = function() {
   partsToRunStrArray.forEach((partNumAsStr) => {
     partsToRun.push(parseInt(partNumAsStr)); //partsToRun
   });
+  totalNumPartsToRun = partsToRun.length;
   // </editor-fold> END URL Args
 
   // <editor-fold> Generate Score Data
@@ -42,6 +44,7 @@ let init = function() {
     return tempScoreData;
   }
   scoreData = generateScoreData();
+  console.log(scoreData);
   // </editor-fold> END Generate Score Data
 
   // <editor-fold> SCORE DATA MANAGER
@@ -58,7 +61,7 @@ let init = function() {
     offsetY: '0px',
     autopos: 'none',
     headerSize: 'xs',
-    onwindowresize: false,
+    onwindowresize: true,
     contentOverflow: 'hidden',
     clr: 'black',
     onsmallified: function() {
@@ -201,6 +204,103 @@ let init = function() {
   // </editor-fold> END SCORE DATA MANAGER
 
   // <editor-fold> MAKE WORLD
+
+  // <editor-fold> World Constants
+  const NUMTRACKS = 5;
+  const CANVAS_W = 600;
+  const CANVAS_CENTER = CANVAS_W / 2;
+  const CANVAS_H = 400;
+  const RUNWAY_W = 400;
+  const RUNWAY_H = 200;
+  const RUNWAY_HALF_W = RUNWAY_W / 2;
+  const RUNWAYLENGTH = 424;
+  const HALFRUNWAYLENGTH = RUNWAYLENGTH / 2;
+  const TRACKDIAMETER = 8;
+  const HALFTRACKDIAMETER = TRACKDIAMETER / 2;
+  const TRACKGAP = RUNWAY_W / NUMTRACKS;
+  const HALFTRACKGAP = TRACKGAP / 2;
+// </editor-fold> END World Constants
+
+  // <editor-fold> Main Panel
+  let mainPanel = mkPanel({
+    w: CANVAS_W,
+    h: CANVAS_H,
+    title: 'SoundFlow #4',
+    onwindowresize: true,
+    clr: 'orange'
+  })
+  // </editor-fold> END Canvas Panel
+
+  // <editor-fold> ThreeJS Scene
+  const SCENE = new THREE.Scene();
+
+  // <editor-fold> Camera
+  const CAMERA = new THREE.PerspectiveCamera(75, CANVAS_W / CANVAS_H, 1, 3000);
+  const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
+  const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
+  const CAM_ROTATION_X = -68; // -90 directly above looking down
+  CAMERA.position.set(0, CAM_Y, CAM_Z);
+  CAMERA.rotation.x = rads(CAM_ROTATION_X);
+  // </editor-fold> END Camera
+
+  // <editor-fold> Lights
+  const SUN = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+  SUN.position.set(100, 600, 175);
+  SCENE.add(SUN);
+  const SUN2 = new THREE.DirectionalLight(0x40A040, 0.6);
+  SUN2.position.set(-100, 350, 200);
+  SCENE.add(SUN2);
+  // </editor-fold> END Lights
+
+  // <editor-fold> Renderer & RunwayDiv
+  let runwayDiv = mkDivCanvas({
+    w: RUNWAY_W,
+    h: RUNWAY_H,
+    clr: 'black'
+  })
+  let runwayL = CANVAS_CENTER - (RUNWAY_W / 2);
+  runwayDiv.style.left = runwayL.toString() + 'px';
+  mainPanel.content.appendChild(runwayDiv);
+  const RENDERER = new THREE.WebGLRenderer();
+  RENDERER.setSize(RUNWAY_W, RUNWAY_H);
+  runwayDiv.appendChild(RENDERER.domElement);
+  // </editor-fold> END Renderer
+
+  // </editor-fold> END ThreeJS Scene
+
+  //<editor-fold>  Runway
+  let runwayMaterial =
+    new THREE.MeshLambertMaterial({
+      color: 0x0040C0,
+      side: THREE.DoubleSide
+    });
+  let runwayGeometry = new THREE.PlaneGeometry(RUNWAY_W, RUNWAYLENGTH, 32);
+  let runway = new THREE.Mesh(runwayGeometry, runwayMaterial);
+  runway.position.z = -HALFRUNWAYLENGTH;
+  //position.z = 0 is in the length middle, so runway.position.z is at top of the plane
+  // move 1/2 runway length back and additionally move back GOFRETNOTATIONPANEL_H
+  // to make room for the gofretnotationpanels
+  runway.rotation.x = rads(-90); // at 0 degrees, plane is straight up and down
+  SCENE.add(runway);
+  //</editor-fold> END Runway
+
+  //<editor-fold> Tracks
+  let trackGeometry = new THREE.CylinderGeometry(TRACKDIAMETER, TRACKDIAMETER, RUNWAYLENGTH, 32);
+  let trackMaterial = new THREE.MeshLambertMaterial({
+    color: 0x708090
+  });
+  for (let trIx = 0; trIx < NUMTRACKS; trIx++) {
+    let newTrack = new THREE.Mesh(trackGeometry, trackMaterial);
+    newTrack.rotation.x = rads(-90);
+    newTrack.position.z = -HALFRUNWAYLENGTH;
+    newTrack.position.y = -HALFTRACKDIAMETER; //so runway intersects center line of track
+    //positions tracks
+    newTrack.position.x =  -RUNWAY_HALF_W + (TRACKGAP * trIx) + HALFTRACKGAP;;
+    SCENE.add(newTrack);
+  }
+  //</editor-fold> END Tracks
+
+  RENDERER.render(SCENE, CAMERA);
   // </editor-fold> END MAKE WORLD
 
 } // END init

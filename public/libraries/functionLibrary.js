@@ -2,16 +2,23 @@
 let mkDivCanvas = function({
   w = 200,
   h = 200,
+  top = 0,
+  left = 0,
   clr = 'black'
 } = {
   w: 200,
   h: 200,
-  clr: 'black'
+  clr: 'black',
+  top: 0,
+  left: 0
 }) {
   let t_div = document.createElement("div");
   t_div.style.width = w.toString() + "px";
   t_div.style.height = h.toString() + "px";
-  t_div.style.background = clr;
+  t_div.style.backgroundColor = clr;
+  t_div.style.position = 'absolute';
+  t_div.style.top = top.toString() + 'px';
+  t_div.style.left = left.toString() + 'px';
   return t_div;
 }
 // </editor-fold> END MAKE CANVAS DIV
@@ -702,6 +709,12 @@ let retrieveFileFromFinder = async function() {
 }
 
 // </editor-fold> END retrieveFileFromFinder
+
+// <editor-fold> rads
+function rads(deg) {
+  return (deg * Math.PI) / 180;
+}
+// </editor-fold> END rads
 
 
 
