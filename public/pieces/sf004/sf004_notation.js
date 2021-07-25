@@ -3,6 +3,46 @@ let partsToRun = [];
 let totalNumPartsToRun;
 let pieceId;
 let scoreData;
+
+// <editor-fold> World Constants
+const NUM_TRACKS = 5;
+const CANVAS_W = 600;
+const CANVAS_H = 400;
+const CANVAS_CENTER = CANVAS_W / 2;
+const RUNWAY_W = 360;
+const RUNWAY_H = 200;
+const HALF_RUNWAY_W = RUNWAY_W / 2;
+const RUNWAY_L = 1000;
+const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
+const TRACK_DIAMETER = 8;
+const HALF_TRACK_DIAMETER = TRACK_DIAMETER / 2;
+const TRACK_GAP = RUNWAY_W / NUM_TRACKS;
+const HALF_TRACK_GAP = TRACK_GAP / 2;
+const FRET_W = 54;
+const FRET_L = 11;
+const FRET_H = 11;
+const HALF_FRET_L = FRET_L / 2;
+const GOFRET_L = FRET_L + 2;
+const GO_Z = -HALF_FRET_L;
+const GOFRET_Y = HALF_TRACK_DIAMETER;
+let xPosOfTracks = [];
+for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
+  xPosOfTracks.push(-HALF_RUNWAY_W + (TRACK_GAP * trIx) + HALF_TRACK_GAP);
+}
+let bbSet = [];
+for (let trIx = 0; trIx < NUM_TRACKS; trIx++) bbSet.push({});
+const BB_W = 50;
+const BB_H = 80;
+const BB_PAD_LEFT = 17;
+const BB_GAP = 19;
+// <editor-fold> MeshLambertMaterials Different Colors
+let MATL_ORANGE = new THREE.MeshLambertMaterial({
+  color: clr_orange
+});
+// </editor-fold> END MeshLambertMaterials Different Colors
+
+// </editor-fold> END World Constants
+
 // </editor-fold> END Global Vars
 
 //<editor-fold> SOCKET IO
@@ -205,22 +245,6 @@ let init = function() {
 
   // <editor-fold> MAKE WORLD
 
-  // <editor-fold> World Constants
-  const NUMTRACKS = 5;
-  const CANVAS_W = 600;
-  const CANVAS_CENTER = CANVAS_W / 2;
-  const CANVAS_H = 400;
-  const RUNWAY_W = 400;
-  const RUNWAY_H = 200;
-  const RUNWAY_HALF_W = RUNWAY_W / 2;
-  const RUNWAYLENGTH = 424;
-  const HALFRUNWAYLENGTH = RUNWAYLENGTH / 2;
-  const TRACKDIAMETER = 8;
-  const HALFTRACKDIAMETER = TRACKDIAMETER / 2;
-  const TRACKGAP = RUNWAY_W / NUMTRACKS;
-  const HALFTRACKGAP = TRACKGAP / 2;
-// </editor-fold> END World Constants
-
   // <editor-fold> Main Panel
   let mainPanel = mkPanel({
     w: CANVAS_W,
@@ -229,16 +253,19 @@ let init = function() {
     onwindowresize: true,
     clr: 'orange'
   })
-  // </editor-fold> END Canvas Panel
+  // </editor-fold> END Main Panel
 
   // <editor-fold> ThreeJS Scene
   const SCENE = new THREE.Scene();
 
   // <editor-fold> Camera
   const CAMERA = new THREE.PerspectiveCamera(75, CANVAS_W / CANVAS_H, 1, 3000);
-  const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
-  const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
-  const CAM_ROTATION_X = -68; // -90 directly above looking down
+  // const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
+  const CAM_Y = 207;
+  // const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
+  const CAM_Z = 30;
+  // const CAM_ROTATION_X = -68; // -90 directly above looking down
+  const CAM_ROTATION_X = -45; // -90 directly above looking down
   CAMERA.position.set(0, CAM_Y, CAM_Z);
   CAMERA.rotation.x = rads(CAM_ROTATION_X);
   // </editor-fold> END Camera
@@ -252,14 +279,14 @@ let init = function() {
   SCENE.add(SUN2);
   // </editor-fold> END Lights
 
-  // <editor-fold> Renderer & RunwayDiv
+  // <editor-fold> Renderer & runwayDiv
   let runwayDiv = mkDivCanvas({
     w: RUNWAY_W,
     h: RUNWAY_H,
     clr: 'black'
   })
-  let runwayL = CANVAS_CENTER - (RUNWAY_W / 2);
-  runwayDiv.style.left = runwayL.toString() + 'px';
+  let runwayDiv_left = CANVAS_CENTER - (RUNWAY_W / 2);
+  runwayDiv.style.left = runwayDiv_left.toString() + 'px';
   mainPanel.content.appendChild(runwayDiv);
   const RENDERER = new THREE.WebGLRenderer();
   RENDERER.setSize(RUNWAY_W, RUNWAY_H);
@@ -274,31 +301,68 @@ let init = function() {
       color: 0x0040C0,
       side: THREE.DoubleSide
     });
-  let runwayGeometry = new THREE.PlaneGeometry(RUNWAY_W, RUNWAYLENGTH, 32);
+  let runwayGeometry = new THREE.PlaneGeometry(RUNWAY_W, RUNWAY_L, 32);
   let runway = new THREE.Mesh(runwayGeometry, runwayMaterial);
-  runway.position.z = -HALFRUNWAYLENGTH;
-  //position.z = 0 is in the length middle, so runway.position.z is at top of the plane
-  // move 1/2 runway length back and additionally move back GOFRETNOTATIONPANEL_H
-  // to make room for the gofretnotationpanels
+  runway.position.z = -HALF_RUNWAY_LENGTH;
   runway.rotation.x = rads(-90); // at 0 degrees, plane is straight up and down
   SCENE.add(runway);
   //</editor-fold> END Runway
 
   //<editor-fold> Tracks
-  let trackGeometry = new THREE.CylinderGeometry(TRACKDIAMETER, TRACKDIAMETER, RUNWAYLENGTH, 32);
+  let trackGeometry = new THREE.CylinderGeometry(TRACK_DIAMETER, TRACK_DIAMETER, RUNWAY_L, 32);
   let trackMaterial = new THREE.MeshLambertMaterial({
     color: 0x708090
   });
-  for (let trIx = 0; trIx < NUMTRACKS; trIx++) {
+  xPosOfTracks.forEach((trXpos) => {
     let newTrack = new THREE.Mesh(trackGeometry, trackMaterial);
     newTrack.rotation.x = rads(-90);
-    newTrack.position.z = -HALFRUNWAYLENGTH;
-    newTrack.position.y = -HALFTRACKDIAMETER; //so runway intersects center line of track
-    //positions tracks
-    newTrack.position.x =  -RUNWAY_HALF_W + (TRACKGAP * trIx) + HALFTRACKGAP;;
+    newTrack.position.z = -HALF_RUNWAY_LENGTH;
+    newTrack.position.y = -HALF_TRACK_DIAMETER;
+    newTrack.position.x = trXpos;
     SCENE.add(newTrack);
-  }
+  });
   //</editor-fold> END Tracks
+
+  // <editor-fold> Go Frets
+  let goFretGeometry = new THREE.CubeGeometry(FRET_W, FRET_H, GOFRET_L);
+  xPosOfTracks.forEach((trXpos) => {
+    newGoFret = new THREE.Mesh(goFretGeometry, MATL_ORANGE);
+    newGoFret.position.z = GO_Z;
+    newGoFret.position.y = GOFRET_Y;
+    newGoFret.position.x = trXpos;
+    newGoFret.rotation.x = rads(-14);
+    SCENE.add(newGoFret);
+  });
+  // </editor-fold> END Go Frets
+
+  // <editor-fold> Bouncing Balls
+  for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) {
+    bbSet[bbIx]['div'] = mkDiv({
+      canvas: mainPanel.content,
+      w: BB_W,
+      h: BB_H,
+      top: RUNWAY_H,
+      left: runwayDiv_left + BB_PAD_LEFT + ((BB_W + BB_GAP) * bbIx),
+      bgClr: 'white'
+    });
+
+    bbSet[bbIx]['svgCont'] = mkSVGcontainer({
+      canvas: bbSet[bbIx].div,
+      w: BB_W,
+      h: BB_H,
+      x: 0,
+      y: 0
+    });
+  }
+  var bbCircle = document.createElementNS(SVG_NS, "circle");
+  bbCircle.setAttributeNS(null, "cx", 25);
+  bbCircle.setAttributeNS(null, "cy", 17);
+  bbCircle.setAttributeNS(null, "r", 15);
+  bbCircle.setAttributeNS(null, "fill", clr_limeGreen);
+  bbCircle.setAttributeNS(null, "stroke", clr_yellow);
+  bbCircle.setAttributeNS(null, "stroke-width", 5);
+  bbSet[0].svgCont.appendChild(bbCircle);
+  // </editor-fold> END Bouncing Balls
 
   RENDERER.render(SCENE, CAMERA);
   // </editor-fold> END MAKE WORLD

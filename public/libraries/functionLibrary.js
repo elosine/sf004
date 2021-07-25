@@ -1,3 +1,17 @@
+// <editor-fold> Colors
+let clr_orange = 'rgba(240,75,0,255)';
+let clr_brightBlue = 'rgba(56,126,211,255)';
+let clr_yellow = 'rgba(244,182,0,255)';
+let clr_brightRed = 'rgba(229,42,25,255)';
+let clr_green = 'rgba(0,147,92,255)';
+let clr_limeGreen = 'rgb(153,255,0)';
+let clr_brightGreen = '#31d196';
+let clr_navyBlue = 'rgba(28,72,121,255)';
+let clr_plum = 'rgba(82,44,85,255)';
+let clr_lavander = 'rgba(162,126,198,255)';
+let clr_darkRed = '#a60701';
+// </editor-fold> END Colors
+
 // <editor-fold> mkDivCanvas
 let mkDivCanvas = function({
   w = 200,
@@ -22,6 +36,8 @@ let mkDivCanvas = function({
   return t_div;
 }
 // </editor-fold> END MAKE CANVAS DIV
+
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 // <editor-fold> mkSVGcanvas
 let mkSVGcanvas = function({
@@ -357,31 +373,50 @@ let mkDiv = function({
   h = 20,
   top = 0,
   left = 0,
-  text = 'welcome to the thunderdome',
-  fontSize = 14,
-  color = 'green'
+  bgClr = clr_limeGreen
 } = {
   canvas,
   w: 50,
   h: 20,
   top: 0,
   left: 0,
-  text: 'welcome to the thunderdome',
-  fontSize: 14,
-  color: 'green'
+  bgClr: clr_limeGreen
 }) {
-  let lbl = document.createElement("span");
-  lbl.innerHTML = text;
-  lbl.style.fontSize = fontSize.toString() + "px";
-  lbl.style.color = color;
-  lbl.style.fontFamily = "Lato";
-  lbl.style.position = 'absolute';
-  lbl.style.top = top.toString() + 'px';
-  lbl.style.left = left.toString() + 'px';
-  canvas.appendChild(lbl);
-  return lbl;
+  let tDiv = document.createElement("div");
+  tDiv.style.position = 'absolute';
+  tDiv.style.width = w.toString() + "px";
+  tDiv.style.height = h.toString() + "px";
+  tDiv.style.top = top.toString() + 'px';
+  tDiv.style.left = left.toString() + 'px';
+  tDiv.style.backgroundColor = bgClr;
+  canvas.appendChild(tDiv);
+  return tDiv;
 }
 // </editor-fold> END mkDiv
+
+// <editor-fold> mkSVGcontainer
+let mkSVGcontainer = function({
+  canvas,
+  w = 200,
+  h = 200,
+  x = 50,
+  y = 50
+} = {
+  canvas,
+  w: 200,
+  h: 200,
+  x: 50,
+  y: 50
+}) {
+  let tSvgCont = document.createElementNS(SVG_NS, "svg");
+  tSvgCont.setAttributeNS(null, "width", w);
+  tSvgCont.setAttributeNS(null, "height", h);
+  tSvgCont.setAttributeNS(null, "x", x);
+  tSvgCont.setAttributeNS(null, "y", y);
+  canvas.appendChild(tSvgCont);
+  return tSvgCont;
+}
+// </editor-fold> END mkSVGcontainer
 
 //<editor-fold> mkInputField
 function mkInputField({
