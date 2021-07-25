@@ -1,3 +1,7 @@
+const SVG_NS = "http://www.w3.org/2000/svg";
+const XLINK_NS = 'http://www.w3.org/1999/xlink';
+
+
 // <editor-fold> Colors
 let clr_orange = 'rgba(240,75,0,255)';
 let clr_brightBlue = 'rgba(56,126,211,255)';
@@ -10,6 +14,8 @@ let clr_navyBlue = 'rgba(28,72,121,255)';
 let clr_plum = 'rgba(82,44,85,255)';
 let clr_lavander = 'rgba(162,126,198,255)';
 let clr_darkRed = '#a60701';
+let clr_lightGrey = '#adadb7';
+let clr_blueGrey = '#708090';
 // </editor-fold> END Colors
 
 // <editor-fold> mkDivCanvas
@@ -37,8 +43,6 @@ let mkDivCanvas = function({
 }
 // </editor-fold> END MAKE CANVAS DIV
 
-const SVG_NS = "http://www.w3.org/2000/svg";
-
 // <editor-fold> mkSVGcanvas
 let mkSVGcanvas = function({
   w = 200,
@@ -58,142 +62,6 @@ let mkSVGcanvas = function({
 // </editor-fold> END MAKE SVG CANVAS
 
 // <editor-fold> mkPanel
-// <editor-fold> jsPanel Notes
-/*
-https://jspanel.de
-
-my String or Function 'center'
-The point of the panel that is positioned against some other element.
-Supported string values:
-    'center'
-    'left-top'
-    'center-top'
-    'right-top'
-    'right-center'
-    'right-bottom'
-    'center-bottom'
-    'left-bottom'
-    'left-center'
-
-at String or Function 'center'
-The point of the element the panel is positioned against.
-Supported string values:
-    'center'
-    'left-top'
-    'center-top'
-    'right-top'
-    'right-center'
-    'right-bottom'
-    'center-bottom'
-    'left-bottom'
-    'left-center'
-
-autoposition String undefined
-This parameter can be used to automatically arrange a number of panels either horizontally or vertically.
-Supported string values:
-'down'
-    for panels positioned using either 'left-top', 'center-top' or 'right-top' for both my: and at: setting autoposition to 'down' will automatically add a vertical offset downwards to each panel in order to prevent them from piling up on each other. Removing a panel will automatically reposition the remaining panels in the same stack.
-'up'
-    for panels positioned using either 'left-bottom', 'center-bottom' or 'right-bottom' for both my: and at: setting autoposition to 'up' will automatically add a vertical offset upwards to each panel in order to prevent them from piling up on each other. Removing a panel will automatically reposition the remaining panels in the same stack.
-'right'
-    for panels positioned using either 'left-top' or 'left-bottom' for both my: and at: setting autoposition to 'right' will automatically add a horizontal right offset to each panel in order to prevent them from piling up on each other. Removing a panel will automatically reposition the remaining panels in the same stack.
-'left'
-    for panels positioned using either 'right-top' or 'right-bottom' for both my: and at: setting autoposition to 'left' will automatically add a horizontal left offset to each panel in order to prevent them from piling up on each other. Removing a panel will automatically reposition the remaining panels in the same stack.
-
-autoposition notes:
-    Basically nothing prevents you from using one of the autoposition values for any panel having the same value for my: and at:. But it simply might not make any sense if you use autoposition: 'down' for panels positioned 'left-bottom' for example.
-    The default spacing between autopositioned panels is '4px' and set in global jsPanel.autopositionSpacing.
-    offsetX/offsetY: If you apply either one of the offsets to a number of panels using autoposition the offset refers to the complete stack of panels.
-    Each autopositioned panel gets an additional class name composed of the basic position (e.g. left-top) and the autoposition direction concatenated with a hyphen. So all panels that are positioned left-top and autopositioned downwards have the class left-top-down for example.
-    Autopositioned panels reposition automatically if one panel of the same stack is closed. But only if panels are autopositioned
-        left-top down/right
-        center-top down
-        right-top down/left
-        right-bottom up/left
-        center-bottom up
-        left-bottom up/right
-
-
-offsetX Number, CSS length value or Function undefined
-offsetY Number, CSS length value or Function undefined
-A horizontal offset to apply to the panel position.
-Number
-A number value is used as offset in pixels.
-CSS length value
-Any valid CSS length value is directly used as offset.
-Function(pos, position)
-A function returning either a number or a valid CSS length value.
-Arguments:
-    pos object with the keys left and top with the calculated CSS left/top values before the offset is applied
-    position option position as object
-The keyword this inside the function refers to pos.
-
-
-minLeft Number, CSS length value or Function undefined
-maxLeft Number, CSS length value or Function undefined
-maxTop Number, CSS length value or Function undefined
-minTop Number, CSS length value or Function undefined
-
-The minimum CSS left the panel has to maintain.
-Number
-A number value is used as pixels.
-CSS length value
-Any valid CSS length value is directly used.
-Function(pos, position)
-A function returning either a number or a valid CSS length value.
-Arguments:
-    pos object with the keys left and top with the calculated CSS left/top values before minLeft is applied (offsetX is already included in this value)
-    position option position as object
-The keyword this inside the function refers to pos.
-
-modify Function undefined
-This function can be used to further modify the CSS left and top values calculated so far.
-Arguments:
-    pos object with the keys left and top with the calculated CSS left/top values that are calculated so far. Those values include the corrections possibly made by the parameters offsetX, offsetY, minLeft, maxLeft, maxTop and minTop.
-    position option position as object
-The keyword this inside the function refers to pos.
-Return value:
-The function must return an object with the keys left and top each set with a valid CSS length value.
-Position shorthand strings
-
-
-
-Position shorthand strings provide an easy way to quickly set the most common positioning options.
-A shorthand string may be composed of values for 'my at offsetX offsetY autoposition of'. Each "substring" is separated from the next with a space and you should stick to this sequence in order to prevent problems. Values for minLeft, maxLeft, maxTop, minTop and modify are not supported in shorthand strings.
-Example:
-Assuming the following positioning object ...
-position: {
-    my: 'right-top',
-    at: 'right-top',
-    offsetX: '-0.5rem',
-    offsetY: 65,
-    autoposition: 'down'
-}
-... as shorthand string would be: position: 'right-top -0.5rem 65 down'.
-
-HEADER
-size String undefined
-The size option is used to set the size of the controls and the header title.
-Supported settings are either one of:
-'xs', 'sm', 'md', 'lg', 'xl'
-
-Content contentOverflow
-Values
-visible
-    Content is not clipped and may be rendered outside the padding box.
-hidden
-    Content is clipped if necessary to fit the padding box. No scrollbars are provided, and no support for allowing the user to scroll (such as by dragging or using a scroll wheel) is allowed. The content can be scrolled programmatically (for example, by setting the value of a property such as offsetLeft), so the element is still a scroll container.
-clip
-    Similar to hidden, the content is clipped to the element's padding box. The difference between clip and hidden is that the clip keyword also forbids all scrolling, including programmatic scrolling. The box is not a scroll container, and does not start a new formatting context. If you wish to start a new formatting context, you can use display: flow-root to do so.
-scroll
-    Content is clipped if necessary to fit the padding box. Browsers always display scrollbars whether or not any content is actually clipped, preventing scrollbars from appearing or disappearing as content changes. Printers may still print overflowing content.
-auto
-    Depends on the user agent. If content fits inside the padding box, it looks the same as visible, but still establishes a new block formatting context. Desktop browsers provide scrollbars if content overflows.
-overlay
-    Behaves the same as auto, but with the scrollbars drawn on top of content instead of taking up space. Only supported in WebKit-based (e.g., Safari) and Blink-based (e.g., Chrome or Opera) browsers.
-
-*/
-// </editor-fold> END jsPanel Notes
 let mkPanel = function({
   canvasType = 0,
   w = 200,
@@ -274,7 +142,7 @@ let mkPanel = function({
     onsmallified: onsmallified,
     onunsmallified: onunsmallified,
     resizeit: {
-        disable: !canresize
+      disable: !canresize
     },
     callback: function() {
       tempPanel = this;
@@ -283,55 +151,11 @@ let mkPanel = function({
   return tempPanel;
 
 }
+
 // </editor-fold> END mkPanel
 
 // <editor-fold> mkSpan
-// <editor-fold> span Notes
-/*
-Inline Elements
-An inline element does not start on a new line.
-An inline element only takes up as much width as necessary.
-// <editor-fold> INLINE ELEMENTS
-Here are the inline elements in HTML:
-<a>
-<abbr>
-<acronym>
-<b>
-<bdo>
-<big>
-<br>
-<button>
-<cite>
-<code>
-<dfn>
-<em>
-<i>
-<img>
-<input>
-<kbd>
-<label>
-<map>
-<object>
-<output>
-<q>
-<samp>
-<script>
-<select>
-<small>
-<span>
-<strong>
-<sub>
-<sup>
-<textarea>
-<time>
-<tt>
-<var>
-// </editor-fold> END INLINE ELEMENTS
-The <span> tag is an inline container used to mark up a part of a text, or a part of a document.
-The <span> tag is easily styled by CSS or manipulated with JavaScript using the class or id attribute.
-The <span> tag is much like the <div> element, but <div> is a block-level element and <span> is an inline element.
-*/
-// </editor-fold> END span Notes
+
 let mkSpan = function({
   canvas,
   top = 0,
@@ -750,6 +574,73 @@ function rads(deg) {
   return (deg * Math.PI) / 180;
 }
 // </editor-fold> END rads
+
+// <editor-fold> mkSvgCircle
+
+let mkSvgCircle = function({
+  svgContainer,
+  cx = 25,
+  cy = 25,
+  r = 10,
+  fill = 'green',
+  stroke = 'yellow',
+  strokeW = 3
+} = {
+  svgContainer,
+  cx: 25,
+  cy: 25,
+  r: 10,
+  fill: 'green',
+  stroke: 'yellow',
+  strokeW: 3
+}) {
+
+  var bbCircle = document.createElementNS(SVG_NS, "circle");
+  bbCircle.setAttributeNS(null, "cx", cx);
+  bbCircle.setAttributeNS(null, "cy", cy);
+  bbCircle.setAttributeNS(null, "r", r);
+  bbCircle.setAttributeNS(null, "fill", fill);
+  bbCircle.setAttributeNS(null, "stroke", stroke);
+  bbCircle.setAttributeNS(null, "stroke-width", strokeW);
+  svgContainer.appendChild(bbCircle);
+
+}
+
+// </editor-fold> END mkSvgCircle
+
+// <editor-fold> mkSvgLine
+
+let mkSvgLine = function({
+  svgContainer,
+  x1 = 25,
+  y1 = 25,
+  x2 = 25,
+  y2 = 25,
+  stroke = 'yellow',
+  strokeW = 3
+} = {
+  svgContainer,
+  x1: 25,
+  y1: 25,
+  x2: 25,
+  y2: 25,
+  stroke: 'yellow',
+  strokeW: 3
+}) {
+
+  var svgLine = document.createElementNS(SVG_NS, "line");
+  svgLine.setAttributeNS(null, "x1", x1);
+  svgLine.setAttributeNS(null, "y1", y1);
+  svgLine.setAttributeNS(null, "x2", x2);
+  svgLine.setAttributeNS(null, "y2", y2);
+  svgLine.setAttributeNS(null, "stroke", stroke);
+  svgLine.setAttributeNS(null, "stroke-width", strokeW);
+  svgContainer.appendChild(svgLine);
+
+}
+
+// </editor-fold> END mkSvgLine
+
 
 
 
