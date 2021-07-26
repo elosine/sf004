@@ -2,47 +2,6 @@
 
 let tempoColors = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
 
-//Get pathnames in folder
-let notationSvgPaths = [
-  "/pieces/sf004/notationSVGs/quintuplet.svg",
-  "/pieces/sf004/notationSVGs/quadruplet.svg",
-  "/pieces/sf004/notationSVGs/triplet.svg",
-  "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
-  "/pieces/sf004/notationSVGs/two16th_8thR.svg",
-  "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
-  "/pieces/sf004/notationSVGs/eighthR_8th.svg",
-  "/pieces/sf004/notationSVGs/quarter.svg",
-  "/pieces/sf004/notationSVGs/qtr_rest.svg"
-];
-
-
-let getImageSize = async function (url) {
-    return new Promise((resolve, reject) => {
-        let img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-    });
-}
-//
-// function tf
-// let imgSizeObj = await getImageSize("/pieces/sf004/notationSVGs/quintuplet.svg");
-
-
-function run_getImageSize() {
-  return getImageSize("/pieces/sf004/notationSVGs/qtr_rest.svg");
-}
-
-// Call start
-(async() => {
-  let imgSizeObj = await run_getImageSize("/pieces/sf004/notationSVGs/quintuplet.svg");
-  let w = imgSizeObj.width;
-  let h = imgSizeObj.height;
-  console.log(w + ' ' + h);
-  console.log(imgSizeObj);
-})();
-
-
 // </editor-fold> END Global Vars
 
 //<editor-fold> SOCKET IO
@@ -81,7 +40,7 @@ function init() {
 
   makeBouncingBalls();
 
-  makeRhythmicNotation();
+  makeNotatedNotes();
 
 
   RENDERER.render(SCENE, CAMERA);
@@ -640,25 +599,24 @@ function makeBouncingBalls() {
 
 // </editor-fold> END BouncingBalls
 
-// <editor-fold> rhythmicNotation
+// <editor-fold> NotatedNotes
 
 /*
 Rhythm only give pitch set
 */
 
 
-// <editor-fold> rhythmicNotation Variables
-let rhythmicNotationObj = {};
+// <editor-fold> NotatedNotes Variables
+let notatedNotesObj = {};
 // Staff
 let horizDistBetweenBeats = 85;
 let topStaffLineY = 38;
-let vertDistanceBetweenStaves = 90;
 let vertDistanceBetweenStaffLines = 8;
-let middleStaffLineY = topStaffLineY + (vertDistanceBetweenStaffLines * 2);
+let vertDistanceBetweenStaves = 90;
 let beatOneX = 12;
 let lastBeatLength = horizDistBetweenBeats - beatOneX;
 let numBeatsPerStaff = 8;
-let rhythmicNotationBottomMargin = 45;
+let NOTATED_NOTES_BOTTOM_MARGIN = 45;
 let numStaves = 3;
 let noteheadW = 10;
 let noteheadH = 8;
@@ -666,36 +624,32 @@ let half_noteheadH = noteheadH / 2;
 
 
 // Measurements
-const RHYTHMIC_NOTATION_W = horizDistBetweenBeats * numBeatsPerStaff;
-const RHYTHMIC_NOTATION_H = middleStaffLineY + ((numStaves - 1) * vertDistanceBetweenStaves) + rhythmicNotationBottomMargin;
-const RHYTHMIC_NOTATION_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
-const RHYTHMIC_NOTATION_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
+const NOTATED_NOTES_W = horizDistBetweenBeats * numBeatsPerStaff;
+const NOTATED_NOTES_H = topStaffLineY + ((numStaves - 1) * vertDistanceBetweenStaves) + (4 * vertDistanceBetweenStaffLines) + NOTATED_NOTES_BOTTOM_MARGIN;
+const NOTATED_NOTES_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
+const NOTATED_NOTES_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 
 
-// </editor-fold> END rhythmicNotation Variables
+// </editor-fold> END NotatedNotes Variables
 
 
-// <editor-fold> makeRhythmicNotation
+// <editor-fold> makeNotatedNotes
 
+function makeNotatedNotes() {
 
-
-
-
-function makeRhythmicNotation() {
-
-  rhythmicNotationObj['div'] = mkDiv({
+  notatedNotesObj['div'] = mkDiv({
     canvas: worldPanel.content,
-    w: RHYTHMIC_NOTATION_W,
-    h: RHYTHMIC_NOTATION_H,
-    top: RHYTHMIC_NOTATION_TOP,
-    left: RHYTHMIC_NOTATION_L,
+    w: NOTATED_NOTES_W,
+    h: NOTATED_NOTES_H,
+    top: NOTATED_NOTES_TOP,
+    left: NOTATED_NOTES_L,
     bgClr: 'white'
   });
 
-  rhythmicNotationObj['svgCont'] = mkSVGcontainer({
-    canvas: rhythmicNotationObj.div,
-    w: RHYTHMIC_NOTATION_W,
-    h: RHYTHMIC_NOTATION_H,
+  notatedNotesObj['svgCont'] = mkSVGcontainer({
+    canvas: notatedNotesObj.div,
+    w: NOTATED_NOTES_W,
+    h: NOTATED_NOTES_H,
     x: 0,
     y: 0
   });
@@ -704,12 +658,12 @@ function makeRhythmicNotation() {
   // Draw Staff Lines
   for (let staffIx = 0; staffIx < numStaves; staffIx++) {
     for (let staffLineIx = 0; staffLineIx < 5; staffLineIx++) {
-      let tStaffY = middleStaffLineY + (staffIx * vertDistanceBetweenStaves);
+      let tStaffY = topStaffLineY + (staffIx * vertDistanceBetweenStaves) + (staffLineIx * vertDistanceBetweenStaffLines);
       mkSvgLine({
-        svgContainer: rhythmicNotationObj.svgCont,
+        svgContainer: notatedNotesObj.svgCont,
         x1: 0,
         y1: tStaffY,
-        x2: RHYTHMIC_NOTATION_W,
+        x2: NOTATED_NOTES_W,
         y2: tStaffY,
         stroke: "rgb(255, 21, 160)",
         strokeW: 0.3
@@ -727,14 +681,37 @@ function makeRhythmicNotation() {
 
 
 
+
+
+  let allq = document.createElementNS(SVG_NS, "image");
+  allq.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/allQtrs_g5_a5.svg');
+  allq.setAttributeNS(null, "y", 13);
+  allq.setAttributeNS(null, "x", 0);
+  allq.setAttributeNS(null, "visibility", 'visible');
+  allq.setAttributeNS(null, "transform", "translate(-41,-108) scale(1.25)");
+  notatedNotesObj.svgCont.appendChild(allq);
+
+for (var i = 0; i < 6; i++) {
+
   let q = document.createElementNS(SVG_NS, "image");
   q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/notehead_10_8.svg');
-  q.setAttributeNS(null, "y", middleStaffLineY - half_noteheadH);
-  q.setAttributeNS(null, "x", beatXLocations[0]);
+  q.setAttributeNS(null, "y", topStaffLineY - noteheadH + (vertDistanceBetweenStaffLines*i));
+  q.setAttributeNS(null, "x", beatXLocations[0]+20);
   q.setAttributeNS(null, "visibility", 'visible');
-  rhythmicNotationObj.svgCont.appendChild(q);
+  notatedNotesObj.svgCont.appendChild(q);
+}
 
+for (var i = 0; i < 6; i++) {
 
+  let q = document.createElementNS(SVG_NS, "image");
+  q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/notehead_10_8.svg');
+  q.setAttributeNS(null, "y", topStaffLineY - half_noteheadH + (vertDistanceBetweenStaffLines*i));
+  q.setAttributeNS(null, "x", beatXLocations[1]);
+  q.setAttributeNS(null, "visibility", 'visible');
+  notatedNotesObj.svgCont.appendChild(q);
+}
+  //30 = g5;
+  //34 =
 
 
 
@@ -742,7 +719,7 @@ function makeRhythmicNotation() {
   let y = 136;
   // let y = 90;
   mkSvgLine({
-    svgContainer: rhythmicNotationObj.svgCont,
+    svgContainer: notatedNotesObj.svgCont,
     x1: 0,
     y1: y,
     x2: 50,
@@ -757,7 +734,7 @@ function makeRhythmicNotation() {
   let y2 = 140;
   let x2 = 97;
   mkSvgLine({
-    svgContainer: rhythmicNotationObj.svgCont,
+    svgContainer: notatedNotesObj.svgCont,
     x1: x2,
     y1: y2,
     x2: x2,
@@ -767,12 +744,12 @@ function makeRhythmicNotation() {
   });
 
 
-} //makeRhythmicNotation() end
+} //makeNotatedNotes() end
 
-// </editor-fold> END makeRhythmicNotation
+// </editor-fold> END makeNotatedNotes
 
 
-// </editor-fold> END rhythmicNotation
+// </editor-fold> END NotatedNotes
 
 
 
