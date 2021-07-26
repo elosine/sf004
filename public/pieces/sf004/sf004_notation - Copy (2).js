@@ -610,10 +610,10 @@ Rhythm only give pitch set
 let rhythmicNotationObj = {};
 // Staff
 let horizDistBetweenBeats = 85;
-let topStaffLineY = 88;
+let topStaffLineY = 100;
 let vertDistanceBetweenStaves = 90;
 let vertDistanceBetweenStaffLines = 8;
-// let middleStaffLineY = topStaffLineY + (vertDistanceBetweenStaffLines * 4);
+let middleStaffLineY = topStaffLineY + (vertDistanceBetweenStaffLines * 4);
 let beatOneX = 12;
 let lastBeatLength = horizDistBetweenBeats - beatOneX;
 let numBeatsPerStaff = 8;
@@ -624,7 +624,7 @@ let noteheadH = 8;
 let half_noteheadH = noteheadH / 2;
 // Measurements
 const RHYTHMIC_NOTATION_W = horizDistBetweenBeats * numBeatsPerStaff;
-const RHYTHMIC_NOTATION_H = topStaffLineY + ((numStaves - 1) * vertDistanceBetweenStaves) + rhythmicNotationBottomMargin;
+const RHYTHMIC_NOTATION_H =topStaffLineY + ((numStaves - 1) * vertDistanceBetweenStaves) + rhythmicNotationBottomMargin;
 const RHYTHMIC_NOTATION_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 
@@ -635,7 +635,7 @@ for (let beatLocIx = 0; beatLocIx < numBeatsPerStaff; beatLocIx++) {
 }
 
 let notationImageObjectSet = {};
-// <editor-fold> rhythmicNotation Variables
+
 let notationSvgPaths_labels = [{
     path: "/pieces/sf004/notationSVGs/quintuplet.svg",
     lbl: 'quintuplet'
@@ -673,7 +673,7 @@ let notationSvgPaths_labels = [{
     lbl: 'qtr_rest'
   }
 ];
-/*
+
 // Get Image Sizes
 async function getImage(url) {
   return new Promise((resolve, reject) => {
@@ -700,8 +700,7 @@ var drawInitialNotationEvent = new CustomEvent("drawInitialNotation", {});
 
 // Dispatch/Trigger/Fire the event
 
-*/
-// </editor-fold> rhythmicNotation Variables
+
 // </editor-fold> END rhythmicNotation Variables
 
 
@@ -739,70 +738,35 @@ function makeRhythmicNotation() {
     });
   }
 
-  async function getImage(url) {
-    return new Promise((resolve, reject) => {
-      let img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = url;
-    });
+  document.addEventListener("drawInitialNotation", function(e) {
+    let q = document.createElementNS(SVG_NS, "image");
+    q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/triplet.svg');
+    // q.setAttributeNS(null, "y", topStaffLineY - notationImageObjectSet.triplet.h);
+    q.setAttributeNS(null, "y", topStaffLineY);
+    q.setAttributeNS(null, "x", beatXLocations[0]);
+    q.setAttributeNS(null, "visibility", 'visible');
+    rhythmicNotationObj.svgCont.appendChild(q);
+    console.log(notationImageObjectSet.triplet);
+  });
 
-  }
-
-  function run_getImage(path) {
-    return getImage(path);
-  }
-
-  notationSvgPaths_labels.forEach((pathLblObj, i) => {
-    let tpath = pathLblObj.path;
-    (async () => {
-      let timg = await run_getImage(tpath);
-      notationImageObjectSet[pathLblObj.lbl] = timg;
-      if (i==(notationSvgPaths_labels.length-1)) {
-          console.log(notationImageObjectSet);
-      }
-
-    })();
+  notationSvgPaths_labels.forEach((pathLblObj, objIx) => {
+    let trigDraw = false;
+    if (objIx == (notationSvgPaths_labels.length - 1)) {
+      trigDraw = true;
+    }
+    notationImageObjectSet[pathLblObj.lbl] = loadNotationObjects(pathLblObj.path, trigDraw);
   });
 
   let q = document.createElementNS(SVG_NS, "image");
-  q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/triplet.svg');
-  // q.setAttributeNS(null, "y", topStaffLineY - notationImageObjectSet.triplet.h);
-  q.setAttributeNS(null, "y", 15);
+  q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/notehead_10_8.svg');
+  q.setAttributeNS(null, "y", middleStaffLineY - half_noteheadH);
   q.setAttributeNS(null, "x", beatXLocations[0]);
   q.setAttributeNS(null, "visibility", 'visible');
   rhythmicNotationObj.svgCont.appendChild(q);
 
-  /*
-    document.addEventListener("drawInitialNotation", function(e) {
-      let q = document.createElementNS(SVG_NS, "image");
-      q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/triplet.svg');
-      // q.setAttributeNS(null, "y", topStaffLineY - notationImageObjectSet.triplet.h);
-      q.setAttributeNS(null, "y", topStaffLineY);
-      q.setAttributeNS(null, "x", beatXLocations[0]);
-      q.setAttributeNS(null, "visibility", 'visible');
-      rhythmicNotationObj.svgCont.appendChild(q);
-      console.log(notationImageObjectSet.triplet);
-    });
-
-    notationSvgPaths_labels.forEach((pathLblObj, objIx) => {
-      let trigDraw = false;
-      if (objIx == (notationSvgPaths_labels.length - 1)) {
-        trigDraw = true;
-      }
-      notationImageObjectSet[pathLblObj.lbl] = loadNotationObjects(pathLblObj.path, trigDraw);
-    });
-
-    let q = document.createElementNS(SVG_NS, "image");
-    q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/notehead_10_8.svg');
-    q.setAttributeNS(null, "y", middleStaffLineY - half_noteheadH);
-    q.setAttributeNS(null, "x", beatXLocations[0]);
-    q.setAttributeNS(null, "visibility", 'visible');
-    rhythmicNotationObj.svgCont.appendChild(q);
 
 
 
-  */
 
 
   let y = 136;
