@@ -1,7 +1,6 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
-
 // <editor-fold> Colors
 let clr_orange = 'rgba(240,75,0,255)';
 let clr_brightBlue = 'rgba(56,126,211,255)';
@@ -603,7 +602,7 @@ let mkSvgCircle = function({
   bbCircle.setAttributeNS(null, "stroke", stroke);
   bbCircle.setAttributeNS(null, "stroke-width", strokeW);
   svgContainer.appendChild(bbCircle);
-
+  return bbCircle;
 }
 
 // </editor-fold> END mkSvgCircle
@@ -637,6 +636,7 @@ let mkSvgLine = function({
   svgLine.setAttributeNS(null, "stroke-width", strokeW);
   svgContainer.appendChild(svgLine);
 
+  return svgLine;
 }
 
 // </editor-fold> END mkSvgLine

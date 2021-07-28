@@ -1,6 +1,7 @@
 // <editor-fold> Global Vars
 
-let tempoColors = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
+const NUM_TEMPOS = 5;
+const TEMPO_COLORS = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
 
 // </editor-fold> END Global Vars
 
@@ -37,11 +38,12 @@ function init() {
   makeTracks();
 
   makeGoFrets();
+  
+  makeTempoFrets();
 
   makeBouncingBalls();
 
   makeRhythmicNotation();
-
 
   RENDERER.render(SCENE, CAMERA);
 
@@ -86,7 +88,7 @@ let generateScoreData = function() {
   let baseTempo = choose(85, 91, 77);
   let tempoRangeMin = baseTempo - (baseTempo * 0.03);
   let tempoRangeMax = baseTempo + (baseTempo * 0.03);
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     let ttempo = rrand(tempoRangeMin, tempoRangeMax);
     tempos.push(ttempo);
   }
@@ -295,14 +297,12 @@ function makeScoreDataManager() {
 // <editor-fold> World Panel
 
 // <editor-fold> World Panel Variables
-
 let worldPanel;
 const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
-const CANVAS_W = 680 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
-const CANVAS_H = 653;
+const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
+const CANVAS_H = 628;
 const CANVAS_CENTER = CANVAS_W / 2;
-
 // </editor-fold> END World Panel Variables
 
 function makeWorldPanel() {
@@ -317,13 +317,11 @@ function makeWorldPanel() {
 
 }
 
-// </editor-fold> END makeWorldPanel
+// </editor-fold> END World Panel
 
 // <editor-fold> ThreeJS Scene
 
-
 // <editor-fold> ThreeJS Scene Variables
-
 
 const RENDERER_W = 340;
 const RENDERER_H = 180;
@@ -331,20 +329,18 @@ const RENDERER_TOP = CANVAS_MARGIN;
 const RENDERER_DIV_LEFT = CANVAS_CENTER - (RENDERER_W / 2);
 let SCENE, CAMERA, SUN, SUN2, RENDERER_DIV, RENDERER;
 let materialColors = [];
-for (var matlClrIx = 0; matlClrIx < tempoColors.length; matlClrIx++) {
+for (let matlClrIx = 0; matlClrIx < TEMPO_COLORS.length; matlClrIx++) {
   let tMatlClr = new THREE.MeshLambertMaterial({
-    color: tempoColors[matlClrIx]
+    color: TEMPO_COLORS[matlClrIx]
   });
   materialColors.push(tMatlClr);
 }
 
 // </editor-fold> END ThreeJS Scene Variables
 
-
 function makeThreeJsScene() {
 
   SCENE = new THREE.Scene();
-
 
   // <editor-fold> Camera
 
@@ -360,7 +356,6 @@ function makeThreeJsScene() {
 
   // </editor-fold> END Camera
 
-
   // <editor-fold> Lights
 
   SUN = new THREE.DirectionalLight(0xFFFFFF, 1.2);
@@ -371,7 +366,6 @@ function makeThreeJsScene() {
   SCENE.add(SUN2);
 
   // </editor-fold> END Lights
-
 
   // <editor-fold> RENDERER_DIV & RENDERER
 
@@ -390,9 +384,7 @@ function makeThreeJsScene() {
 
   // </editor-fold> END RENDERER_DIV & RENDERER
 
-
 } // function makeThreeJsScene() end
-
 
 // </editor-fold> END ThreeJs Scene
 
@@ -438,10 +430,9 @@ function makeRunway() {
 
 // <editor-fold> Tracks
 
-
 // <editor-fold> Tracks Variables
 
-const NUM_TRACKS = 5;
+const NUM_TRACKS = NUM_TEMPOS;
 const TRACK_DIAMETER = 8;
 const HALF_TRACK_DIAMETER = TRACK_DIAMETER / 2;
 const TRACK_GAP = RUNWAY_W / NUM_TRACKS;
@@ -452,7 +443,6 @@ for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
 }
 
 // </editor-fold> END Tracks Variables
-
 
 // <editor-fold> makeTracks
 
@@ -481,11 +471,11 @@ function makeTracks() {
 
 // </editor-fold> END makeTracks
 
-
 // </editor-fold> END Tracks
 
-// <editor-fold> GoFrets
+// <editor-fold> Frets
 
+// <editor-fold> makeGoFrets
 
 // <editor-fold> GoFrets Variables
 
@@ -497,9 +487,6 @@ const GO_Z = -HALF_GO_FRET_L;
 const GO_FRET_Y = HALF_TRACK_DIAMETER;
 
 // </editor-fold> END GoFrets Variables
-
-
-// <editor-fold> makeGoFrets
 
 function makeGoFrets() {
 
@@ -523,10 +510,48 @@ function makeGoFrets() {
 
 // </editor-fold> END makeGoFrets
 
+// <editor-fold> makeTempoFrets
 
-// </editor-fold> END GoFrets
+// <editor-fold> Tempo Frets Variables
 
-// <editor-fold> BouncingBalls
+const TEMPO_FRET_W = GO_FRET_W - 2;
+const TEMPO_FRET_H = GO_FRET_H - 2;
+const TEMPO_FRET_L = GO_FRET_L - 5;
+const TEMPO_FRET_Y = HALF_TRACK_DIAMETER;
+const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L;
+
+// </editor-fold> END Tempo Frets Variables
+
+function makeTempoFrets() {
+
+  let tempoFretGeometry = new THREE.CubeGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
+
+  xPosOfTracks.forEach((trXpos, trIx) => {
+
+    for (var tFretIx = 0; tFretIx < NUM_TEMPO_FRETS_TO_FILL; tFretIx++) {
+
+      newTempoFret = new THREE.Mesh(tempoFretGeometry, materialColors[trIx]);
+
+      newTempoFret.position.z = GO_Z - TEMPO_FRET_L - (TEMPO_FRET_L*tFretIx);
+      newTempoFret.position.y = TEMPO_FRET_Y;
+      newTempoFret.position.x = trXpos;
+      newTempoFret.rotation.x = rads(-14);
+
+      SCENE.add(newTempoFret);
+
+    } //for (var i = 0; i < NUM_TEMPO_FRETS_TO_FILL; i++) End
+
+  }); //xPosOfTracks.forEach((trXpos) END
+
+
+} //makeTempoFrets() end
+
+// </editor-fold> END makeTempoFrets
+
+
+// </editor-fold> END Frets
+
+// <editor-fold> Bouncing Balls
 
 // <editor-fold> BouncingBalls Variables
 
@@ -574,7 +599,7 @@ function makeBouncingBalls() {
       cx: BB_CENTER,
       cy: BBCIRC_TOP_CY,
       r: BBCIRC_R,
-      fill: tempoColors[bbIx],
+      fill: TEMPO_COLORS[bbIx],
       stroke: 'white',
       strokeW: 0
     })
@@ -599,43 +624,57 @@ function makeBouncingBalls() {
 
 // </editor-fold> END BouncingBalls
 
-// <editor-fold> rhythmicNotation
-
-/*
-Rhythm only give pitch set
-*/
-
+// <editor-fold> Rhythmic Notation
 
 // <editor-fold> rhythmicNotation Variables
-let rhythmicNotationObj = {};
-// Staff
-let horizDistBetweenBeats = 85;
-let topStaffLineY = 88;
-let vertDistanceBetweenStaves = 90;
-let vertDistanceBetweenStaffLines = 8;
-// let middleStaffLineY = topStaffLineY + (vertDistanceBetweenStaffLines * 4);
-let beatOneX = 12;
-let lastBeatLength = horizDistBetweenBeats - beatOneX;
-let numBeatsPerStaff = 8;
-let rhythmicNotationBottomMargin = 45;
-let numStaves = 3;
-let noteheadW = 10;
-let noteheadH = 8;
-let half_noteheadH = noteheadH / 2;
-// Measurements
-const RHYTHMIC_NOTATION_W = horizDistBetweenBeats * numBeatsPerStaff;
-const RHYTHMIC_NOTATION_H = topStaffLineY + ((numStaves - 1) * vertDistanceBetweenStaves) + rhythmicNotationBottomMargin;
-const RHYTHMIC_NOTATION_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
-const RHYTHMIC_NOTATION_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 
-// Beat Locations
-let beatXLocations = [];
-for (let beatLocIx = 0; beatLocIx < numBeatsPerStaff; beatLocIx++) {
-  beatXLocations.push(beatOneX + (beatLocIx * horizDistBetweenBeats));
+let rhythmicNotationObj = {};
+let notationImageObjectSet = {};
+
+const HORIZ_DIST_BTWN_BEATS = 85;
+const TOP_STAFF_LINE_Y = 88;
+const VERT_DIST_BTWN_STAVES = 100;
+const VERT_DIST_BTWN_STAFF_LINES = 8;
+const FIRST_BEAT_L = 12;
+const LAST_BEAT_W = HORIZ_DIST_BTWN_BEATS - FIRST_BEAT_L;
+const NUM_BEATS_PER_STAFF = 8;
+const STAFF_BTM_MARGIN = 45;
+const NUM_STAVES = 3;
+const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFF * NUM_STAVES;
+const NOTEHEAD_W = 10;
+const NOTEHEAD_H = 8;
+const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
+const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (HORIZ_DIST_BTWN_BEATS * NUM_BEATS_PER_STAFF) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAVES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
+const NOTATION_CURSOR_H = 70;
+
+let motivesByBeat = [];
+for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
+  motivesByBeat.push({});
 }
 
-let notationImageObjectSet = {};
-// <editor-fold> rhythmicNotation Variables
+let tempoCursors = [];
+
+// <editor-fold> Beat Coordinates
+let beatXLocations = [];
+for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFF; beatLocIx++) {
+  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * HORIZ_DIST_BTWN_BEATS));
+}
+
+let beatCoords = [];
+for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
+  for (var beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFF; beatPerStaffIx++) {
+    let tCoordObj = {};
+    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * HORIZ_DIST_BTWN_BEATS);
+    tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
+    beatCoords.push(tCoordObj);
+  }
+}
+// </editor-fold> Beat Coordinates
+
+// <editor-fold> notationSvgPaths_labels
 let notationSvgPaths_labels = [{
     path: "/pieces/sf004/notationSVGs/quintuplet.svg",
     lbl: 'quintuplet'
@@ -673,71 +712,54 @@ let notationSvgPaths_labels = [{
     lbl: 'qtr_rest'
   }
 ];
-/*
-// Get Image Sizes
-async function getImage(url) {
-  return new Promise((resolve, reject) => {
-    let img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = url;
-  });
-}
+// </editor-fold> END notationSvgPaths_labels
 
-async function loadNotationObjects(path, trigger) {
-  let imageObj = await getImage(path);
-  if (trigger) {
-    document.dispatchEvent(drawInitialNotationEvent);
-  }
-  return imageObj;
-}
-
-
-
-
-// Create the event
-var drawInitialNotationEvent = new CustomEvent("drawInitialNotation", {});
-
-// Dispatch/Trigger/Fire the event
-
-*/
-// </editor-fold> rhythmicNotation Variables
 // </editor-fold> END rhythmicNotation Variables
-
 
 // <editor-fold> makeRhythmicNotation
 
 function makeRhythmicNotation() {
 
+  // <editor-fold> DIV/SVG Container
+
   rhythmicNotationObj['div'] = mkDiv({
     canvas: worldPanel.content,
-    w: RHYTHMIC_NOTATION_W,
-    h: RHYTHMIC_NOTATION_H,
-    top: RHYTHMIC_NOTATION_TOP,
-    left: RHYTHMIC_NOTATION_L,
+    w: RHYTHMIC_NOTATION_CANVAS_W,
+    h: RHYTHMIC_NOTATION_CANVAS_H,
+    top: RHYTHMIC_NOTATION_CANVAS_TOP,
+    left: RHYTHMIC_NOTATION_CANVAS_L,
     bgClr: 'white'
   });
 
   rhythmicNotationObj['svgCont'] = mkSVGcontainer({
     canvas: rhythmicNotationObj.div,
-    w: RHYTHMIC_NOTATION_W,
-    h: RHYTHMIC_NOTATION_H,
+    w: RHYTHMIC_NOTATION_CANVAS_W,
+    h: RHYTHMIC_NOTATION_CANVAS_H,
     x: 0,
     y: 0
   });
 
-  for (let staffIx = 0; staffIx < numStaves; staffIx++) {
-    let tStaffY = topStaffLineY + (staffIx * vertDistanceBetweenStaves);
-    mkSvgLine({
+  // </editor-fold> END DIV/SVG Container
+
+  // <editor-fold> StaffLines
+  let rhythmicNotationStaffLines = [];
+  for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
+    let tStaffY = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES);
+    let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
       x1: 0,
       y1: tStaffY,
-      x2: RHYTHMIC_NOTATION_W,
+      x2: RHYTHMIC_NOTATION_CANVAS_W,
       y2: tStaffY,
-      stroke: "rgb(255, 21, 160)",
-      strokeW: 0.3
+      stroke: "black",
+      strokeW: 1
     });
+    rhythmicNotationStaffLines.push(tLine);
   }
+  rhythmicNotationObj['staffLines'] = rhythmicNotationStaffLines;
+  // </editor-fold> END Staff Lines
+
+  // <editor-fold> Draw Initial Notation
 
   async function getImage(url) {
     return new Promise((resolve, reject) => {
@@ -746,99 +768,81 @@ function makeRhythmicNotation() {
       img.onerror = reject;
       img.src = url;
     });
-
   }
-
+  // Wrapper to deal with asynchronous process
   function run_getImage(path) {
     return getImage(path);
   }
 
+  // Make all motives and make display:none; Display All Quarters
+  function makeMotives() { //runs after await so all image sizes are loaded
+
+    beatCoords.forEach((beatCoordsObj, beatIx) => {
+
+      let tx = beatCoordsObj.x;
+      let ty = beatCoordsObj.y;
+
+      notationSvgPaths_labels.forEach((pathLblObj) => {
+
+        let tLabel = pathLblObj.lbl;
+        let tDisp = tLabel == 'quarter' ? 'yes' : 'none';
+
+        let tSvgImage = document.createElementNS(SVG_NS, "image");
+        tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
+        tSvgImage.setAttributeNS(null, "y", ty - notationImageObjectSet[tLabel].height);
+        tSvgImage.setAttributeNS(null, "x", tx);
+        tSvgImage.setAttributeNS(null, "visibility", 'visible');
+        tSvgImage.setAttributeNS(null, "display", tDisp);
+        rhythmicNotationObj.svgCont.appendChild(tSvgImage);
+
+        motivesByBeat[beatIx][tLabel] = tSvgImage;
+
+      }); //notationSvgPaths_labels.forEach((pathLblObj)  END
+
+    }); //beatCoords.forEach((beatCoordsObj) END
+
+  } //function makeMotives() END
+
+  // MAIN LOOP HERE: Load Notation SVGs to get image height/width for positioning
   notationSvgPaths_labels.forEach((pathLblObj, i) => {
     let tpath = pathLblObj.path;
-    (async () => {
-      let timg = await run_getImage(tpath);
+    (async () => { //generic async wrapper to avoid error
+      let timg = await run_getImage(tpath); // Runs wrapper which runs getImage everything below this await waits for response
       notationImageObjectSet[pathLblObj.lbl] = timg;
-      if (i==(notationSvgPaths_labels.length-1)) {
-          console.log(notationImageObjectSet);
+      if (i == (notationSvgPaths_labels.length - 1)) {
+        makeMotives();
       }
-
     })();
-  });
+  }); //notationSvgPaths_labels.forEach((pathLblObj, i) end
 
-  let q = document.createElementNS(SVG_NS, "image");
-  q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/triplet.svg');
-  // q.setAttributeNS(null, "y", topStaffLineY - notationImageObjectSet.triplet.h);
-  q.setAttributeNS(null, "y", 15);
-  q.setAttributeNS(null, "x", beatXLocations[0]);
-  q.setAttributeNS(null, "visibility", 'visible');
-  rhythmicNotationObj.svgCont.appendChild(q);
+  // </editor-fold> END Draw Initial Notation
 
-  /*
-    document.addEventListener("drawInitialNotation", function(e) {
-      let q = document.createElementNS(SVG_NS, "image");
-      q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/triplet.svg');
-      // q.setAttributeNS(null, "y", topStaffLineY - notationImageObjectSet.triplet.h);
-      q.setAttributeNS(null, "y", topStaffLineY);
-      q.setAttributeNS(null, "x", beatXLocations[0]);
-      q.setAttributeNS(null, "visibility", 'visible');
-      rhythmicNotationObj.svgCont.appendChild(q);
-      console.log(notationImageObjectSet.triplet);
+  // <editor-fold> Notation Scrolling Cursors
+
+  for (var tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) {
+
+    let tLine = mkSvgLine({
+      svgContainer: rhythmicNotationObj.svgCont,
+      x1: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - (tempoCsrIx * 8),
+      y1: beatCoords[16].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
+      x2: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - (tempoCsrIx * 8),
+      y2: beatCoords[16].y + HALF_NOTEHEAD_H, //beatCoords[16].y is 3rd staff line
+      stroke: TEMPO_COLORS[tempoCsrIx],
+      strokeW: 4
     });
+    tLine.setAttributeNS(null, 'stroke-linecap', 'round');
+    tempoCursors.push(tLine);
 
-    notationSvgPaths_labels.forEach((pathLblObj, objIx) => {
-      let trigDraw = false;
-      if (objIx == (notationSvgPaths_labels.length - 1)) {
-        trigDraw = true;
-      }
-      notationImageObjectSet[pathLblObj.lbl] = loadNotationObjects(pathLblObj.path, trigDraw);
-    });
+  } //for (var tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
 
-    let q = document.createElementNS(SVG_NS, "image");
-    q.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notation/notehead_10_8.svg');
-    q.setAttributeNS(null, "y", middleStaffLineY - half_noteheadH);
-    q.setAttributeNS(null, "x", beatXLocations[0]);
-    q.setAttributeNS(null, "visibility", 'visible');
-    rhythmicNotationObj.svgCont.appendChild(q);
-
-
-
-  */
-
-
-  let y = 136;
-  // let y = 90;
-  mkSvgLine({
-    svgContainer: rhythmicNotationObj.svgCont,
-    x1: 0,
-    y1: y,
-    x2: 50,
-    y2: y,
-    stroke: 'rgb(255,0,128)',
-    strokeW: 0.3
-  });
-
-
-
-
-  let y2 = 140;
-  let x2 = 97;
-  mkSvgLine({
-    svgContainer: rhythmicNotationObj.svgCont,
-    x1: x2,
-    y1: y2,
-    x2: x2,
-    y2: y2 + 50,
-    stroke: 'rgb(255,128,0)',
-    strokeW: 0.3
-  });
-
+  // </editor-fold> END Notation Scrolling Cursors
 
 } //makeRhythmicNotation() end
 
 // </editor-fold> END makeRhythmicNotation
 
 
-// </editor-fold> END rhythmicNotation
+// </editor-fold> END Rhythmic Notation
 
 
 
