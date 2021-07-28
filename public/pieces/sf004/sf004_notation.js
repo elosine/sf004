@@ -38,12 +38,14 @@ function init() {
   makeTracks();
 
   makeGoFrets();
-  
+
   makeTempoFrets();
 
   makeBouncingBalls();
 
   makeRhythmicNotation();
+
+  makeSigns();
 
   RENDERER.render(SCENE, CAMERA);
 
@@ -335,6 +337,12 @@ for (let matlClrIx = 0; matlClrIx < TEMPO_COLORS.length; matlClrIx++) {
   });
   materialColors.push(tMatlClr);
 }
+// const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
+const CAM_Y = 150;
+// const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
+const CAM_Z = 21;
+// const CAM_ROTATION_X = -68; // -90 directly above looking down
+const CAM_ROTATION_X = -45; // -90 directly above looking down
 
 // </editor-fold> END ThreeJS Scene Variables
 
@@ -345,12 +353,6 @@ function makeThreeJsScene() {
   // <editor-fold> Camera
 
   CAMERA = new THREE.PerspectiveCamera(75, RENDERER_W / RENDERER_H, 1, 3000);
-  // const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
-  const CAM_Y = 150;
-  // const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
-  const CAM_Z = 21;
-  // const CAM_ROTATION_X = -68; // -90 directly above looking down
-  const CAM_ROTATION_X = -45; // -90 directly above looking down
   CAMERA.position.set(0, CAM_Y, CAM_Z);
   CAMERA.rotation.x = rads(CAM_ROTATION_X);
 
@@ -412,7 +414,7 @@ function makeRunway() {
       side: THREE.DoubleSide
     });
 
-  let runwayGeometry = new THREE.PlaneGeometry(RUNWAY_W, RUNWAY_L, 32);
+  let runwayGeometry = new THREE.PlaneBufferGeometry(RUNWAY_W, RUNWAY_L, 32);
 
   let runway = new THREE.Mesh(runwayGeometry, runwayMaterial);
 
@@ -448,7 +450,7 @@ for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
 
 function makeTracks() {
 
-  let trackGeometry = new THREE.CylinderGeometry(TRACK_DIAMETER, TRACK_DIAMETER, RUNWAY_L, 32);
+  let trackGeometry = new THREE.CylinderBufferGeometry(TRACK_DIAMETER, TRACK_DIAMETER, RUNWAY_L, 32);
 
   let trackMaterial = new THREE.MeshLambertMaterial({
     color: 0x708090
@@ -473,14 +475,14 @@ function makeTracks() {
 
 // </editor-fold> END Tracks
 
-// <editor-fold> Frets
-
-// <editor-fold> makeGoFrets
+// <editor-fold> Go Frets
 
 // <editor-fold> GoFrets Variables
 
+let goFrets = [];
 const GO_FRET_W = 54;
 const GO_FRET_H = 11;
+const HALF_GO_FRET_H = GO_FRET_H / 2;
 const GO_FRET_L = 13;
 const HALF_GO_FRET_L = GO_FRET_L / 2;
 const GO_Z = -HALF_GO_FRET_L;
@@ -488,9 +490,11 @@ const GO_FRET_Y = HALF_TRACK_DIAMETER;
 
 // </editor-fold> END GoFrets Variables
 
+// <editor-fold> makeGoFrets
+
 function makeGoFrets() {
 
-  let goFretGeometry = new THREE.CubeGeometry(GO_FRET_W, GO_FRET_H, GO_FRET_L);
+  let goFretGeometry = new THREE.BoxBufferGeometry(GO_FRET_W, GO_FRET_H, GO_FRET_L);
 
   xPosOfTracks.forEach((trXpos, trIx) => {
 
@@ -502,18 +506,21 @@ function makeGoFrets() {
     newGoFret.rotation.x = rads(-14);
 
     SCENE.add(newGoFret);
+    goFrets.push(newGoFret);
 
   }); //xPosOfTracks.forEach((trXpos) END
 
 
 } //makeGoFrets() end
+// </editor-fold> End makeGoFrets
 
-// </editor-fold> END makeGoFrets
+// </editor-fold> END Go Frets
 
-// <editor-fold> makeTempoFrets
+// <editor-fold> Tempo Frets
 
 // <editor-fold> Tempo Frets Variables
 
+let tempoFretsPerTrack = [];
 const TEMPO_FRET_W = GO_FRET_W - 2;
 const TEMPO_FRET_H = GO_FRET_H - 2;
 const TEMPO_FRET_L = GO_FRET_L - 5;
@@ -522,24 +529,32 @@ const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L;
 
 // </editor-fold> END Tempo Frets Variables
 
+// <editor-fold> makeTempoFrets
+
 function makeTempoFrets() {
 
-  let tempoFretGeometry = new THREE.CubeGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
+  let tempoFretGeometry = new THREE.BoxBufferGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
 
   xPosOfTracks.forEach((trXpos, trIx) => {
+
+    let thisTracksTempoFrets = [];
 
     for (var tFretIx = 0; tFretIx < NUM_TEMPO_FRETS_TO_FILL; tFretIx++) {
 
       newTempoFret = new THREE.Mesh(tempoFretGeometry, materialColors[trIx]);
 
-      newTempoFret.position.z = GO_Z - TEMPO_FRET_L - (TEMPO_FRET_L*tFretIx);
+      newTempoFret.position.z = GO_Z - TEMPO_FRET_L - (TEMPO_FRET_L * tFretIx);
       newTempoFret.position.y = TEMPO_FRET_Y;
       newTempoFret.position.x = trXpos;
       newTempoFret.rotation.x = rads(-14);
 
       SCENE.add(newTempoFret);
+      newTempoFret.visible = false;
+      thisTracksTempoFrets.push(newTempoFret);
 
     } //for (var i = 0; i < NUM_TEMPO_FRETS_TO_FILL; i++) End
+
+    tempoFretsPerTrack.push(thisTracksTempoFrets);
 
   }); //xPosOfTracks.forEach((trXpos) END
 
@@ -548,8 +563,7 @@ function makeTempoFrets() {
 
 // </editor-fold> END makeTempoFrets
 
-
-// </editor-fold> END Frets
+// </editor-fold> END Tempo Frets
 
 // <editor-fold> Bouncing Balls
 
@@ -569,7 +583,6 @@ const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 
 // </editor-fold> END BouncingBalls Variables
-
 
 // <editor-fold> makeBouncingBalls
 
@@ -602,9 +615,9 @@ function makeBouncingBalls() {
       fill: TEMPO_COLORS[bbIx],
       stroke: 'white',
       strokeW: 0
-    })
+    });
 
-    bbSet[bbIx]['bbBouncePad'] = mkSvgLine({
+    bbSet[bbIx]['bbBouncePadOff'] = mkSvgLine({
       svgContainer: bbSet[bbIx].svgCont,
       x1: 0,
       y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
@@ -612,7 +625,29 @@ function makeBouncingBalls() {
       y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
       stroke: 'black',
       strokeW: BB_BOUNCE_WEIGHT
-    })
+    });
+
+    bbSet[bbIx]['bbBouncePadOn'] = mkSvgLine({
+      svgContainer: bbSet[bbIx].svgCont,
+      x1: 0,
+      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      x2: BB_W,
+      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      stroke: 'yellow',
+      strokeW: BB_BOUNCE_WEIGHT+2
+    });
+    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null,'display' , 'none');
+
+
+    bbSet[bbIx]['offIndicator'] =  mkSvgRect({
+      svgContainer:bbSet[bbIx].svgCont,
+      x: 0,
+      y: 0,
+      w: BB_W,
+      h: BB_H,
+      fill: 'rgba(173, 173, 183, 0.9)',
+    });
+
 
   } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
 
@@ -620,7 +655,6 @@ function makeBouncingBalls() {
 } //makeBouncingBalls() end
 
 // </editor-fold> END makeBouncingBalls
-
 
 // </editor-fold> END BouncingBalls
 
@@ -715,8 +749,6 @@ let notationSvgPaths_labels = [{
 // </editor-fold> END notationSvgPaths_labels
 
 // </editor-fold> END rhythmicNotation Variables
-
-// <editor-fold> makeRhythmicNotation
 
 function makeRhythmicNotation() {
 
@@ -823,12 +855,12 @@ function makeRhythmicNotation() {
 
     let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
-      x1: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - (tempoCsrIx * 8),
+      x1: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
       y1: beatCoords[16].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
-      x2: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - (tempoCsrIx * 8),
+      x2: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
       y2: beatCoords[16].y + HALF_NOTEHEAD_H, //beatCoords[16].y is 3rd staff line
       stroke: TEMPO_COLORS[tempoCsrIx],
-      strokeW: 4
+      strokeW: 3
     });
     tLine.setAttributeNS(null, 'stroke-linecap', 'round');
     tempoCursors.push(tLine);
@@ -839,10 +871,58 @@ function makeRhythmicNotation() {
 
 } //makeRhythmicNotation() end
 
-// </editor-fold> END makeRhythmicNotation
-
-
 // </editor-fold> END Rhythmic Notation
+
+// <editor-fold> Signs
+
+// <editor-fold> Signs Variables
+
+const SIGN_W = TEMPO_FRET_W - 10;
+const SIGN_H = 150;
+const HALF_SIGN_H = SIGN_H / 2;
+let signsByTrack = [];
+const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = NUM_TEMPO_FRETS_TO_FILL / 10;
+
+// </editor-fold> END Signs Variables
+
+function makeSigns() {
+
+  let signGeometry = new THREE.PlaneBufferGeometry(SIGN_W, SIGN_H, 32);
+
+  xPosOfTracks.forEach((trXpos, trIx) => {
+
+    let thisTracksSigns = [];
+
+    for (var tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+      let signMaterial =
+        new THREE.MeshLambertMaterial({
+          color: TEMPO_COLORS[trIx],
+          side: THREE.DoubleSide,
+          opacity: 0.7,
+          transparent: true,
+        });
+
+      let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+      sign.position.z = GO_Z ;
+      sign.position.x = trXpos;
+      sign.position.y = 0;
+      sign.rotation.x = rads(CAM_ROTATION_X);
+
+      SCENE.add(sign);
+      sign.visible = false;
+      thisTracksSigns.push(sign);
+
+    } //for (var tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+    signsByTrack.push(thisTracksSigns);
+
+  }); // xPosOfTracks.forEach((trXpos, trIx) end
+
+} //makeSigns() end
+
+// </editor-fold> END Signs
 
 
 

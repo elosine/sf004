@@ -4,7 +4,7 @@ const XLINK_NS = 'http://www.w3.org/1999/xlink';
 // <editor-fold> Colors
 let clr_orange = 'rgba(240,75,0,255)';
 let clr_brightBlue = 'rgba(56,126,211,255)';
-let clr_yellow = 'rgba(244,182,0,255)';
+let clr_mustard = 'rgba(244,182,0,255)';
 let clr_brightRed = 'rgba(229,42,25,255)';
 let clr_green = 'rgba(0,147,92,255)';
 let clr_limeGreen = 'rgb(153,255,0)';
@@ -15,6 +15,8 @@ let clr_lavander = 'rgba(162,126,198,255)';
 let clr_darkRed = '#a60701';
 let clr_lightGrey = '#adadb7';
 let clr_blueGrey = '#708090';
+let clr_lightGreen = '#85b068';
+let clr_yellow = 'rgba(254,213,0,255)';
 // </editor-fold> END Colors
 
 // <editor-fold> mkDivCanvas
@@ -640,6 +642,45 @@ let mkSvgLine = function({
 }
 
 // </editor-fold> END mkSvgLine
+
+// <editor-fold> mkSvgRect
+
+let mkSvgRect = function({
+  svgContainer,
+  x = 25,
+  y = 25,
+  w = 10,
+  h = 10,
+  fill = 'green',
+  stroke = 'yellow',
+  strokeW = 0,
+  roundR = 0
+} = {
+  svgContainer,
+  x: 25,
+  y: 25,
+  w: 10,
+  h: 10,
+  fill: 'green',
+  stroke: 'yellow',
+  strokeW: 0,
+  roundR: 0
+}) {
+
+  var svgRect = document.createElementNS(SVG_NS, "rect");
+  svgRect.setAttributeNS(null, "x", x);
+  svgRect.setAttributeNS(null, "y", y);
+  svgRect.setAttributeNS(null, "width", w);
+  svgRect.setAttributeNS(null, "height", h);
+  svgRect.setAttributeNS(null, "fill", fill);
+  svgRect.setAttributeNS(null, "stroke", stroke);
+  svgRect.setAttributeNS(null, "stroke-width", strokeW);
+  svgRect.setAttributeNS(null, "rx", roundR);
+  svgContainer.appendChild(svgRect);
+  return svgRect;
+}
+
+// </editor-fold> END mkSvgRect
 
 
 
