@@ -1,6 +1,7 @@
 // <editor-fold> Global Vars
 
 const NUM_TEMPOS = 5;
+const NUM_PLAYERS = 5;
 const TEMPO_COLORS = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
 
 // </editor-fold> END Global Vars
@@ -337,6 +338,9 @@ for (let matlClrIx = 0; matlClrIx < TEMPO_COLORS.length; matlClrIx++) {
   });
   materialColors.push(tMatlClr);
 }
+let matl_yellow = new THREE.MeshLambertMaterial({
+  color: 'yellow'
+});
 // const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
 const CAM_Y = 150;
 // const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
@@ -480,6 +484,7 @@ function makeTracks() {
 // <editor-fold> GoFrets Variables
 
 let goFrets = [];
+let goFretsGo = [];
 const GO_FRET_W = 54;
 const GO_FRET_H = 11;
 const HALF_GO_FRET_H = GO_FRET_H / 2;
@@ -495,6 +500,8 @@ const GO_FRET_Y = HALF_TRACK_DIAMETER;
 function makeGoFrets() {
 
   let goFretGeometry = new THREE.BoxBufferGeometry(GO_FRET_W, GO_FRET_H, GO_FRET_L);
+  let goFretGoGeometry = new THREE.BoxBufferGeometry(GO_FRET_W + 2, GO_FRET_H + 2, GO_FRET_L + 2);
+
 
   xPosOfTracks.forEach((trXpos, trIx) => {
 
@@ -507,6 +514,17 @@ function makeGoFrets() {
 
     SCENE.add(newGoFret);
     goFrets.push(newGoFret);
+
+    newGoFretGo = new THREE.Mesh(goFretGoGeometry, matl_yellow);
+
+    newGoFretGo.position.z = GO_Z;
+    newGoFretGo.position.y = GO_FRET_Y;
+    newGoFretGo.position.x = trXpos;
+    newGoFretGo.rotation.x = rads(-14);
+    newGoFretGo.visible = false;
+
+    SCENE.add(newGoFretGo);
+    goFretsGo.push(newGoFretGo);
 
   }); //xPosOfTracks.forEach((trXpos) END
 
@@ -634,13 +652,13 @@ function makeBouncingBalls() {
       x2: BB_W,
       y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
       stroke: 'yellow',
-      strokeW: BB_BOUNCE_WEIGHT+2
+      strokeW: BB_BOUNCE_WEIGHT + 2
     });
-    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null,'display' , 'none');
+    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
 
 
-    bbSet[bbIx]['offIndicator'] =  mkSvgRect({
-      svgContainer:bbSet[bbIx].svgCont,
+    bbSet[bbIx]['offIndicator'] = mkSvgRect({
+      svgContainer: bbSet[bbIx].svgCont,
       x: 0,
       y: 0,
       w: BB_W,
@@ -682,7 +700,7 @@ const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (HORIZ_DIST_BTWN_BEATS * NUM_B
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAVES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
-const NOTATION_CURSOR_H = 70;
+const NOTATION_CURSOR_H = 57;
 
 let motivesByBeat = [];
 for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
@@ -690,6 +708,7 @@ for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
 }
 
 let tempoCursors = [];
+let playerTokens = []; //{:svg,:text}
 
 // <editor-fold> Beat Coordinates
 let beatXLocations = [];
@@ -869,6 +888,171 @@ function makeRhythmicNotation() {
 
   // </editor-fold> END Notation Scrolling Cursors
 
+  // <editor-fold> Player Tokens
+
+  //circle, triangle, diamond, watermellon, square,
+  for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
+    let tPlrSet = [];
+    for (var playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
+      let tPlrObj = {}
+      switch (playerIx) {
+
+        case 0:
+
+          let tCirc = mkSvgCircle({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            cy: beatCoords[16].y - NOTATION_CURSOR_H - 11,
+            r: 11,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tCirc;
+
+          let tCircText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 11,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 18,
+            txt: '1'
+          });
+
+          tPlrObj['txt'] = tCircText;
+
+          break;
+
+        case 1:
+
+          let tTri = mkSvgTriangle({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            cy: beatCoords[16].y - NOTATION_CURSOR_H - 14,
+            h: 26,
+            w: 26,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tTri;
+
+          let tTriText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 11,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 18,
+            txt: '2'
+          });
+
+          tPlrObj['txt'] = tTriText;
+
+          break;
+
+        case 2:
+
+          let tDia = mkSvgDiamond({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            cy: beatCoords[16].y - NOTATION_CURSOR_H - 14,
+            h: 26,
+            w: 26,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tDia;
+
+          let tDiaText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 14,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 18,
+            txt: '3'
+          });
+
+          tPlrObj['txt'] = tDiaText;
+
+          break;
+
+        case 3:
+
+          let tArc = mkSvgArc({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 20,
+            radius: 20,
+            startAngle: 90,
+            endAngle: 270,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3,
+            strokeCap: 'round'
+          });
+
+          tPlrObj['svg'] = tArc;
+
+          let tArcText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 10,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 18,
+            txt: '4'
+          });
+
+          tPlrObj['txt'] = tArcText;
+
+          break;
+
+        case 4:
+
+          let tSqr = mkSvgRect({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - 11,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 23,
+            w: 22,
+            h: 22,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tSqr;
+
+          let tSqrText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
+            y: beatCoords[16].y - NOTATION_CURSOR_H - 12,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 18,
+            txt: '5'
+          });
+
+          tPlrObj['txt'] = tSqrText;
+
+          break;
+
+
+      }
+
+
+    } //for (var playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
+
+  } //for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
+
+  // </editor-fold> END Notation Scrolling Cursors
+
 } //makeRhythmicNotation() end
 
 // </editor-fold> END Rhythmic Notation
@@ -905,7 +1089,7 @@ function makeSigns() {
 
       let sign = new THREE.Mesh(signGeometry, signMaterial);
 
-      sign.position.z = GO_Z ;
+      sign.position.z = GO_Z;
       sign.position.x = trXpos;
       sign.position.y = 0;
       sign.rotation.x = rads(CAM_ROTATION_X);

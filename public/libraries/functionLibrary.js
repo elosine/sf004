@@ -17,6 +17,7 @@ let clr_lightGrey = '#adadb7';
 let clr_blueGrey = '#708090';
 let clr_lightGreen = '#85b068';
 let clr_yellow = 'rgba(254,213,0,255)';
+let clr_neonMagenta = "rgb(255, 21, 160)";
 // </editor-fold> END Colors
 
 // <editor-fold> mkDivCanvas
@@ -667,7 +668,7 @@ let mkSvgRect = function({
   roundR: 0
 }) {
 
-  var svgRect = document.createElementNS(SVG_NS, "rect");
+  let svgRect = document.createElementNS(SVG_NS, "rect");
   svgRect.setAttributeNS(null, "x", x);
   svgRect.setAttributeNS(null, "y", y);
   svgRect.setAttributeNS(null, "width", w);
@@ -682,6 +683,198 @@ let mkSvgRect = function({
 
 // </editor-fold> END mkSvgRect
 
+// <editor-fold> mkSvgArc
+
+let polarToCartesian = function(centerX, centerY, radius, angleInDegrees) {
+  let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+  return {
+    x: centerX + (radius * Math.cos(angleInRadians)),
+    y: centerY + (radius * Math.sin(angleInRadians))
+  };
+}
+
+let mkSvgArc = function({
+  svgContainer,
+  x = 0,
+  y = 0,
+  radius = 10,
+  startAngle = 45,
+  endAngle = 180,
+  fill = 'green',
+  stroke = 'yellow',
+  strokeW = 3,
+  strokeCap = 'round' //square;round;butt
+} = {
+  svgContainer,
+  x: 0,
+  y: 0,
+  radius: 10,
+  startAngle: 45,
+  endAngle: 180,
+  fill: 'green',
+  stroke: 'yellow',
+  strokeW: 3,
+  strokeCap: 'round' //square;round;butt
+}) {
+  let start = polarToCartesian(x, y, radius, endAngle);
+  let end = polarToCartesian(x, y, radius, startAngle);
+  let arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+  let d = [
+    "M", start.x, start.y,
+    "A", radius, radius, 0, arcSweep, 0, end.x, end.y,
+    "L", x,y,
+    "L", start.x, start.y
+  ].join(" ");
+
+  // << << ARCS PROPER -------------------- >
+  let arc = document.createElementNS(SVG_NS, "path");
+  arc.setAttributeNS(null, "d", d); //describeArc makes 12'0clock =0degrees
+  arc.setAttributeNS(null, "stroke-width", strokeW);
+  arc.setAttributeNS(null, "stroke", stroke);
+  arc.setAttributeNS(null, "fill", fill);
+  arc.setAttributeNS(null, "stroke-linecap", strokeCap);
+  svgContainer.appendChild(arc);
+  return arc;
+}
+
+// </editor-fold> END mkSvgArc
+
+// <editor-fold> mkSvgTriangle
+
+let mkSvgTriangle = function({
+  svgContainer,
+  cx = 25,
+  cy = 25,
+  h = 10,
+  w = 10,
+  fill = 'green',
+  stroke = 'black',
+  strokeW = 3
+} = {
+  svgContainer,
+  cx: 25,
+  cy: 25,
+  h: 10,
+  w: 10,
+  fill: 'green',
+  stroke: 'black',
+  strokeW: 3
+}) {
+
+  let x1, x2, x3, y1, y2, y3;
+  let halfH = h / 2;
+  let halfW = w / 2;
+  x1 = cx;
+  y1 = cy - halfH;
+  x2 = cx + halfW;
+  y2 = cy + halfH;
+  x3 = cx - halfW;
+  y3 = cy + halfH;
+
+  let pointsString = x1.toString() + ',' + y1.toString() + ' ' + x2.toString() + ',' + y2.toString() + ' ' + x3.toString() + ',' + y3.toString();
+
+  var svgTriangle = document.createElementNS(SVG_NS, "polygon");
+  svgTriangle.setAttributeNS(null, "points", pointsString);
+  svgTriangle.setAttributeNS(null, "fill", fill);
+  svgTriangle.setAttributeNS(null, "stroke", stroke);
+  svgTriangle.setAttributeNS(null, "stroke-width", strokeW);
+  svgContainer.appendChild(svgTriangle);
+  return svgTriangle;
+}
+
+// </editor-fold> END mkSvgTriangle
+
+// <editor-fold> mkSvgText
+
+let mkSvgText = function({
+  svgContainer,
+  x = 0,
+  y = 0,
+  fill = 'black',
+  stroke = 'white',
+  strokeW = 0,
+  justifyH = 'start',
+  justifyV = 'auto',
+  fontSz = 18,
+  fontFamily = 'lato',
+  txt = '007'
+} = {
+  svgContainer,
+  x: 25,
+  y: 25,
+  fill: 'black',
+  stroke: 'white',
+  strokeW: 0,
+  justifyH: 'start',
+  justifyV: 'auto',
+  fontSz: 18,
+  fontFamily: 'lato',
+  txt: '007'
+}) {
+
+  let svgText = document.createElementNS(SVG_NS, "text");
+  svgText.setAttributeNS(null, "x", x);
+  svgText.setAttributeNS(null, "y", y);
+  svgText.setAttributeNS(null, "fill", fill);
+  svgText.setAttributeNS(null, "stroke", stroke);
+  svgText.setAttributeNS(null, "stroke-width", strokeW);
+  svgText.setAttributeNS(null, "text-anchor", justifyH); //start;middle;end
+  svgText.setAttributeNS(null, "font-size", fontSz);
+  svgText.setAttributeNS(null, "font-family", strokeW);
+  // auto | baseline | before-edge | text-before-edge | middle | central | after-edge | text-after-edge | ideographic | alphabetic | hanging | mathematical | inherit
+  svgText.setAttributeNS(null, "alignment-baseline", justifyV);
+  svgText.textContent = txt;
+  svgContainer.appendChild(svgText);
+  return svgText;
+}
+// </editor-fold> END mkSvgText
+
+// <editor-fold> mkSvgDiamond
+
+let mkSvgDiamond = function({
+  svgContainer,
+  cx = 25,
+  cy = 25,
+  h = 10,
+  w = 10,
+  fill = 'green',
+  stroke = 'black',
+  strokeW = 3
+} = {
+  svgContainer,
+  cx: 25,
+  cy: 25,
+  h: 10,
+  w: 10,
+  fill: 'green',
+  stroke: 'black',
+  strokeW: 3
+}) {
+
+  let x1, x2, x3, y1, y2, y3, x4, y4;
+  let halfH = h / 2;
+  let halfW = w / 2;
+  x1 = cx;
+  y1 = cy - halfH;
+  x2 = cx + halfW;
+  y2 = cy;
+  x3 = cx;
+  y3 = cy + halfH;
+  x4 = cx - halfW;
+  y4 = cy;
+
+  let pointsString = x1.toString() + ',' + y1.toString() + ' ' + x2.toString() + ',' + y2.toString() + ' ' + x3.toString() + ',' + y3.toString() + ' ' + x4.toString() + ',' + y4.toString();
+
+  var svgDiamond = document.createElementNS(SVG_NS, "polygon");
+  svgDiamond.setAttributeNS(null, "points", pointsString);
+  svgDiamond.setAttributeNS(null, "fill", fill);
+  svgDiamond.setAttributeNS(null, "stroke", stroke);
+  svgDiamond.setAttributeNS(null, "stroke-width", strokeW);
+  svgContainer.appendChild(svgDiamond);
+  return svgDiamond;
+}
+
+// </editor-fold> END mkSvgDiamond
 
 
 
