@@ -48,6 +48,8 @@ function init() {
 
   makeSigns();
 
+  makePitchSets();
+
   RENDERER.render(SCENE, CAMERA);
 
 } // function init() end
@@ -304,7 +306,7 @@ let worldPanel;
 const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
 const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
-const CANVAS_H = 628;
+const CANVAS_H = 632;
 const CANVAS_CENTER = CANVAS_W / 2;
 // </editor-fold> END World Panel Variables
 
@@ -684,14 +686,14 @@ let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
 const HORIZ_DIST_BTWN_BEATS = 85;
-const TOP_STAFF_LINE_Y = 88;
-const VERT_DIST_BTWN_STAVES = 100;
+const TOP_STAFF_LINE_Y = 113;
+const VERT_DIST_BTWN_STAVES = 140;
 const VERT_DIST_BTWN_STAFF_LINES = 8;
 const FIRST_BEAT_L = 12;
 const LAST_BEAT_W = HORIZ_DIST_BTWN_BEATS - FIRST_BEAT_L;
 const NUM_BEATS_PER_STAFF = 8;
-const STAFF_BTM_MARGIN = 45;
-const NUM_STAVES = 3;
+const STAFF_BTM_MARGIN = 40;
+const NUM_STAVES = 2;
 const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFF * NUM_STAVES;
 const NOTEHEAD_W = 10;
 const NOTEHEAD_H = 8;
@@ -700,7 +702,7 @@ const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (HORIZ_DIST_BTWN_BEATS * NUM_B
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAVES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
-const NOTATION_CURSOR_H = 57;
+const NOTATION_CURSOR_H = 83;
 
 let motivesByBeat = [];
 for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
@@ -708,7 +710,7 @@ for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
 }
 
 let tempoCursors = [];
-let playerTokens = []; //{:svg,:text}
+let playerTokens = []; //track[ player[ {:svg,:text} ] ]
 
 // <editor-fold> Beat Coordinates
 let beatXLocations = [];
@@ -766,6 +768,13 @@ let notationSvgPaths_labels = [{
   }
 ];
 // </editor-fold> END notationSvgPaths_labels
+
+// <editor-fold> dynamicsAccents_paths_labels
+let dynamicsAccents_paths_labels = [{
+  path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
+  lbl: 'sf'
+}];
+// </editor-fold> END dynamicsAccents_paths_labels
 
 // </editor-fold> END rhythmicNotation Variables
 
@@ -836,7 +845,8 @@ function makeRhythmicNotation() {
       notationSvgPaths_labels.forEach((pathLblObj) => {
 
         let tLabel = pathLblObj.lbl;
-        let tDisp = tLabel == 'quarter' ? 'yes' : 'none';
+        // let tDisp = tLabel == 'quarter' ? 'yes' : 'none';
+        let tDisp = tLabel == 'quintuplet' ? 'yes' : 'none';
 
         let tSvgImage = document.createElementNS(SVG_NS, "image");
         tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
@@ -874,10 +884,10 @@ function makeRhythmicNotation() {
 
     let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
-      x1: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-      y1: beatCoords[16].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
-      x2: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-      y2: beatCoords[16].y + HALF_NOTEHEAD_H, //beatCoords[16].y is 3rd staff line
+      x1: beatCoords[0].x+43,
+      y1: beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
+      x2: beatCoords[0].x+43,
+      y2: beatCoords[0].y + HALF_NOTEHEAD_H, //beatCoords[0].y is 3rd staff line
       stroke: TEMPO_COLORS[tempoCsrIx],
       strokeW: 3
     });
@@ -892,18 +902,22 @@ function makeRhythmicNotation() {
 
   //circle, triangle, diamond, watermellon, square,
   for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
+
     let tPlrSet = [];
+
     for (var playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
+
       let tPlrObj = {}
+
       switch (playerIx) {
 
-        case 0:
+        case 10:
 
           let tCirc = mkSvgCircle({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            cy: beatCoords[16].y - NOTATION_CURSOR_H - 11,
-            r: 11,
+            cx: beatCoords[0].x,
+            cy: beatCoords[0].y - NOTATION_CURSOR_H - 10,
+            r: 9,
             fill: 'none',
             stroke: clr_neonMagenta,
             strokeW: 3
@@ -913,11 +927,11 @@ function makeRhythmicNotation() {
 
           let tCircText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 11,
+            x: beatCoords[0].x,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
             justifyH: 'middle',
             justifyV: 'central',
-            fontSz: 18,
+            fontSz: 13,
             txt: '1'
           });
 
@@ -925,14 +939,14 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 1:
+        case 11:
 
           let tTri = mkSvgTriangle({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            cy: beatCoords[16].y - NOTATION_CURSOR_H - 14,
-            h: 26,
-            w: 26,
+            cx: beatCoords[0].x,
+            cy: beatCoords[0].y - NOTATION_CURSOR_H - 12,
+            h: 23,
+            w: 23,
             fill: 'none',
             stroke: clr_neonMagenta,
             strokeW: 3
@@ -942,11 +956,11 @@ function makeRhythmicNotation() {
 
           let tTriText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 11,
+            x: beatCoords[0].x,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 8,
             justifyH: 'middle',
             justifyV: 'central',
-            fontSz: 18,
+            fontSz: 13,
             txt: '2'
           });
 
@@ -958,8 +972,8 @@ function makeRhythmicNotation() {
 
           let tDia = mkSvgDiamond({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            cy: beatCoords[16].y - NOTATION_CURSOR_H - 14,
+            cx: beatCoords[0].x+43,
+            cy: beatCoords[0].y - NOTATION_CURSOR_H - 14,
             h: 26,
             w: 26,
             fill: 'none',
@@ -971,11 +985,11 @@ function makeRhythmicNotation() {
 
           let tDiaText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 14,
+            x: beatCoords[0].x+43,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 14,
             justifyH: 'middle',
             justifyV: 'central',
-            fontSz: 18,
+            fontSz: 13,
             txt: '3'
           });
 
@@ -983,12 +997,12 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 3:
+        case 13:
 
           let tArc = mkSvgArc({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 20,
+            x: beatCoords[0].x,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 20,
             radius: 20,
             startAngle: 90,
             endAngle: 270,
@@ -1002,11 +1016,11 @@ function makeRhythmicNotation() {
 
           let tArcText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 10,
+            x: beatCoords[0].x,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
             justifyH: 'middle',
             justifyV: 'central',
-            fontSz: 18,
+            fontSz: 13,
             txt: '4'
           });
 
@@ -1014,12 +1028,12 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 4:
+        case 14:
 
           let tSqr = mkSvgRect({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS - 11,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 23,
+            x: beatCoords[0].x - 11,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 23,
             w: 22,
             h: 22,
             fill: 'none',
@@ -1031,11 +1045,11 @@ function makeRhythmicNotation() {
 
           let tSqrText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[7].x + HORIZ_DIST_BTWN_BEATS,
-            y: beatCoords[16].y - NOTATION_CURSOR_H - 12,
+            x: beatCoords[0].x,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 12,
             justifyH: 'middle',
             justifyV: 'central',
-            fontSz: 18,
+            fontSz: 13,
             txt: '5'
           });
 
@@ -1043,17 +1057,29 @@ function makeRhythmicNotation() {
 
           break;
 
+      } //switch (playerIx) end
 
-      }
-
+      tPlrSet.push(tPlrObj);
 
     } //for (var playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
 
+    playerTokens.push(tPlrSet);
+
   } //for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
 
-  // </editor-fold> END Notation Scrolling Cursors
+  // </editor-fold> END Player Tokens
+
+
+  let tttSvgImage = document.createElementNS(SVG_NS, "image");
+  tttSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/dynamics_accents/sf.svg');
+  tttSvgImage.setAttributeNS(null, "y", beatCoords[0].y + 2);
+  tttSvgImage.setAttributeNS(null, "x", beatCoords[0].x - 2);
+  tttSvgImage.setAttributeNS(null, "visibility", 'visible');
+  rhythmicNotationObj.svgCont.appendChild(tttSvgImage);
 
 } //makeRhythmicNotation() end
+
+
 
 // </editor-fold> END Rhythmic Notation
 
@@ -1107,6 +1133,85 @@ function makeSigns() {
 } //makeSigns() end
 
 // </editor-fold> END Signs
+
+// <editor-fold> Pitch Sets
+
+// <editor-fold> Pitch Sets Variables
+
+pitchSetsObj = {};
+let PITCH_SETS_W = HORIZ_DIST_BTWN_BEATS;
+let PITCH_SETS_H = VERT_DIST_BTWN_STAVES;
+let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
+let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
+
+// <editor-fold> notationSvgPaths_labels
+let nlabels = [{
+    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
+    lbl: 'quintuplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
+    lbl: 'quadruplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/triplet.svg",
+    lbl: 'triplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
+    lbl: 'dot8thR_16th'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
+    lbl: 'two16th_8thR'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
+    lbl: 'eighthR_two16ths'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
+    lbl: 'eighthR_8th'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quarter.svg",
+    lbl: 'quarter'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
+    lbl: 'qtr_rest'
+  }
+];
+// </editor-fold> END notationSvgPaths_labels
+
+// </editor-fold> END Pitch Sets Variables
+
+function makePitchSets() {
+
+  // <editor-fold> DIV/SVG Container
+
+  pitchSetsObj['div'] = mkDiv({
+    canvas: worldPanel.content,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    top: PITCH_SETS_TOP,
+    left: PITCH_SETS_LEFT,
+    bgClr: 'white'
+  });
+
+  pitchSetsObj['svgCont'] = mkSVGcontainer({
+    canvas: pitchSetsObj.div,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    x: 0,
+    y: 0
+  });
+
+  // </editor-fold> END DIV/SVG Container
+
+}
+
+// </editor-fold> END Pitch Sets
 
 
 
