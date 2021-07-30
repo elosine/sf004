@@ -685,12 +685,12 @@ function makeBouncingBalls() {
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
-const HORIZ_DIST_BTWN_BEATS = 85;
+const BEAT_L_PX = 85;
 const TOP_STAFF_LINE_Y = 113;
-const VERT_DIST_BTWN_STAVES = 140;
+const VERT_DIST_BTWN_STAVES = 133;
 const VERT_DIST_BTWN_STAFF_LINES = 8;
 const FIRST_BEAT_L = 12;
-const LAST_BEAT_W = HORIZ_DIST_BTWN_BEATS - FIRST_BEAT_L;
+const LAST_BEAT_W = BEAT_L_PX - FIRST_BEAT_L;
 const NUM_BEATS_PER_STAFF = 8;
 const STAFF_BTM_MARGIN = 40;
 const NUM_STAVES = 2;
@@ -698,7 +698,7 @@ const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFF * NUM_STAVES;
 const NOTEHEAD_W = 10;
 const NOTEHEAD_H = 8;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
-const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (HORIZ_DIST_BTWN_BEATS * NUM_BEATS_PER_STAFF) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFF) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAVES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
@@ -715,18 +715,43 @@ let playerTokens = []; //track[ player[ {:svg,:text} ] ]
 // <editor-fold> Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFF; beatLocIx++) {
-  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * HORIZ_DIST_BTWN_BEATS));
+  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
 }
 
 let beatCoords = [];
 for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
   for (var beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFF; beatPerStaffIx++) {
     let tCoordObj = {};
-    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * HORIZ_DIST_BTWN_BEATS);
+    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_L_PX);
     tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
     beatCoords.push(tCoordObj);
   }
 }
+
+function posMarcato(beatNum, subdivision, partial) {
+
+  let tCoords = {};
+
+  switch (subdivision) {
+
+    case 3:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX ) / 3) * (partial - 1));
+      break;
+
+    case 4:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
+      break;
+
+    case 5:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
+      break;
+
+  } // end switch
+
+  return tCoords;
+
+} // function posMarcato(beatNum, subdivision, partial) end
+
 // </editor-fold> Beat Coordinates
 
 // <editor-fold> notationSvgPaths_labels
@@ -821,19 +846,6 @@ function makeRhythmicNotation() {
 
   // <editor-fold> Draw Initial Notation
 
-  async function getImage(url) {
-    return new Promise((resolve, reject) => {
-      let img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = url;
-    });
-  }
-  // Wrapper to deal with asynchronous process
-  function run_getImage(path) {
-    return getImage(path);
-  }
-
   // Make all motives and make display:none; Display All Quarters
   function makeMotives() { //runs after await so all image sizes are loaded
 
@@ -846,7 +858,7 @@ function makeRhythmicNotation() {
 
         let tLabel = pathLblObj.lbl;
         // let tDisp = tLabel == 'quarter' ? 'yes' : 'none';
-        let tDisp = tLabel == 'quintuplet' ? 'yes' : 'none';
+        let tDisp = tLabel == 'triplet' ? 'yes' : 'none';
 
         let tSvgImage = document.createElementNS(SVG_NS, "image");
         tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
@@ -866,14 +878,20 @@ function makeRhythmicNotation() {
 
   // MAIN LOOP HERE: Load Notation SVGs to get image height/width for positioning
   notationSvgPaths_labels.forEach((pathLblObj, i) => {
+
     let tpath = pathLblObj.path;
+
     (async () => { //generic async wrapper to avoid error
+
       let timg = await run_getImage(tpath); // Runs wrapper which runs getImage everything below this await waits for response
       notationImageObjectSet[pathLblObj.lbl] = timg;
+
       if (i == (notationSvgPaths_labels.length - 1)) {
         makeMotives();
       }
+
     })();
+
   }); //notationSvgPaths_labels.forEach((pathLblObj, i) end
 
   // </editor-fold> END Draw Initial Notation
@@ -884,14 +902,15 @@ function makeRhythmicNotation() {
 
     let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
-      x1: beatCoords[0].x+43,
+      x1: beatCoords[0].x,
       y1: beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
-      x2: beatCoords[0].x+43,
+      x2: beatCoords[0].x,
       y2: beatCoords[0].y + HALF_NOTEHEAD_H, //beatCoords[0].y is 3rd staff line
       stroke: TEMPO_COLORS[tempoCsrIx],
       strokeW: 3
     });
     tLine.setAttributeNS(null, 'stroke-linecap', 'round');
+    tLine.setAttributeNS(null, 'display', 'none');
     tempoCursors.push(tLine);
 
   } //for (var tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
@@ -911,7 +930,7 @@ function makeRhythmicNotation() {
 
       switch (playerIx) {
 
-        case 10:
+        case 0:
 
           let tCirc = mkSvgCircle({
             svgContainer: rhythmicNotationObj.svgCont,
@@ -939,7 +958,7 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 11:
+        case 1:
 
           let tTri = mkSvgTriangle({
             svgContainer: rhythmicNotationObj.svgCont,
@@ -972,10 +991,10 @@ function makeRhythmicNotation() {
 
           let tDia = mkSvgDiamond({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[0].x+43,
+            cx: beatCoords[0].x,
             cy: beatCoords[0].y - NOTATION_CURSOR_H - 14,
-            h: 26,
-            w: 26,
+            h: 21,
+            w: 21,
             fill: 'none',
             stroke: clr_neonMagenta,
             strokeW: 3
@@ -985,7 +1004,7 @@ function makeRhythmicNotation() {
 
           let tDiaText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x+43,
+            x: beatCoords[0].x,
             y: beatCoords[0].y - NOTATION_CURSOR_H - 14,
             justifyH: 'middle',
             justifyV: 'central',
@@ -997,13 +1016,13 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 13:
+        case 3:
 
           let tArc = mkSvgArc({
             svgContainer: rhythmicNotationObj.svgCont,
             x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 20,
-            radius: 20,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 16,
+            radius: 15,
             startAngle: 90,
             endAngle: 270,
             fill: 'none',
@@ -1017,7 +1036,7 @@ function makeRhythmicNotation() {
           let tArcText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
             x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 8,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -1028,14 +1047,14 @@ function makeRhythmicNotation() {
 
           break;
 
-        case 14:
+        case 4:
 
           let tSqr = mkSvgRect({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x - 11,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 23,
-            w: 22,
-            h: 22,
+            x: beatCoords[0].x - 9,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 19,
+            w: 18,
+            h: 18,
             fill: 'none',
             stroke: clr_neonMagenta,
             strokeW: 3
@@ -1046,7 +1065,7 @@ function makeRhythmicNotation() {
           let tSqrText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
             x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 12,
+            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -1058,7 +1077,8 @@ function makeRhythmicNotation() {
           break;
 
       } //switch (playerIx) end
-
+      tPlrObj['svg'].setAttributeNS(null, "display", 'none');
+      tPlrObj['txt'].setAttributeNS(null, "display", 'none');
       tPlrSet.push(tPlrObj);
 
     } //for (var playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
@@ -1071,9 +1091,9 @@ function makeRhythmicNotation() {
 
 
   let tttSvgImage = document.createElementNS(SVG_NS, "image");
-  tttSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/dynamics_accents/sf.svg');
+  tttSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/dynamics_accents/marcato.svg');
   tttSvgImage.setAttributeNS(null, "y", beatCoords[0].y + 2);
-  tttSvgImage.setAttributeNS(null, "x", beatCoords[0].x - 2);
+  tttSvgImage.setAttributeNS(null, "x", posMarcato(3, 3, 3).x);
   tttSvgImage.setAttributeNS(null, "visibility", 'visible');
   rhythmicNotationObj.svgCont.appendChild(tttSvgImage);
 
@@ -1139,8 +1159,8 @@ function makeSigns() {
 // <editor-fold> Pitch Sets Variables
 
 pitchSetsObj = {};
-let PITCH_SETS_W = HORIZ_DIST_BTWN_BEATS;
-let PITCH_SETS_H = VERT_DIST_BTWN_STAVES;
+let PITCH_SETS_W = BEAT_L_PX;
+let PITCH_SETS_H = 90;
 let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
 let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
 
@@ -1208,6 +1228,13 @@ function makePitchSets() {
   });
 
   // </editor-fold> END DIV/SVG Container
+
+  let ps = document.createElementNS(SVG_NS, "image");
+  ps.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/pitchSets/e4_two8ve.svg');
+  ps.setAttributeNS(null, "y", 25);
+  ps.setAttributeNS(null, "x", 25);
+  ps.setAttributeNS(null, "visibility", 'visible');
+  pitchSetsObj.svgCont.appendChild(ps);
 
 }
 

@@ -42,7 +42,7 @@
         %\override TupletBracket.bracket-visibility = ##t
         \override TupletBracket.bracket-visibility = ##f
         \override TupletNumber.visibility = ##f
-        %S\set tupletFullLength = ##t
+        %\set tupletFullLength = ##t
         \override NoteHead.font-size = #-1
         \override Stem.details.beamed-lengths = #'(7)
         \override Stem.details.lengths = #'(7)

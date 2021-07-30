@@ -876,6 +876,21 @@ let mkSvgDiamond = function({
 
 // </editor-fold> END mkSvgDiamond
 
+// <editor-fold> getImage (async)
+async function getImage(url) {
+  return new Promise((resolve, reject) => {
+    let img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+// Wrapper to deal with asynchronous process
+function run_getImage(path) {
+  return getImage(path);
+}
+// </editor-fold> END getImage (async)
+
 
 
 // <editor-fold>
