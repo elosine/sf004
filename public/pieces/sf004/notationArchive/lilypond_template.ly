@@ -52,6 +52,9 @@
         
         % \override NoteColumn.accent-skip = ##t
         
+         \override Accidental.font-size = -4 
+
+        
         % Notes Only, No Staff
         %     \stopStaff
         %         \override NoteHead.transparent = ##t

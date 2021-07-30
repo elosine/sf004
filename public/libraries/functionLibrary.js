@@ -683,7 +683,7 @@ let mkSvgRect = function({
 
 // </editor-fold> END mkSvgRect
 
-// <editor-fold> mkSvgArc
+// <editor-fold> describeArc
 
 let polarToCartesian = function(centerX, centerY, radius, angleInDegrees) {
   let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -692,6 +692,24 @@ let polarToCartesian = function(centerX, centerY, radius, angleInDegrees) {
     y: centerY + (radius * Math.sin(angleInRadians))
   };
 }
+
+function describeArc(x, y, radius, startAngle, endAngle) {
+  let start = polarToCartesian(x, y, radius, endAngle);
+  let end = polarToCartesian(x, y, radius, startAngle);
+  let arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
+  let d = [
+    "M", start.x, start.y,
+    "A", radius, radius, 0, arcSweep, 0, end.x, end.y,
+    "L", x,y,
+    "L", start.x, start.y
+  ].join(" ");
+  return d;
+}
+
+// </editor-fold> END describeArc
+
+
+// <editor-fold> mkSvgArc
 
 let mkSvgArc = function({
   svgContainer,
@@ -716,13 +734,14 @@ let mkSvgArc = function({
   strokeW: 3,
   strokeCap: 'round' //square;round;butt
 }) {
+
   let start = polarToCartesian(x, y, radius, endAngle);
   let end = polarToCartesian(x, y, radius, startAngle);
   let arcSweep = endAngle - startAngle <= 180 ? "0" : "1";
   let d = [
     "M", start.x, start.y,
     "A", radius, radius, 0, arcSweep, 0, end.x, end.y,
-    "L", x,y,
+    "L", x, y,
     "L", start.x, start.y
   ].join(" ");
 
@@ -734,6 +753,7 @@ let mkSvgArc = function({
   arc.setAttributeNS(null, "fill", fill);
   arc.setAttributeNS(null, "stroke-linecap", strokeCap);
   svgContainer.appendChild(arc);
+
   return arc;
 }
 

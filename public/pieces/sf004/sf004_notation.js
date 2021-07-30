@@ -46,9 +46,25 @@ function init() {
 
   makeRhythmicNotation();
 
+  makeScrollingCursors();
+
+  makePlayerTokens();
+  // playerTokens[3][3].svg.setAttributeNS(null, 'display', 'yes');
+  // playerTokens[3][3].txt.setAttributeNS(null, 'display', 'yes');
+  //
+  // playerTokens[4][3].svg.setAttributeNS(null, 'display', 'yes');
+  // playerTokens[4][3].txt.setAttributeNS(null, 'display', 'yes');
+  // playerTokens[4][3].txt.setAttributeNS(null, 'x', '100px');
+  // console.log(playerTokens[4][3].svg.getAttribute('d'));
+  // let td = describeArc(100, beatCoords[0].y - NOTATION_CURSOR_H - 16, 15, 90, 270)
+  //
+  // playerTokens[4][3].svg.setAttributeNS(null,'d',td);
+
   makeSigns();
 
   makePitchSets();
+
+  makeArticulations();
 
   RENDERER.render(SCENE, CAMERA);
 
@@ -709,9 +725,6 @@ for (var beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
   motivesByBeat.push({});
 }
 
-let tempoCursors = [];
-let playerTokens = []; //track[ player[ {:svg,:text} ] ]
-
 // <editor-fold> Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFF; beatLocIx++) {
@@ -727,30 +740,6 @@ for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
     beatCoords.push(tCoordObj);
   }
 }
-
-function posMarcato(beatNum, subdivision, partial) {
-
-  let tCoords = {};
-
-  switch (subdivision) {
-
-    case 3:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX ) / 3) * (partial - 1));
-      break;
-
-    case 4:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
-      break;
-
-    case 5:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
-      break;
-
-  } // end switch
-
-  return tCoords;
-
-} // function posMarcato(beatNum, subdivision, partial) end
 
 // </editor-fold> Beat Coordinates
 
@@ -847,19 +836,21 @@ function makeRhythmicNotation() {
   // <editor-fold> Draw Initial Notation
 
   // Make all motives and make display:none; Display All Quarters
-  function makeMotives() { //runs after await so all image sizes are loaded
+  function makeMotives() { // This function runs in loop below, after await so all image sizes are loaded
 
-    beatCoords.forEach((beatCoordsObj, beatIx) => {
+    //make an SVG for each motive at each beat
+    beatCoords.forEach((beatCoordsObj, beatIx) => { //each beat loop
 
       let tx = beatCoordsObj.x;
       let ty = beatCoordsObj.y;
 
-      notationSvgPaths_labels.forEach((pathLblObj) => {
+      notationSvgPaths_labels.forEach((pathLblObj) => { //each motive loop
 
         let tLabel = pathLblObj.lbl;
-        // let tDisp = tLabel == 'quarter' ? 'yes' : 'none';
-        let tDisp = tLabel == 'triplet' ? 'yes' : 'none';
+        let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
+        // let tDisp = tLabel == 'triplet' ? 'yes' : 'none';
 
+        // Create HTML SVG image
         let tSvgImage = document.createElementNS(SVG_NS, "image");
         tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
         tSvgImage.setAttributeNS(null, "y", ty - notationImageObjectSet[tLabel].height);
@@ -886,8 +877,10 @@ function makeRhythmicNotation() {
       let timg = await run_getImage(tpath); // Runs wrapper which runs getImage everything below this await waits for response
       notationImageObjectSet[pathLblObj.lbl] = timg;
 
-      if (i == (notationSvgPaths_labels.length - 1)) {
+      if (i == (notationSvgPaths_labels.length - 1)) { //does not run makeMotives until all images are loaded
+
         makeMotives();
+
       }
 
     })();
@@ -896,7 +889,13 @@ function makeRhythmicNotation() {
 
   // </editor-fold> END Draw Initial Notation
 
-  // <editor-fold> Notation Scrolling Cursors
+} //makeRhythmicNotation() end
+
+// <editor-fold> Notation Scrolling Cursors
+
+let tempoCursors = [];
+
+function makeScrollingCursors() {
 
   for (var tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) {
 
@@ -915,9 +914,15 @@ function makeRhythmicNotation() {
 
   } //for (var tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
 
-  // </editor-fold> END Notation Scrolling Cursors
+}
 
-  // <editor-fold> Player Tokens
+// </editor-fold> END Notation Scrolling Cursors
+
+// <editor-fold> Player Tokens
+
+let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
+
+function makePlayerTokens() {
 
   //circle, triangle, diamond, watermellon, square,
   for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
@@ -934,8 +939,8 @@ function makeRhythmicNotation() {
 
           let tCirc = mkSvgCircle({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[0].x,
-            cy: beatCoords[0].y - NOTATION_CURSOR_H - 10,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 10,
             r: 9,
             fill: 'none',
             stroke: clr_neonMagenta,
@@ -946,8 +951,8 @@ function makeRhythmicNotation() {
 
           let tCircText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 10,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -962,8 +967,8 @@ function makeRhythmicNotation() {
 
           let tTri = mkSvgTriangle({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[0].x,
-            cy: beatCoords[0].y - NOTATION_CURSOR_H - 12,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 12,
             h: 23,
             w: 23,
             fill: 'none',
@@ -975,8 +980,8 @@ function makeRhythmicNotation() {
 
           let tTriText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 8,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 8,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -991,8 +996,8 @@ function makeRhythmicNotation() {
 
           let tDia = mkSvgDiamond({
             svgContainer: rhythmicNotationObj.svgCont,
-            cx: beatCoords[0].x,
-            cy: beatCoords[0].y - NOTATION_CURSOR_H - 14,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 14,
             h: 21,
             w: 21,
             fill: 'none',
@@ -1004,8 +1009,8 @@ function makeRhythmicNotation() {
 
           let tDiaText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 14,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 14,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -1020,8 +1025,8 @@ function makeRhythmicNotation() {
 
           let tArc = mkSvgArc({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 16,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 16,
             radius: 15,
             startAngle: 90,
             endAngle: 270,
@@ -1035,8 +1040,8 @@ function makeRhythmicNotation() {
 
           let tArcText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 8,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 8,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -1051,8 +1056,8 @@ function makeRhythmicNotation() {
 
           let tSqr = mkSvgRect({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x - 9,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 19,
+            x: beatCoords[15].x - 9,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 19,
             w: 18,
             h: 18,
             fill: 'none',
@@ -1064,8 +1069,8 @@ function makeRhythmicNotation() {
 
           let tSqrText = mkSvgText({
             svgContainer: rhythmicNotationObj.svgCont,
-            x: beatCoords[0].x,
-            y: beatCoords[0].y - NOTATION_CURSOR_H - 10,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 10,
             justifyH: 'middle',
             justifyV: 'central',
             fontSz: 13,
@@ -1077,6 +1082,7 @@ function makeRhythmicNotation() {
           break;
 
       } //switch (playerIx) end
+
       tPlrObj['svg'].setAttributeNS(null, "display", 'none');
       tPlrObj['txt'].setAttributeNS(null, "display", 'none');
       tPlrSet.push(tPlrObj);
@@ -1087,19 +1093,10 @@ function makeRhythmicNotation() {
 
   } //for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
 
-  // </editor-fold> END Player Tokens
+} //unction makePlayerTokens() end
 
 
-  let tttSvgImage = document.createElementNS(SVG_NS, "image");
-  tttSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/dynamics_accents/marcato.svg');
-  tttSvgImage.setAttributeNS(null, "y", beatCoords[0].y + 2);
-  tttSvgImage.setAttributeNS(null, "x", posMarcato(3, 3, 3).x);
-  tttSvgImage.setAttributeNS(null, "visibility", 'visible');
-  rhythmicNotationObj.svgCont.appendChild(tttSvgImage);
-
-} //makeRhythmicNotation() end
-
-
+// </editor-fold> END Player Tokens
 
 // </editor-fold> END Rhythmic Notation
 
@@ -1159,50 +1156,37 @@ function makeSigns() {
 // <editor-fold> Pitch Sets Variables
 
 pitchSetsObj = {};
-let PITCH_SETS_W = BEAT_L_PX;
-let PITCH_SETS_H = 90;
+pitchSetImgObjects = {};
+let PITCH_SETS_W = 120;
+let PITCH_SETS_H = 80;
 let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
 let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
+let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
+let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
-// <editor-fold> notationSvgPaths_labels
-let nlabels = [{
-    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
-    lbl: 'quintuplet'
+// <editor-fold> pitchSetSvgs_path_lbl
+
+let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
+
+let pitchSetSvgs_path_lbl = [{
+    path: pitchSetsPath + 'e4_e5.svg',
+    lbl: 'e4_e5'
   },
   {
-    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
-    lbl: 'quadruplet'
+    path: pitchSetsPath + 'e4_e5_b4.svg',
+    lbl: 'e4_e5_b4'
   },
   {
-    path: "/pieces/sf004/notationSVGs/triplet.svg",
-    lbl: 'triplet'
+    path: pitchSetsPath + 'e4_e5_b4cluster.svg',
+    lbl: 'e4_e5_b4cluster'
   },
   {
-    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
-    lbl: 'dot8thR_16th'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
-    lbl: 'two16th_8thR'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
-    lbl: 'eighthR_two16ths'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
-    lbl: 'eighthR_8th'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/quarter.svg",
-    lbl: 'quarter'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
-    lbl: 'qtr_rest'
+    path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
+    lbl: 'e4cluster_e5cluster_b4cluster'
   }
 ];
-// </editor-fold> END notationSvgPaths_labels
+
+// </editor-fold> END pitchSetSvgs_path_lbl
 
 // </editor-fold> END Pitch Sets Variables
 
@@ -1229,16 +1213,207 @@ function makePitchSets() {
 
   // </editor-fold> END DIV/SVG Container
 
-  let ps = document.createElementNS(SVG_NS, "image");
-  ps.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/pitchSets/e4_two8ve.svg');
-  ps.setAttributeNS(null, "y", 25);
-  ps.setAttributeNS(null, "x", 25);
-  ps.setAttributeNS(null, "visibility", 'visible');
-  pitchSetsObj.svgCont.appendChild(ps);
+  // <editor-fold> Make Pitch Set SVGs
+
+  function makePitchSetSvgs() { // This function runs in loop below, after await so all image sizes are loaded
+
+    pitchSetSvgs_path_lbl.forEach((pathLblObj) => { //each motive loop
+
+      let tLbl = pathLblObj.lbl;
+      let tx = PITCH_SETS_CENTER_W - (pitchSetImgObjects[tLbl].width / 2);
+      let ty = PITCH_SETS_MIDDLE_H - (pitchSetImgObjects[tLbl].height / 2);
+
+      let tDisplay = tLbl == 'e4_e5' ? 'yes' : 'none';
+      // let tDisplay = tLbl == 'e4cluster_e5cluster_b4cluster' ? 'yes' : 'none';
+
+      // Create HTML SVG image
+      let tSvgImage = document.createElementNS(SVG_NS, "image");
+      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', pathLblObj.path);
+      tSvgImage.setAttributeNS(null, "x", tx);
+      tSvgImage.setAttributeNS(null, "y", ty);
+      tSvgImage.setAttributeNS(null, "visibility", 'visible');
+      tSvgImage.setAttributeNS(null, "display", tDisplay);
+      pitchSetsObj.svgCont.appendChild(tSvgImage);
+
+      pitchSetsObj[tLbl] = tSvgImage;
+
+    }); // pitchSetSvgs_path_lbl.forEach((pathLblObj) =>  END
+
+  } //function makePitchSetSvgs() END
+
+
+  // MAIN LOOP HERE: Load Notation SVGs to get image height/width for positioning
+  pitchSetSvgs_path_lbl.forEach((pathLblObj, i) => {
+
+    let tPath = pathLblObj.path;
+
+    (async () => { //generic async wrapper to avoid error
+
+      let tImg = await run_getImage(tPath); // Runs wrapper which runs getImage everything below this await waits for response
+      pitchSetImgObjects[pathLblObj.lbl] = tImg;
+
+      if (i == (pitchSetSvgs_path_lbl.length - 1)) { // only run make function after last image is loaded
+        makePitchSetSvgs();
+      }
+
+    })();
+
+  }); // pitchSetSvgs_path_lbl.forEach((pathLblObj, i) => END
+
+  // </editor-fold> END Make Pitch Set SVGs
+
+  // <editor-fold> Pitch Set Change Indicator
+
+  pitchSetsObj['chgIndicator'] = mkSvgRect({
+    svgContainer: pitchSetsObj.svgCont,
+    x: 0,
+    y: 0,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    fill: 'none',
+    stroke: clr_neonMagenta,
+    strokeW: 8
+  });
+
+  pitchSetsObj['chgIndicator'].setAttributeNS(null, 'display', 'none');
+
+  // </editor-fold> END Pitch Set Change Indicator
 
 }
 
 // </editor-fold> END Pitch Sets
+
+// <editor-fold> Articulations
+
+// <editor-fold> Articulations Variables
+
+let articulationsPath = "/pieces/sf004/notationSVGs/dynamics_accents/";
+
+let articulationsObj = {
+  marcato: {
+    path: articulationsPath + 'marcato.svg',
+    amt: (TOTAL_NUM_BEATS * 5)
+  },
+  sf: {
+    path: articulationsPath + 'sf.svg',
+    amt: TOTAL_NUM_BEATS
+  }
+};
+
+// <editor-fold> function posMarcato
+
+function posMarcato(beatNum, subdivision, partial) {
+
+  let tCoords = {};
+
+  switch (subdivision) {
+
+    case 3:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX) / 3) * (partial - 1));
+      break;
+
+    case 4:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
+      break;
+
+    case 5:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
+      break;
+
+  } // end switch
+
+  return tCoords;
+
+} // function posMarcato(beatNum, subdivision, partial) end
+
+// </editor-fold> END function posMarcato
+
+// </editor-fold> END Articulations Variables
+
+function makeArticulations() {
+
+  for (let key in articulationsObj) {
+
+    let artObj = articulationsObj[key];
+
+    let tPath = artObj.path;
+    let tLbl = key;
+    let tAmt = artObj.amt;
+    let tArtSet = [];
+
+    for (var artIx = 0; artIx < tAmt; artIx++) { // create tAmt number of the same SVG
+
+      let tArt = document.createElementNS(SVG_NS, "image");
+      tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
+      tArt.setAttributeNS(null, "x", beatCoords[0].x);
+      tArt.setAttributeNS(null, "y", beatCoords[0].y + 2);
+      tArt.setAttributeNS(null, "visibility", 'visible');
+      tArt.setAttributeNS(null, "display", 'none');
+      rhythmicNotationObj.svgCont.appendChild(tArt);
+
+      tArtSet.push(tArt);
+
+    } // for (var artIx = 0; artIx < tAmt; artIx++) END
+
+    articulationsObj[key]['imgSet'] = tArtSet;
+
+  } // for (let key in articulationsObj) END
+
+} // makeArticulations() END
+
+// </editor-fold> END Articulations
+
+//<editor-fold> Animation Engine
+
+//<editor-fold>  < ANIMATION ENGINE - ENGINE >           //
+
+function animationEngine(timestamp) { //timestamp not used. Using timesync instead
+  // Get current timestamp from timeSync
+  let ts_Date = new Date(TS.now());
+  ts_now_epochTime = ts_Date.getTime();
+  // Calculate a cumulative change between frames
+  cumulativeChangeBtwnFrames_MS += ts_now_epochTime - lastFrame_epochTime;
+  // Update lastFrame_epochTime with current timestamp for next cycle
+  lastFrame_epochTime = ts_now_epochTime;
+  // Calculate pieceClockTime_MS
+  let pieceTime_MS = ts_now_epochTime - pieceClock0_epochTime;
+  // Send locally to display clock, and update, no global variable
+  calcDisplayClock(pieceTime_MS);
+  // For as many times as the cumulativeChangeBtwnFrames_MS is >= the framerate
+  while (cumulativeChangeBtwnFrames_MS >= MSPERFRAME) {
+    // Run the animationEngine 1 frame
+    update(pieceTime_MS);
+    draw();
+    // Continue advancing the animationEngine frame-by-frame until the cumulativeChangeBtwnFrames_MS is < the framerate
+    cumulativeChangeBtwnFrames_MS -= MSPERFRAME;
+    // Any remainder is carried over to the next cycle, guaranteeing a fixed framerate
+  }
+  if (animation_isGo) requestAnimationFrame(animationEngine); // gate for use with pause
+}
+//</editor-fold> END ANIMATION ENGINE - ENGINE             END
+//<editor-fold>     < ANIMATION ENGINE - UPDATE >           //
+function update(now_pieceClock) {
+  // ANIMATE ---------------------- >
+  notationObjects.forEach(function(nObj) {
+    nObj.animate(now_pieceClock, frameCount);
+  });
+  frameCount++;
+}
+//</editor-fold> END ANIMATION ENGINE - UPDATE             END
+//<editor-fold>     < ANIMATION ENGINE - DRAW >             //
+function draw() {
+  // RENDER ----------------------- >
+  notationObjects.forEach(function(nObj) {
+    nObj.renderer.render(nObj.scene, nObj.camera);
+  });
+}
+//</editor-fold> END ANIMATION ENGINE - DRAW               END
+//</editor-fold>  > END ANIMATION ENGINE  /////////////////////////////////////
+
+
+
+
+
 
 
 

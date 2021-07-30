@@ -52,10 +52,10 @@
         %\once \override TupletNumber #'text = "7:4"
         %\set tupletFullLength = ##t %http://lilypond.org/doc/v2.19/Documentation/snippets/rhythms
         
-        \override NoteHead.font-size = #0
+        \override NoteHead.font-size = #-0.75
         
-        \override Stem.details.beamed-lengths = #'(7)
-        \override Stem.details.lengths = #'(7)
+        \override Stem.details.beamed-lengths = #'(0)
+        \override Stem.details.lengths = #'(0)
         
         % \override NoteColumn.accent-skip = ##t
         
@@ -87,7 +87,7 @@
         %         }         
         
         
-        <<e'4  b' e''>>  
+        <<e'4  e''>>  
         
         
       
