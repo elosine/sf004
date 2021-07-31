@@ -25,7 +25,9 @@ app.use('/timesync', timesyncServer.requestHandler);
 //</editor-fold> END TIMESYNC SERVER
 
 //<editor-fold> SOCKET IO
+
 io.on('connection', function(socket) {
+
 
   //<editor-fold> LOAD PIECE FROM SERVER
   // Request for load piece from splash page
@@ -52,5 +54,27 @@ io.on('connection', function(socket) {
   });
   //</editor-fold> END LOAD PIECE FROM SERVER
 
+  //<editor-fold> Set Start Time Broadcast
+
+  socket.on('sf004_newStartTimeBroadcast_toServer', function(data) {
+    console.log(data);
+    let pieceId = data.pieceId;
+    let startTime_epoch = data.startTime_epoch;
+
+    socket.broadcast.emit('sf004_newStartTime_fromServer', {
+      pieceId: pieceId,
+      startTime_epoch: startTime_epoch
+    });
+
+    socket.emit('sf004_newStartTime_fromServer', {
+      pieceId: pieceId,
+      startTime_epoch: startTime_epoch
+    });
+
+  }); // socket.on('sf004_newStartTimeBroadcast_send', function(data) END
+
+  //</editor-fold> END Set Start Time Broadcast
+
 }); // End Socket IO
+
 //</editor-fold> >> END SOCKET IO

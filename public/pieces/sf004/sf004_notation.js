@@ -19,6 +19,15 @@ const SOCKET = ioConnection;
 
 //</editor-fold> > END SOCKET IO
 
+//<editor-fold> TimeSync
+
+const TS = timesync.create({
+  server: '/timesync',
+  interval: 1000
+});
+
+//</editor-fold> TimeSync END
+
 // <editor-fold> INIT
 
 function init() {
@@ -67,6 +76,9 @@ function init() {
   makeArticulations();
 
   RENDERER.render(SCENE, CAMERA);
+
+  makeControlPanel();
+
 
 } // function init() end
 
@@ -1363,54 +1375,167 @@ function makeArticulations() {
 
 // </editor-fold> END Articulations
 
+//<editor-fold> Animation Engine Complex
+
+// <editor-fold> Animation Engine Variables
+
+const FRAMERATE = 60;
+const MSPERFRAME = Math.round(1000.0 / FRAMERATE);
+let FRAMECOUNT = 0;
+let PIECE_TIME_MS = 0
+let cumulativeChangeBtwnFrames_MS = 0;
+let lastFrame_epoch;
+let animationEngineIsRunning = false;
+
+// </editor-fold> END Animation Engine Variables
+
 //<editor-fold> Animation Engine
 
-//<editor-fold>  < ANIMATION ENGINE - ENGINE >           //
+function animationEngine(timestamp) {
 
-function animationEngine(timestamp) { //timestamp not used. Using timesync instead
-  // Get current timestamp from timeSync
   let ts_Date = new Date(TS.now());
-  ts_now_epochTime = ts_Date.getTime();
-  // Calculate a cumulative change between frames
-  cumulativeChangeBtwnFrames_MS += ts_now_epochTime - lastFrame_epochTime;
-  // Update lastFrame_epochTime with current timestamp for next cycle
-  lastFrame_epochTime = ts_now_epochTime;
-  // Calculate pieceClockTime_MS
-  let pieceTime_MS = ts_now_epochTime - pieceClock0_epochTime;
-  // Send locally to display clock, and update, no global variable
-  calcDisplayClock(pieceTime_MS);
-  // For as many times as the cumulativeChangeBtwnFrames_MS is >= the framerate
+  let ts_now_epoch = ts_Date.getTime();
+  cumulativeChangeBtwnFrames_MS += ts_now_epoch - lastFrame_epoch;
+  lastFrame_epoch = ts_now_epoch;
+
   while (cumulativeChangeBtwnFrames_MS >= MSPERFRAME) {
-    // Run the animationEngine 1 frame
-    update(pieceTime_MS);
+
+    pieceClock(ts_now_epoch);
+    wipe();
+    update();
     draw();
-    // Continue advancing the animationEngine frame-by-frame until the cumulativeChangeBtwnFrames_MS is < the framerate
+
     cumulativeChangeBtwnFrames_MS -= MSPERFRAME;
-    // Any remainder is carried over to the next cycle, guaranteeing a fixed framerate
-  }
-  if (animation_isGo) requestAnimationFrame(animationEngine); // gate for use with pause
+
+  } // while (cumulativeChangeBtwnFrames_MS >= MSPERFRAME) END
+
+  if (animationEngineIsRunning) requestAnimationFrame(animationEngine);
+
+} // function animationEngine(timestamp) END
+
+//</editor-fold> Animation Engine END
+
+//<editor-fold> Piece Clock
+
+function pieceClock(nowEpochTime) {
+  
+  PIECE_TIME_MS = nowEpochTime - startTime_epoch;
+  FRAMECOUNT++;
+
 }
-//</editor-fold> END ANIMATION ENGINE - ENGINE             END
-//<editor-fold>     < ANIMATION ENGINE - UPDATE >           //
-function update(now_pieceClock) {
-  // ANIMATE ---------------------- >
-  notationObjects.forEach(function(nObj) {
-    nObj.animate(now_pieceClock, frameCount);
-  });
-  frameCount++;
+
+//</editor-fold> Piece Clock
+
+//<editor-fold> Wipe
+
+function wipe() {
+
 }
-//</editor-fold> END ANIMATION ENGINE - UPDATE             END
-//<editor-fold>     < ANIMATION ENGINE - DRAW >             //
+
+//</editor-fold> Wipe
+
+//<editor-fold> Update
+
+function update() {
+
+}
+
+//</editor-fold> update END
+
+//<editor-fold> Draw
+
 function draw() {
-  // RENDER ----------------------- >
-  notationObjects.forEach(function(nObj) {
-    nObj.renderer.render(nObj.scene, nObj.camera);
-  });
+
+  // renderer.render(nObj.scene, nObj.camera);
+
 }
-//</editor-fold> END ANIMATION ENGINE - DRAW               END
-//</editor-fold>  > END ANIMATION ENGINE  /////////////////////////////////////
+
+//</editor-fold> Draw END
+
+//</editor-fold> Animation Engine Complex END
+
+// <editor-fold> Control Panel
+
+// <editor-fold> Control Panel Vars
+
+const CTRLPANEL_W = 89;
+const CTRLPANEL_H = 200;
+const CTRLPANEL_BTN_W = 60;
+const CTRLPANEL_BTN_H = 35;
+const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
+const CTRLPANEL_MARGIN = 7;
+
+// </editor-fold> END Control Panel Vars
 
 
+function makeControlPanel() {
+
+  // <editor-fold> Control Panel Panel
+
+  let controlPanelPanel = mkPanel({
+    w: CTRLPANEL_W,
+    h: CTRLPANEL_H,
+    title: 'sf004 Control Panel',
+    ipos: 'left-top',
+    offsetX: '0px',
+    offsetY: '0px',
+    autopos: 'none',
+    headerSize: 'xs',
+    onwindowresize: true,
+    contentOverflow: 'hidden',
+    clr: 'black'
+  });
+
+  // </editor-fold> END Control Panel Panel
+
+  // <editor-fold> Generate New Score Data Button
+
+  let startButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_MARGIN,
+    left: CTRLPANEL_MARGIN,
+    label: 'Start',
+    fontSize: 16,
+    action: function() {
+      markStartTime();
+    }
+  });
+
+  // </editor-fold> END Generate New Score Data Button
+
+} // function makeControlPanel() END
+
+// </editor-fold> END Control Panel
+
+// <editor-fold> markStartTime
+
+let startTime_epoch = 0;
+
+// Broadcast Start Time when Start Button is pressed
+let markStartTime = function() {
+  let ts_Date = new Date(TS.now());
+  let t_startTime_epoch = ts_Date.getTime();
+  // Send start time to server to broadcast to rest of players
+  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
+    pieceId: PIECE_ID,
+    startTime_epoch: t_startTime_epoch
+  });
+} // let markStartTime = function() END
+
+// Receive new start time from server broadcast and set startTime_epoch
+SOCKET.on('sf004_newStartTime_fromServer', function(data) {
+
+  if (data.pieceId == PIECE_ID) {
+    startTime_epoch = data.startTime_epoch;
+    lastFrame_epoch = data.startTime_epoch;
+    // requestAnimationFrame(animationEngine);
+  }
+
+}); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
+
+// </editor-fold> END markStartTime
 
 
 
