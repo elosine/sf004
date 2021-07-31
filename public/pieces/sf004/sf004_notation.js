@@ -6,6 +6,7 @@ const TEMPO_COLORS = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue
 
 // </editor-fold> END Global Vars
 
+
 //<editor-fold> SOCKET IO
 
 let ioConnection;
@@ -19,6 +20,7 @@ const SOCKET = ioConnection;
 
 //</editor-fold> > END SOCKET IO
 
+
 //<editor-fold> TimeSync
 
 const TS = timesync.create({
@@ -27,6 +29,7 @@ const TS = timesync.create({
 });
 
 //</editor-fold> TimeSync END
+
 
 // <editor-fold> INIT
 
@@ -79,10 +82,11 @@ function init() {
 
   makeControlPanel();
 
-
+  console.log(playerTokens);
 } // function init() end
 
 // </editor-fold> END INIT
+
 
 // <editor-fold> URL Args
 
@@ -108,6 +112,7 @@ function processUrlArgs() {
 
 // </editor-fold> END URL Args
 
+
 // <editor-fold> Generate Score Data
 
 let scoreData;
@@ -132,6 +137,7 @@ let generateScoreData = function() {
 }
 
 // </editor-fold> END Generate Score Data
+
 
 // <editor-fold> SCORE DATA MANAGER
 
@@ -327,6 +333,7 @@ function makeScoreDataManager() {
 
 // </editor-fold> END SCORE DATA MANAGER
 
+
 // <editor-fold> World Panel
 
 // <editor-fold> World Panel Variables
@@ -334,7 +341,7 @@ let worldPanel;
 const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
 const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
-const CANVAS_H = 632;
+const CANVAS_H = 578;
 const CANVAS_CENTER = CANVAS_W / 2;
 // </editor-fold> END World Panel Variables
 
@@ -351,6 +358,7 @@ function makeWorldPanel() {
 }
 
 // </editor-fold> END World Panel
+
 
 // <editor-fold> ThreeJS Scene
 
@@ -424,6 +432,7 @@ function makeThreeJsScene() {
 
 // </editor-fold> END ThreeJs Scene
 
+
 // <editor-fold> Runway
 
 
@@ -463,6 +472,7 @@ function makeRunway() {
 
 
 // </editor-fold> END Runway
+
 
 // <editor-fold> Tracks
 
@@ -508,6 +518,7 @@ function makeTracks() {
 // </editor-fold> END makeTracks
 
 // </editor-fold> END Tracks
+
 
 // <editor-fold> Go Frets
 
@@ -562,7 +573,17 @@ function makeGoFrets() {
 } //makeGoFrets() end
 // </editor-fold> End makeGoFrets
 
+// <editor-fold> wipeGoFrets
+function wipeGoFrets() {
+  goFrets.forEach((goFret, fretIx) => {
+    goFret.visible = false;
+    goFretsGo[fretIx].visible = false;
+  });
+}
+// </editor-fold> END wipeGoFrets
+
 // </editor-fold> END Go Frets
+
 
 // <editor-fold> Tempo Frets
 
@@ -611,7 +632,18 @@ function makeTempoFrets() {
 
 // </editor-fold> END makeTempoFrets
 
+// <editor-fold> wipeTempoFrets
+function wipeTempoFrets() {
+  tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
+    arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
+      tTempoFret.visible = false;
+    });
+  });
+}
+// </editor-fold> END wipeTempoFrets
+
 // </editor-fold> END Tempo Frets
+
 
 // <editor-fold> Bouncing Balls
 
@@ -704,7 +736,25 @@ function makeBouncingBalls() {
 
 // </editor-fold> END makeBouncingBalls
 
+// <editor-fold> wipeBbComplex
+
+function wipeBbComplex() {
+
+  bbSet.forEach((tbb) => {
+
+    tbb.bbCirc.setAttributeNS(null, 'display', 'none');
+    tbb.bbBouncePadOff.setAttributeNS(null, 'display', 'none');
+    tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+    tbb.offIndicator.setAttributeNS(null, 'display', 'yes');
+
+  });
+
+}
+
+// </editor-fold> END wipeBbComplex
+
 // </editor-fold> END BouncingBalls
+
 
 // <editor-fold> Rhythmic Notation
 
@@ -928,6 +978,21 @@ function makeScrollingCursors() {
 
 }
 
+// <editor-fold> wipeTempoCsrs
+
+function wipeTempoCsrs() {
+
+  tempoCursors.forEach((tempoCsr) => {
+
+    tempoCsr.setAttributeNS(null, 'display', 'none');
+
+  });
+
+
+}
+
+// </editor-fold> END wipeTempoCsrs
+
 // </editor-fold> END Notation Scrolling Cursors
 
 // <editor-fold> Player Tokens
@@ -1105,12 +1170,53 @@ function makePlayerTokens() {
 
   } //for (var tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
 
-} //unction makePlayerTokens() end
+} //function makePlayerTokens() end
 
+// <editor-fold> wipePlayerTokens
+
+function wipePlayerTokens() {
+
+  playerTokens.forEach((thisTemposPlrTokensDict) => {
+
+    for (let key in thisTemposPlrTokensDict) {
+
+      let plrTknSvg = thisTemposPlrTokensDict[key].svg;
+      let plrTknTxt = thisTemposPlrTokensDict[key].txt;
+
+      plrTknSvg.setAttributeNS(null, 'display', 'none');
+      plrTknTxt.setAttributeNS(null, 'display', 'none');
+
+    }
+
+  });
+
+}
+
+// </editor-fold> END wipePlayerTokens
 
 // </editor-fold> END Player Tokens
 
+// <editor-fold> wipeRhythmicNotation
+
+function wipeRhythmicNotation() {
+
+  motivesByBeat.forEach((thisBeatsMotiveDic) => {
+
+    for (let key in thisBeatsMotiveDic) {
+
+      let tMotive = thisBeatsMotiveDic[key];
+      tMotive.setAttributeNS(null, 'display', 'none');
+
+    }
+
+  });
+
+}
+
+// </editor-fold> END wipeRhythmicNotation
+
 // </editor-fold> END Rhythmic Notation
+
 
 // <editor-fold> Signs
 
@@ -1123,6 +1229,8 @@ let signsByTrack = [];
 const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = NUM_TEMPO_FRETS_TO_FILL / 10;
 
 // </editor-fold> END Signs Variables
+
+// <editor-fold> makeSigns
 
 function makeSigns() {
 
@@ -1161,13 +1269,35 @@ function makeSigns() {
 
 } //makeSigns() end
 
+// </editor-fold> END makeSigns
+
+// <editor-fold> wipeSigns
+
+function wipeSigns() {
+
+  signsByTrack.forEach((arrayOfSignsForOneTrack) => {
+
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+
+      tSign.visible = false;
+
+    });
+
+  });
+
+}
+
+// </editor-fold> END wipeSigns
+
 // </editor-fold> END Signs
+
 
 // <editor-fold> Pitch Sets
 
 // <editor-fold> Pitch Sets Variables
 
 pitchSetsObj = {};
+pitchSetsObj['svgs'] = {};
 pitchSetImgObjects = {};
 let PITCH_SETS_W = 120;
 let PITCH_SETS_H = 80;
@@ -1247,7 +1377,7 @@ function makePitchSets() {
       tSvgImage.setAttributeNS(null, "display", tDisplay);
       pitchSetsObj.svgCont.appendChild(tSvgImage);
 
-      pitchSetsObj[tLbl] = tSvgImage;
+      pitchSetsObj.svgs[tLbl] = tSvgImage;
 
     }); // pitchSetSvgs_path_lbl.forEach((pathLblObj) =>  END
 
@@ -1293,7 +1423,27 @@ function makePitchSets() {
 
 }
 
+// <editor-fold> wipePitchSets
+
+function wipePitchSets() {
+
+  pitchSetsObj.chgIndicator.setAttributeNS(null, 'display', 'none');
+
+  let tSvgsSet = pitchSetsObj['svgs'];
+
+  for (let key in tSvgsSet) {
+
+    let tPsSvg = tSvgsSet[key];
+    tPsSvg.setAttributeNS(null, 'display', 'none');
+
+  }
+
+}
+
+// </editor-fold> END wipePitchSets
+
 // </editor-fold> END Pitch Sets
+
 
 // <editor-fold> Articulations
 
@@ -1373,7 +1523,28 @@ function makeArticulations() {
 
 } // makeArticulations() END
 
+// <editor-fold> wipeArticulations
+
+function wipeArticulations() {
+
+  for (let key in articulationsObj) {
+
+    let artImgSet = articulationsObj[key];
+
+    artImgSet.imgSet.forEach((tSvg) => {
+
+      tSvg.setAttributeNS(null, 'display', 'none');
+
+    });
+
+  }
+
+}
+
+// </editor-fold> END wipeArticulations
+
 // </editor-fold> END Articulations
+
 
 //<editor-fold> Animation Engine Complex
 
@@ -1418,7 +1589,7 @@ function animationEngine(timestamp) {
 //<editor-fold> Piece Clock
 
 function pieceClock(nowEpochTime) {
-  
+
   PIECE_TIME_MS = nowEpochTime - startTime_epoch;
   FRAMECOUNT++;
 
@@ -1426,13 +1597,22 @@ function pieceClock(nowEpochTime) {
 
 //</editor-fold> Piece Clock
 
-//<editor-fold> Wipe
-
+// <editor-fold> Wipe
 function wipe() {
 
-}
+  wipeTempoFrets();
+  wipeGoFrets();
+  wipeSigns();
+  wipeBbComplex();
+  wipePitchSets();
+  wipeRhythmicNotation();
+  wipeTempoCsrs();
+  wipePlayerTokens();
+  wipeArticulations();
 
-//</editor-fold> Wipe
+} // function wipe() END
+
+// </editor-fold> END Wipe
 
 //<editor-fold> Update
 
@@ -1445,14 +1625,13 @@ function update() {
 //<editor-fold> Draw
 
 function draw() {
-
-  // renderer.render(nObj.scene, nObj.camera);
-
+  RENDERER.render(SCENE, CAMERA);
 }
 
 //</editor-fold> Draw END
 
 //</editor-fold> Animation Engine Complex END
+
 
 // <editor-fold> Control Panel
 
@@ -1488,7 +1667,7 @@ function makeControlPanel() {
 
   // </editor-fold> END Control Panel Panel
 
-  // <editor-fold> Generate New Score Data Button
+  // <editor-fold> Start Piece Button
 
   let startButton = mkButton({
     canvas: controlPanelPanel.content,
@@ -1499,22 +1678,23 @@ function makeControlPanel() {
     label: 'Start',
     fontSize: 16,
     action: function() {
-      markStartTime();
+      markStartTime_startAnimation();
     }
   });
 
-  // </editor-fold> END Generate New Score Data Button
+  // </editor-fold> END Start Piece Button
 
 } // function makeControlPanel() END
 
 // </editor-fold> END Control Panel
 
-// <editor-fold> markStartTime
+
+// <editor-fold> markStartTime_startAnimation
 
 let startTime_epoch = 0;
 
 // Broadcast Start Time when Start Button is pressed
-let markStartTime = function() {
+let markStartTime_startAnimation = function() {
   let ts_Date = new Date(TS.now());
   let t_startTime_epoch = ts_Date.getTime();
   // Send start time to server to broadcast to rest of players
@@ -1530,12 +1710,13 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
   if (data.pieceId == PIECE_ID) {
     startTime_epoch = data.startTime_epoch;
     lastFrame_epoch = data.startTime_epoch;
-    // requestAnimationFrame(animationEngine);
+    animationEngineIsRunning = true;
+    requestAnimationFrame(animationEngine);
   }
 
 }); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
 
-// </editor-fold> END markStartTime
+// </editor-fold> END markStartTime_startAnimation
 
 
 
