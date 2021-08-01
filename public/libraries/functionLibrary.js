@@ -700,14 +700,13 @@ function describeArc(x, y, radius, startAngle, endAngle) {
   let d = [
     "M", start.x, start.y,
     "A", radius, radius, 0, arcSweep, 0, end.x, end.y,
-    "L", x,y,
+    "L", x, y,
     "L", start.x, start.y
   ].join(" ");
   return d;
 }
 
 // </editor-fold> END describeArc
-
 
 // <editor-fold> mkSvgArc
 
@@ -911,7 +910,41 @@ function run_getImage(path) {
 }
 // </editor-fold> END getImage (async)
 
+// <editor-fold> generatePalindromeTimeContainers
 
+let generatePalindromeTimeContainers = function({
+
+  numContainersOneWay = 4,
+  largestCont_minMax = [90, 110],
+  pctChg_minMax = [-0.25, -0.31]
+} = {
+  numContainersOneWay: 4,
+  largestCont_minMax: [90, 110],
+  pctChg_minMax: [-0.25, -0.31]
+}) {
+
+  let timeContainers = [];
+  let firstTimeContDur = rrand(largestCont_minMax[0], largestCont_minMax[1]);
+  timeContainers.push(firstTimeContDur);
+
+  for (let contIx = 1; contIx < numContainersOneWay; contIx++) { //make first half of palindrome
+
+    let tPctChg = 1 + rrand(pctChg_minMax[0], pctChg_minMax[1]);
+    let previousTime = timeContainers[contIx - 1];
+    let newTime = previousTime * tPctChg;
+    timeContainers.push(newTime);
+
+  }
+
+  for (let contIx = timeContainers.length-2; contIx >= 0; contIx--) { //mirror
+    timeContainers.push(timeContainers[contIx]);
+  }
+
+  return timeContainers;
+
+}
+
+// </editor-fold> END generatePalindromeTimeContainers
 
 // <editor-fold>
 // </editor-fold> END
