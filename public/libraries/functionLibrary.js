@@ -474,12 +474,19 @@ let rrandInt = function(min, max) {
 }
 // </editor-fold> END rrandInt
 
+
 // <editor-fold> choose
+
 let choose = function(choices) {
-  let randpick = rrandInt(0, arguments.length - 1);
-  return arguments[randpick];
+
+  let randpick = rrandInt(0, choices.length - 1);
+
+  return choices[randpick];
+
 }
+
 // </editor-fold> END choose
+
 
 // <editor-fold> generateFileNameWdate
 let generateFileNameWdate = function(name) {
@@ -936,7 +943,7 @@ let generatePalindromeTimeContainers = function({
 
   }
 
-  for (let contIx = timeContainers.length-2; contIx >= 0; contIx--) { //mirror
+  for (let contIx = timeContainers.length - 2; contIx >= 0; contIx--) { //mirror
     timeContainers.push(timeContainers[contIx]);
   }
 
@@ -945,6 +952,44 @@ let generatePalindromeTimeContainers = function({
 }
 
 // </editor-fold> END generatePalindromeTimeContainers
+
+// <editor-fold> plot
+
+function plot(fn, range, width, height) {
+
+  let tpoints = [];
+  let widthScale = (width / (range[1] - range[0]));
+  let heightScale = (height / (range[3] - range[2]));
+  let first = true;
+
+  for (let x = 0; x < width; x++) {
+
+    let xFnVal = (x / widthScale) - range[0];
+    let yGVal = (fn(xFnVal) - range[2]) * heightScale;
+    yGVal = height - yGVal; // 0,0 is top-left
+    let tar = {};
+    tar.x = x;
+    tar.y = yGVal;
+    first = false;
+    tpoints.push(tar);
+
+  }
+
+  return tpoints;
+
+}
+
+// USAGE
+/*
+plot( function(x){return y of x}, [xmin, xmax, ymin, ymax], crvWidth, crvHeight )
+
+var coords = plot( function(x) {
+  return Math.pow(x, 2.4);
+}, [0, 1, 0, 1], CRV_W, CRV_H);
+*/
+
+// </editor-fold> END plot
+
 
 // <editor-fold>
 // </editor-fold> END

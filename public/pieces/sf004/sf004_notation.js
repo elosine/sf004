@@ -115,18 +115,21 @@ function processUrlArgs() {
 
 // <editor-fold> Generate Score Data
 
+
 let scoreData;
 
 let generateScoreData = function() {
 
   let tempScoreData = {};
 
+
+
   //#region Tempos
 
   let tempos = [];
 
   // Generate 5 Tempos
-  let baseTempo = choose(85, 91, 77);
+  let baseTempo = choose([85, 91, 77]);
   let tempoRangeMin = baseTempo - (baseTempo * 0.0085);
   let tempoRangeMax = baseTempo + (baseTempo * 0.0085);
 
@@ -135,49 +138,160 @@ let generateScoreData = function() {
     tempos.push(ttempo);
   }
 
-  tempScoreData['tempos'] = tempos
+  tempScoreData['tempos'] = tempos;
 
   //#endregion Tempos
 
-  //#region Tempo Changes
 
-  let tempoChgsPerTempo = [];
+  //#region Tempo Changes Per Player
 
-  tempos.forEach((tempo, tempoIx) => {
+  let tempoChangeTimes_perPlayer = [];
 
+  for (let plrNum = 0; plrNum < NUM_PLAYERS; plrNum++) {
+
+
+    //#region Generate time containers within which a certian rate of tempo change will take place
+    // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
     let tempoChgTimeCont = generatePalindromeTimeContainers({
       numContainersOneWay: 4,
       largestCont_minMax: [90, 110],
       pctChg_minMax: [-0.25, -0.31]
     });
+    //#endregion Generate time containers within which a certian speed of tempo will take place
 
-    //Convert to beats for this tempo
-    let tempoChgTimeCont_beats = [];
+    //#region Generate Set of when tempo changes are to occur in Frames
+    // duration with tempo changes will be in this pattern: short - medium - long
+    // in conjunction with time containers. so 1st tc from short array, next tc from medium array etc...
+    let shortTempoChgDursSec = [4, 4, 5, 7];
+    let mediumTempoChgDursSec = [9, 9, 11, 13];
+    let longTempoChgDursSec = [14, 14, 16, 18];
 
-    tempoChgTimeCont.forEach((time, i) => {
+    let tempoChangeFrames_thisPlayer = [];
+    let tTimeElapsed = 0;
+    tempoChangeFrames_thisPlayer.push(0); // so there is a starting tempo
+    let chgDurSetNum = 0;
+    let timeContainerRemainder = 0;
 
-      let tBps = tempo / 60;
-      let tNumBeatsInCont = time / tBps
+    tempoChgTimeCont.forEach((timeContDur) => { //each new time container
 
-      tempoChgTimeCont_beats.push(Math.round(tNumBeatsInCont));
+      chgDurSetNum = (chgDurSetNum + 1) % 3; //loop change duration sets
 
-    }); // tempoChgTimeCont.forEach((time, i) => END
+      let timeElapsed_thisTC = timeContainerRemainder; //this will be 0 or a negative number
 
-    tempoChgsPerTempo.push(tempoChgTimeCont_beats);
+      do { //loop through each time container; add time from the appropriate set of
 
-    //Generate tempo changes in beats
-    let shortTempoChgDurs_inBeats = [];
+        let tTimeInc = 99; //so while loop does not go on forever
 
-  }); //tempos.forEach((tempo, tempoIx) => END
+        switch (chgDurSetNum) {
 
-  console.log(tempoChgsPerTempo);
+          case 0:
+            tTimeInc = choose(shortTempoChgDursSec);
+            break;
 
-  //#region Tempo Changes
+          case 1:
+            tTimeInc = choose(mediumTempoChgDursSec);
+            break;
+
+          case 2:
+            tTimeInc = choose(longTempoChgDursSec);
+            break;
+
+        }
+
+        timeElapsed_thisTC += tTimeInc; //add time from the appropriate set until this time container is full
+        tTimeElapsed += tTimeInc //add this increment to overall time
+        let timeElapsedAsFrames = Math.round(tTimeElapsed * FRAMERATE); //convert to frames
+        tempoChangeFrames_thisPlayer.push(timeElapsedAsFrames); //add to this players array of frames to change tempo
+
+      } while (timeElapsed_thisTC <= timeContDur);
+
+      timeContainerRemainder = timeElapsed_thisTC - timeContDur; //a negative number pass on remainder so pattern of tempo change durations remains consistant
+
+    }); //tempoChgTimeCont.forEach((timeContDur) => END
+
+
+    //#endregion Generate Set of when tempo changes are to occur in beats
+
+    tempoChangeTimes_perPlayer.push(tempoChangeFrames_thisPlayer);
+
+  } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
+
+  tempScoreData['tempoChanges'] = tempoChangeTimes_perPlayer;
+
+
+  //#endregion Tempo Changes Per Player
+
+
+  //#region Unison Tempo Changes
+
+  let unisonTempoChangeObjs = [];
+  let unisonDurSet = [4, 4, 3, 3, 7, 9];
+  let unisonTempo = [0, 1, 2, 3, 4];
+  let unisonTime = 0;
+
+  let unison_gapRange_numIterations = [{
+      gapRange: [11, 13],
+      numIter: 4
+    },
+    {
+      gapRange: [18, 21],
+      numIter: 3
+    },
+    {
+      gapRange: [34, 36],
+      numIter: 2
+    },
+    {
+      gapRange: [60, 65],
+      numIter: 1
+    },
+    {
+      gapRange: [34, 36],
+      numIter: 2
+    },
+    {
+      gapRange: [18, 21],
+      numIter: 3
+    },
+    {
+      gapRange: [11, 13],
+      numIter: 4
+    }
+  ];
+
+
+  unison_gapRange_numIterations.forEach((gapIterDict) => {
+
+    let numIter = gapIterDict.numIter;
+
+    for (let iterIx = 0; iterIx < numIter; iterIx++) {
+
+      let tChgObj = {};
+
+      let unisonFrame = Math.round(unisonTime * FRAMERATE); //convert to frames
+      tChgObj['frame'] = unisonFrame;
+      let tDur = choose(unisonDurSet);
+      let tDurFrames = Math.round(tDur * FRAMERATE); //convert to frames
+      tChgObj['durFrames'] = tDurFrames;
+      let timeToNextUnison = rrand(gapIterDict.gapRange[0], gapIterDict.gapRange[1]);
+      unisonTime += timeToNextUnison;
+
+      unisonTempoChangeObjs.push(tChgObj);
+
+    }
+
+  }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
+
+  tempScoreData['unisons'] = unisonTempoChangeObjs;
+
+  //#endregion Unison Tempo Changes
+
 
 
   return tempScoreData;
 
-}
+} //generateScoreData = function() END
+
 
 // </editor-fold> END Generate Score Data
 
@@ -196,6 +310,10 @@ let tempoFrets_leadInFrames_perTempo = [];
 let goFramesCycle_perTempo = []; //cycle length from tempo frames
 let goFrames_leadInFrames_perTempo = []
 //#endregion Go Frames
+
+//#region BBs
+let bbMotionObjs_perTempo = []
+//#endregion BBs
 
 // </editor-fold> END Calculate Score Vars
 
@@ -287,6 +405,7 @@ let calculateScore = function() {
 
     // </editor-fold> END Tempo Frets
 
+
     // <editor-fold> Go Frames
 
     //#region Lead In
@@ -376,6 +495,7 @@ let calculateScore = function() {
 
     // </editor-fold> END Go Frames
 
+
     // <editor-fold> BBs
 
     //#region Lead In - BBs
@@ -384,10 +504,53 @@ let calculateScore = function() {
 
     //#endregion Lead In - BBs
 
+    //#region Calc BBs
+
+    //#region BB Vars
+    let descentDurFrames = Math.round(framesPerBeat / 2);
+    let ascentDurFrames = framesPerBeat - descentDurFrames;
+    let bbMotionObjs_thisTempo = [];
+    //#endregion BB Vars
+
+    let bbMotionObj_thisTempo = {};
+
+    //#region Calc BB Descent
+
+    let descentFactor = 2.4;
+    let descentPlot = plot(function(x) {
+      return Math.pow(x, descentFactor);
+    }, [0, 1, 0, 1], descentDurFrames, BB_TRAVEL_DIST);
+
+    // Make array of number of frames length with px location
+    // Need to remove first coord and add a zero to the end of set
+    bbMotionObj_thisTempo['descent'] = [];
+
+    descentPlot.forEach((coords, coordsIx) => {
+
+      if (coordsIx > 0) { //don't take first coord cause that is the bb top resting position
+        bbMotionObj_thisTempo.descent.push(Math.round(coords.y)); //round as these are pixels
+      }
+
+    });
+
+    bbMotionObj_thisTempo.descent.push(0); //add 0 to end so bb falls to bottom
+
+    //#endregion Calc BB Descent
+
+    //#region Calc BB Ascent
+    //#endregion Calc BB Ascent
+
+
+    //#endregion Calc BBs
+
+
     // </editor-fold> END BBs
 
+    bbMotionObjs_perTempo.push(bbMotionObj_thisTempo);
 
   }); // scoreData.tempos.forEach((tTempo) => END
+
+  console.log(bbMotionObjs_perTempo);
 
 } // let calculateScore = function()
 
@@ -1030,6 +1193,8 @@ const BB_PAD_LEFT = 10;
 const BB_GAP = 16;
 const BBCIRC_R = 13;
 const BBCIRC_TOP_CY = BBCIRC_R + 3;
+const BBCIRC_BOTTOM_CY = BB_H - BBCIRC_R;
+const BB_TRAVEL_DIST = BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY;
 const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 
@@ -1098,6 +1263,7 @@ function makeBouncingBalls() {
       h: BB_H,
       fill: 'rgba(173, 173, 183, 0.9)',
     });
+    bbSet[bbIx].offIndicator.setAttributeNS(null, 'display', 'none');
 
 
   } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
@@ -1113,10 +1279,10 @@ function wipeBbComplex() {
 
   bbSet.forEach((tbb) => {
 
-    tbb.bbCirc.setAttributeNS(null, 'display', 'none');
+    // tbb.bbCirc.setAttributeNS(null, 'display', 'none');
     tbb.bbBouncePadOff.setAttributeNS(null, 'display', 'none');
     tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-    tbb.offIndicator.setAttributeNS(null, 'display', 'yes');
+    // tbb.offIndicator.setAttributeNS(null, 'display', 'yes');
 
   });
 
