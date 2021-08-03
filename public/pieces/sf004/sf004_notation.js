@@ -312,14 +312,14 @@ let goFrames_leadInFrames_perTempo = []
 //#endregion Go Frames
 
 //#region BBs
-let bbMotionObjs_perTempo = []
+let bbYpos_perTempo = [];
 //#endregion BBs
 
 // </editor-fold> END Calculate Score Vars
 
 let calculateScore = function() {
 
-  scoreData.tempos.forEach((tTempo) => {
+  scoreData.tempos.forEach((tTempo, thisTempoIx) => {
 
 
     // <editor-fold> Tempo Frets
@@ -498,6 +498,7 @@ let calculateScore = function() {
 
     // <editor-fold> BBs
 
+
     //#region Lead In - BBs
 
 
@@ -506,17 +507,18 @@ let calculateScore = function() {
 
     //#region Calc BBs
 
-    //#region BB Vars
-    let descentDurFrames = Math.round(framesPerBeat / 2);
-    let ascentDurFrames = framesPerBeat - descentDurFrames;
-    let bbMotionObjs_thisTempo = [];
-    //#endregion BB Vars
 
+    //#region BB Vars
+    let descentDurFrames = Math.ceil(framesPerBeat / 2);
+    let ascentDurFrames = framesPerBeat - descentDurFrames;
     let bbMotionObj_thisTempo = {};
+    let bbYpos_thisTempo = [];
+    //#endregion BB Vars
 
     //#region Calc BB Descent
 
     let descentFactor = 2.4;
+
     let descentPlot = plot(function(x) {
       return Math.pow(x, descentFactor);
     }, [0, 1, 0, 1], descentDurFrames, BB_TRAVEL_DIST);
@@ -531,14 +533,54 @@ let calculateScore = function() {
         bbMotionObj_thisTempo.descent.push(Math.round(coords.y)); //round as these are pixels
       }
 
-    });
+    }); // descentPlot.forEach((coords, coordsIx) => END
 
     bbMotionObj_thisTempo.descent.push(0); //add 0 to end so bb falls to bottom
 
     //#endregion Calc BB Descent
 
     //#region Calc BB Ascent
+
+    let ascentFactor = 1.2;
+
+    let ascentPlot = plot(function(x) {
+      return Math.pow(x, ascentFactor);
+    }, [0, 1, 0, 1], ascentDurFrames, BB_TRAVEL_DIST);
+
+    // Make array of number of frames length with px location
+    // Need to remove first coord and add a zero to the end of set
+    bbMotionObj_thisTempo['ascent'] = [];
+
+    ascentPlot.forEach((coords, coordsIx) => {
+
+      if (coordsIx > 0) { //don't take first coord cause that is the bb top resting position
+        bbMotionObj_thisTempo.ascent.push(Math.round(coords.y)); //round as these are pixels
+      }
+
+    }); // ascentPlot.forEach((coords, coordsIx) => END
+
+    bbMotionObj_thisTempo.ascent.push(0); //add 0 to end so bb falls to bottom
+
     //#endregion Calc BB Ascent
+
+    //#region Populate bbYpos_thisTempo with BB Y pos for every frame in this tempo's loop
+
+    for (var frmIx = 0; frmIx < goFrameCycles_perTempo[thisTempoIx].length; frmIx++) {
+
+      bbYpos_thisTempo.push(BBCIRC_TOP_CY); // Populate BB pos array with BBCIRC_TOP_CY
+
+      let frmState = goFrameCycles_perTempo[thisTempoIx][frmIx];
+
+      if (frmState == 1) { //if go frame count back and find frame when descent starts, then replace values in bbYpos_thisTempo with proper bb-y position
+
+        let tDescentStartFrame = frmIx - bbMotionObj_thisTempo.descent.length - 1; //count back from goFrame the num of frames it takes to descend the bb, which is the same as the length of the array - 1 because the last value of the array is 0 and should coincide with the goframe
+        // bbYpos_thisTempo
+
+      } //   if (frmState == 1) END
+
+    } // for (var frmIx = 0; frmIx < goFrameCycles_perTempo[tTempo].length; frmIx++) END
+
+    //#endregion Populate bbYpos_thisTempo with BB Y pos for every frame in this tempo's loop
 
 
     //#endregion Calc BBs
@@ -546,11 +588,11 @@ let calculateScore = function() {
 
     // </editor-fold> END BBs
 
-    bbMotionObjs_perTempo.push(bbMotionObj_thisTempo);
+    bbYpos_perTempo.push(bbYpos_thisTempo);
 
   }); // scoreData.tempos.forEach((tTempo) => END
 
-  console.log(bbMotionObjs_perTempo);
+  console.log(bbYpos_perTempo);
 
 } // let calculateScore = function()
 
@@ -1289,6 +1331,131 @@ function wipeBbComplex() {
 }
 
 // </editor-fold> END wipeBbComplex
+
+// <editor-fold> updateBbBouncePad
+
+function updateBbBouncePad() {
+
+  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+
+    goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length; // module loops the set of frames
+
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'yes');
+
+          break;
+
+        case 1:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'none');
+
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  else {
+
+    goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = (FRAMECOUNT - LEAD_IN_FRAMES) % goFrmSet.length;
+
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'yes');
+
+          break;
+
+        case 1:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'none');
+
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } //else END
+
+} // function updateBbBouncePad() END
+
+// </editor-fold> END updateBbBouncePad
+
+// <editor-fold> updateBBs
+
+function updateBBs() {
+
+  //#region Lead In - BBs
+  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+
+    goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length; // module loops the set of frames
+
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'yes');
+
+          break;
+
+        case 1:
+
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
+          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'none');
+
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  //#endregion Lead In - bbs
+
+  //#region Animate BBs
+  else {
+
+    goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // Loop: set of goFrames
+
+      let goFrmSetIx = (FRAMECOUNT - LEAD_IN_FRAMES) % goFrmSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+      //for this tempo's descent, look in bbMotionObjs_perTempo.descent, this array's length will be the number of frames before this go frame.
+      //last array value will be 0 so this frame should be equal to goframe
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } //else END
+
+  //#endregion Animate BBs
+
+
+} // function updateBbBouncePad() END
+
+// </editor-fold> END updateBBs
+
 
 // </editor-fold> END BouncingBalls
 
@@ -2162,6 +2329,7 @@ function update() {
 
   updateTempoFrets();
   updateGoFrets();
+  updateBbBouncePad();
 
 }
 
