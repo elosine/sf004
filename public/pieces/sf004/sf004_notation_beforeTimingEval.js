@@ -330,6 +330,7 @@ let calculateScore = function() {
     let framesPerBeat = pxPerBeat_pxBtwnFrets / PX_PER_FRAME;
     let tempoLoopLength = 100;
     let tfSetCycle = Math.ceil(framesPerBeat); // num of frames that need to pass to travel one beat worth of distance
+    console.log('frmbt: ' + tfSetCycle);
     let thisTempoLoop_numFrames = Math.round(framesPerBeat * tempoLoopLength); // number equal to tempoLoopLength beats worth of frames this will be the number of frames in the cycle
     let maxLocsToCalc = thisTempoLoop_numFrames * tfSetCycle; //the maximum number of tempo fret locations to calculate so that there will be enough locations in the last frame of the cycle
     //#endregion Tempo Fret Vars
@@ -495,11 +496,11 @@ let calculateScore = function() {
     //#region Calc BBs
 
     //#region Calc BB Vars
-    let framesPerBeat_ceil = Math.ceil(framesPerBeat);
-    let descentDurFrames = Math.round(framesPerBeat_ceil / 2);
-    let ascentDurFrames = framesPerBeat_ceil - descentDurFrames;
+    let descentDurFrames = Math.ceil(framesPerBeat / 2);
+    let ascentDurFrames = framesPerBeat - descentDurFrames;
     let bbMotionObj_thisTempo = {};
     let bbYpos_thisTempo = [];
+    console.log('tfrm: ' + framesPerBeat);
     //#endregion BB Vars
 
     //#region Calc BB Descent
@@ -516,9 +517,13 @@ let calculateScore = function() {
 
     descentPlot.forEach((coords, coordsIx) => {
 
-      bbMotionObj_thisTempo.descent.push(Math.round(coords.y)); //round as these are pixels
+      if (coordsIx > 0) { //don't take first coord cause that is the bb top resting position
+        bbMotionObj_thisTempo.descent.push(Math.round(coords.y)); //round as these are pixels
+      }
 
     }); // descentPlot.forEach((coords, coordsIx) => END
+
+    // bbMotionObj_thisTempo.descent.push(0); //add 0 to end so bb falls to bottom
 
     //#endregion Calc BB Descent
 
@@ -536,7 +541,7 @@ let calculateScore = function() {
 
     ascentPlot.forEach((coords, coordsIx) => {
 
-      bbMotionObj_thisTempo.ascent.push(Math.round(coords.y)); //round as these are pixels
+        bbMotionObj_thisTempo.ascent.push(Math.round(coords.y)); //round as these are pixels
 
     }); // ascentPlot.forEach((coords, coordsIx) => END
 
@@ -544,17 +549,12 @@ let calculateScore = function() {
     //#endregion Calc BB Ascent
 
     //#region Calc BB Bounce
+
     let bbOneBeatBounce_thisTempo = [];
 
-    //ascent; starts at bottom position 0
+    //ascent; includes position 0
     bbMotionObj_thisTempo.ascent.forEach((ascentPos) => {
       let tBbY = BBCIRC_TOP_CY + ascentPos;
-      bbOneBeatBounce_thisTempo.push(tBbY);
-    });
-    //descent
-    bbMotionObj_thisTempo.descent.forEach((descentPos) => {
-      let tBbY = BBCIRC_BOTTOM_CY - descentPos;
-      bbOneBeatBounce_thisTempo.push(tBbY);
     });
 
 
