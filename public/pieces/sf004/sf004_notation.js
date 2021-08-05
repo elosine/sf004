@@ -1,14 +1,15 @@
-// <editor-fold> RUNTIME
+//#ef RUNTIME
 
-// <editor-fold> Global Vars
+
+// #ef Global Vars
 
 const NUM_TEMPOS = 5;
 const NUM_PLAYERS = 5;
 const TEMPO_COLORS = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
 
-// </editor-fold> END Global Vars
+// #endef END Global Vars
 
-//<editor-fold> SOCKET IO
+//#ef SOCKET IO
 
 let ioConnection;
 
@@ -19,18 +20,18 @@ if (window.location.hostname == 'localhost') {
 }
 const SOCKET = ioConnection;
 
-//</editor-fold> > END SOCKET IO
+//#endef > END SOCKET IO
 
-//<editor-fold> TimeSync
+//#ef TimeSync
 
 const TS = timesync.create({
   server: '/timesync',
   interval: 1000
 });
 
-//</editor-fold> TimeSync END
+//#endef TimeSync END
 
-// <editor-fold> INIT
+// #ef INIT
 
 function init() {
 
@@ -84,9 +85,9 @@ function init() {
 
 } // function init() end
 
-// </editor-fold> END INIT
+// #endef END INIT
 
-// <editor-fold> URL Args
+// #ef URL Args
 
 let PIECE_ID;
 let partsToRun = [];
@@ -108,9 +109,9 @@ function processUrlArgs() {
 
 }
 
-// </editor-fold> END URL Args
+// #endef END URL Args
 
-// <editor-fold> Generate Score Data
+// #ef Generate Score Data
 
 let scoreData;
 
@@ -118,7 +119,7 @@ let generateScoreData = function() {
 
   let tempScoreData = {};
 
-  //#region Tempos
+  //##ef Tempos
 
   let tempos = [];
 
@@ -135,26 +136,26 @@ let generateScoreData = function() {
 
   tempScoreData['tempos'] = tempos;
 
-  //#endregion Tempos
+  //##endef Tempos
 
 
-  //#region Tempo Changes Per Player
+  //##ef Tempo Changes Per Player
 
   let tempoChangeTimes_perPlayer = [];
 
   for (let plrNum = 0; plrNum < NUM_PLAYERS; plrNum++) {
 
 
-    //#region Generate time containers within which a certian rate of tempo change will take place
+    //##ef Generate time containers within which a certian rate of tempo change will take place
     // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
     let tempoChgTimeCont = generatePalindromeTimeContainers({
       numContainersOneWay: 4,
       largestCont_minMax: [90, 110],
       pctChg_minMax: [-0.25, -0.31]
     });
-    //#endregion Generate time containers within which a certian speed of tempo will take place
+    //##endef Generate time containers within which a certian speed of tempo will take place
 
-    //#region Generate Set of when tempo changes are to occur in Frames
+    //##ef Generate Set of when tempo changes are to occur in Frames
     // duration with tempo changes will be in this pattern: short - medium - long
     // in conjunction with time containers. so 1st tc from short array, next tc from medium array etc...
     let shortTempoChgDursSec = [4, 4, 5, 7];
@@ -205,7 +206,7 @@ let generateScoreData = function() {
     }); //tempoChgTimeCont.forEach((timeContDur) => END
 
 
-    //#endregion Generate Set of when tempo changes are to occur in beats
+    //##endef Generate Set of when tempo changes are to occur in beats
 
     tempoChangeTimes_perPlayer.push(tempoChangeFrames_thisPlayer);
 
@@ -214,10 +215,10 @@ let generateScoreData = function() {
   tempScoreData['tempoChanges'] = tempoChangeTimes_perPlayer;
 
 
-  //#endregion Tempo Changes Per Player
+  //##endef Tempo Changes Per Player
 
 
-  //#region Unison Tempo Changes
+  //##ef Unison Tempo Changes
 
   let unisonTempoChangeObjs = [];
   let unisonDurSet = [4, 4, 3, 3, 7, 9];
@@ -279,7 +280,7 @@ let generateScoreData = function() {
 
   tempScoreData['unisons'] = unisonTempoChangeObjs;
 
-  //#endregion Unison Tempo Changes
+  //##endef Unison Tempo Changes
 
 
 
@@ -288,44 +289,45 @@ let generateScoreData = function() {
 } //generateScoreData = function() END
 
 
-// </editor-fold> END Generate Score Data
+// #endef END Generate Score Data
 
-// <editor-fold> Calculate Score
+// #ef Calculate Score
 
-// <editor-fold> Calculate Score Vars
 
-//#region Tempo Frets
+// #ef Calculate Score Vars
+
+//##ef Tempo Frets
 let tempoFretLocs_eachFrame_perTempo = [];
 let goFrameCycles_perTempo = [];
 let tempoFrets_leadInFrames_perTempo = [];
-//#endregion Tempo Frets
+//##endef Tempo Frets
 
-//#region Go Frames
+//##ef Go Frames
 let goFramesCycle_perTempo = []; //cycle length from tempo frames
 let goFrames_leadInFrames_perTempo = []
-//#endregion Go Frames
+//##endef Go Frames
 
-//#region BBs
+//##ef BBs
 let bbYpos_perTempo = [];
 let bbYpos_leadIn_perTempo = [];
-//#endregion BBs
+//##endef BBs
 
-// </editor-fold> END Calculate Score Vars
+// #endef END Calculate Score Vars
 
 let calculateScore = function() {
 
   scoreData.tempos.forEach((tTempo, thisTempoIx) => {
 
 
-    // <editor-fold> Tempo Frets
+    // #ef Tempo Frets
 
-    //#region Comments
+    //##ef Comments
     // There will be an array of tempo fret locations for each tempo
     // The array will contain an array of Tempo Fret locations for each frame
     // The array can loop and is tempoLoopLength beats long, can change below
-    //#endregion Comments
+    //##endef Comments
 
-    //#region Tempo Fret Vars
+    //##ef Tempo Fret Vars
     let beatsPerSec = tTempo / 60;
     let pxPerBeat_pxBtwnFrets = PX_PER_SEC / beatsPerSec;
     let framesPerBeat = pxPerBeat_pxBtwnFrets / PX_PER_FRAME;
@@ -333,9 +335,9 @@ let calculateScore = function() {
     let tfSetCycle = Math.ceil(framesPerBeat); // num of frames that need to pass to travel one beat worth of distance
     let thisTempoLoop_numFrames = Math.round(framesPerBeat * tempoLoopLength); // number equal to tempoLoopLength beats worth of frames this will be the number of frames in the cycle
     let maxLocsToCalc = thisTempoLoop_numFrames * tfSetCycle; //the maximum number of tempo fret locations to calculate so that there will be enough locations in the last frame of the cycle
-    //#endregion Tempo Fret Vars
+    //##endef Tempo Fret Vars
 
-    //#region LEAD IN FRAMES
+    //##ef LEAD IN FRAMES
 
     let maxTfsOnRunway = RUNWAY_L / pxPerBeat_pxBtwnFrets;
     let tfLocsSet = []; //one set of tempo fret locations from location lead in start
@@ -361,9 +363,9 @@ let calculateScore = function() {
 
     tempoFrets_leadInFrames_perTempo.push(thisTempos_leadInFramesTfLocs_perFrame); //push this tempos frames to overall array with all tempos
 
-    //#endregion LEAD IN FRAMES
+    //##endef LEAD IN FRAMES
 
-    //#region Tempo Frets
+    //##ef Tempo Frets
     let tFrameCt = 0;
     let pxAdv = 0; // cumulitive frames*PX_PER_FRAME
 
@@ -396,13 +398,13 @@ let calculateScore = function() {
     } //or (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) END
 
     tempoFretLocs_eachFrame_perTempo.push(thisTemposTfLocByFrameCycle);
-    //#endregion Tempo Frets
+    //##endef Tempo Frets
 
-    // </editor-fold> END Tempo Frets
+    // #endef END Tempo Frets
 
-    // <editor-fold> Go Frames
+    // #ef Go Frames
 
-    //#region Lead In
+    //##ef Lead In
 
     let thisTempo_leadIn_goFrames = [];
 
@@ -414,9 +416,9 @@ let calculateScore = function() {
 
     goFrames_leadInFrames_perTempo.push(thisTempo_leadIn_goFrames);
 
-    //#endregion Lead In
+    //##endef Lead In
 
-    //#region CALCULATE GO FRAMES
+    //##ef CALCULATE GO FRAMES
 
     let setOfGoFrames = []; // set of each frame number that is a go frame
     let maxNumGoFrames = (thisTempoLoop_numFrames / framesPerBeat) + 100; // to set a limit on below loop
@@ -432,9 +434,9 @@ let calculateScore = function() {
     } //  for (let frmIx = 0; frmIx < maxNumGoFrames; frmIx++) END
     goFramesCycle_perTempo.push(setOfGoFrames);
 
-    //#endregion CALCULATE GO FRAMES
+    //##endef CALCULATE GO FRAMES
 
-    //#region Make Go Frames Cycle
+    //##ef Make Go Frames Cycle
     let thisTemposGoFrames = [];
 
     for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) { //Make a goframe state for each frame in cycle
@@ -456,9 +458,9 @@ let calculateScore = function() {
 
     } // for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++)  END
 
-    //#endregion Make Go Frames Cycle
+    //##endef Make Go Frames Cycle
 
-    //#region Go Frames Blink
+    //##ef Go Frames Blink
     let thisTemposGoFrames_blink = deepCopy(thisTemposGoFrames);
 
     let goFrmBlink = 14; //num of frames to hold go frame go
@@ -487,13 +489,13 @@ let calculateScore = function() {
 
     goFrameCycles_perTempo.push(thisTemposGoFrames_blink);
 
-    //#endregion Go Frames Blink
+    //##endef Go Frames Blink
 
-    // </editor-fold> END Go Frames
+    // #endef END Go Frames
 
-    // <editor-fold> BBs
+    // #ef BBs
 
-    //#region Calc BBs
+    //##ef Calc BBs
 
     let bbYpos_thisTempo = [];
     let leadInDescent = [];
@@ -548,9 +550,9 @@ let calculateScore = function() {
 
     }); // setOfGoFrames.forEach((goFrm, goFrmIx) => END
 
-    //#endregion Calc BBs
+    //##endef Calc BBs
 
-    //#region Lead In - BBs
+    //##ef Lead In - BBs
 
     //Make a lead in set of bbYpos_leadIn_thisTempo with thisTempo_leadIn_goFrames length & all BBCIRC_BOTTOM_CY
     let bbYpos_leadIn_thisTempo = [];
@@ -566,14 +568,17 @@ let calculateScore = function() {
     });
 
 
-    //#endregion Lead In - BBs
+    //##endef Lead In - BBs
 
 
     bbYpos_perTempo.push(bbYpos_thisTempo);
     bbYpos_leadIn_perTempo.push(bbYpos_leadIn_thisTempo);
 
 
-    // </editor-fold> END BBs
+    // #endef END BBs
+
+    // #ef Scrolling Cursors
+
 
   }); // scoreData.tempos.forEach((tTempo) => END
 
@@ -581,24 +586,29 @@ let calculateScore = function() {
 
 } // let calculateScore = function()
 
-// </editor-fold> END Calculate Score
+
+// #endef END Calculate Score
 
 
-// </editor-fold> END RUNTIME
+// #endef Calculate Score
 
 
-// <editor-fold> WORLD
+//#endef RUNTIME
 
-// <editor-fold> World Panel
 
-// <editor-fold> World Panel Variables
+// #ef WORLD
+
+
+// #ef World Panel
+
+// #ef World Panel Variables
 let worldPanel;
 const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
 const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
 const CANVAS_H = 578;
 const CANVAS_CENTER = CANVAS_W / 2;
-// </editor-fold> END World Panel Variables
+// #endef END World Panel Variables
 
 function makeWorldPanel() {
 
@@ -612,11 +622,11 @@ function makeWorldPanel() {
 
 }
 
-// </editor-fold> END World Panel
+// #endef END World Panel
 
-// <editor-fold> ThreeJS Scene
+// #ef ThreeJS Scene
 
-// <editor-fold> ThreeJS Scene Variables
+// #ef ThreeJS Scene Variables
 
 const RENDERER_W = 340;
 const RENDERER_H = 180;
@@ -640,21 +650,21 @@ const CAM_Z = 21;
 // const CAM_ROTATION_X = -68; // -90 directly above looking down
 const CAM_ROTATION_X = -45; // -90 directly above looking down
 
-// </editor-fold> END ThreeJS Scene Variables
+// #endef END ThreeJS Scene Variables
 
 function makeThreeJsScene() {
 
   SCENE = new THREE.Scene();
 
-  // <editor-fold> Camera
+  // #ef Camera
 
   CAMERA = new THREE.PerspectiveCamera(75, RENDERER_W / RENDERER_H, 1, 3000);
   CAMERA.position.set(0, CAM_Y, CAM_Z);
   CAMERA.rotation.x = rads(CAM_ROTATION_X);
 
-  // </editor-fold> END Camera
+  // #endef END Camera
 
-  // <editor-fold> Lights
+  // #ef Lights
 
   SUN = new THREE.DirectionalLight(0xFFFFFF, 1.2);
   SUN.position.set(100, 600, 175);
@@ -663,9 +673,9 @@ function makeThreeJsScene() {
   SUN2.position.set(-100, 350, 200);
   SCENE.add(SUN2);
 
-  // </editor-fold> END Lights
+  // #endef END Lights
 
-  // <editor-fold> RENDERER_DIV & RENDERER
+  // #ef RENDERER_DIV & RENDERER
 
   RENDERER_DIV = mkDivCanvas({
     w: RENDERER_W,
@@ -680,16 +690,16 @@ function makeThreeJsScene() {
   RENDERER.setSize(RENDERER_W, RENDERER_H);
   RENDERER_DIV.appendChild(RENDERER.domElement);
 
-  // </editor-fold> END RENDERER_DIV & RENDERER
+  // #endef END RENDERER_DIV & RENDERER
 
 } // function makeThreeJsScene() end
 
-// </editor-fold> END ThreeJs Scene
+// #endef END ThreeJs Scene
 
-// <editor-fold> Runway
+// #ef Runway
 
 
-// <editor-fold> Runway Variables
+// #ef Runway Variables
 
 const RUNWAY_W = RENDERER_W;
 const RUNWAY_H = RENDERER_H;
@@ -697,10 +707,10 @@ const RUNWAY_L = 1000;
 const HALF_RUNWAY_W = RUNWAY_W / 2;
 const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
 
-// </editor-fold> END Runway Variables
+// #endef END Runway Variables
 
 
-// <editor-fold> makeRunway
+// #ef makeRunway
 
 function makeRunway() {
 
@@ -721,14 +731,14 @@ function makeRunway() {
 
 } //makeRunway() end
 
-// </editor-fold> END makeRunway
+// #endef END makeRunway
 
 
-// </editor-fold> END Runway
+// #endef END Runway
 
-// <editor-fold> Tracks
+// #ef Tracks
 
-// <editor-fold> Tracks Variables
+// #ef Tracks Variables
 
 const NUM_TRACKS = NUM_TEMPOS;
 const TRACK_DIAMETER = 8;
@@ -740,9 +750,9 @@ for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
   xPosOfTracks.push(-HALF_RUNWAY_W + (TRACK_GAP * trIx) + HALF_TRACK_GAP);
 }
 
-// </editor-fold> END Tracks Variables
+// #endef END Tracks Variables
 
-// <editor-fold> makeTracks
+// #ef makeTracks
 
 function makeTracks() {
 
@@ -767,13 +777,13 @@ function makeTracks() {
 
 } //makeTracks() end
 
-// </editor-fold> END makeTracks
+// #endef END makeTracks
 
-// </editor-fold> END Tracks
+// #endef END Tracks
 
-// <editor-fold> Go Frets
+// #ef Go Frets
 
-// <editor-fold> GoFrets Variables
+// #ef GoFrets Variables
 
 let goFrets = [];
 let goFretsGo = [];
@@ -785,9 +795,9 @@ const HALF_GO_FRET_L = GO_FRET_L / 2;
 const GO_Z = -HALF_GO_FRET_L;
 const GO_FRET_Y = HALF_TRACK_DIAMETER;
 
-// </editor-fold> END GoFrets Variables
+// #endef END GoFrets Variables
 
-// <editor-fold> makeGoFrets
+// #ef makeGoFrets
 
 function makeGoFrets() {
 
@@ -822,18 +832,18 @@ function makeGoFrets() {
 
 
 } //makeGoFrets() end
-// </editor-fold> End makeGoFrets
+// #endef End makeGoFrets
 
-// <editor-fold> wipeGoFrets
+// #ef wipeGoFrets
 function wipeGoFrets() {
   goFrets.forEach((goFret, fretIx) => {
     goFret.visible = false;
     goFretsGo[fretIx].visible = false;
   });
 }
-// </editor-fold> END wipeGoFrets
+// #endef END wipeGoFrets
 
-// <editor-fold> updateGoFrets
+// #ef updateGoFrets
 
 function updateGoFrets() {
 
@@ -898,13 +908,13 @@ function updateGoFrets() {
 
 } // function updateGoFrets() END
 
-// </editor-fold> END updateGoFrets
+// #endef END updateGoFrets
 
-// </editor-fold> END Go Frets
+// #endef END Go Frets
 
-// <editor-fold> Tempo Frets
+// #ef Tempo Frets
 
-// <editor-fold> Tempo Frets Variables
+// #ef Tempo Frets Variables
 
 let tempoFretsPerTrack = [];
 const TEMPO_FRET_W = GO_FRET_W - 2;
@@ -913,9 +923,9 @@ const TEMPO_FRET_L = GO_FRET_L - 5;
 const TEMPO_FRET_Y = HALF_TRACK_DIAMETER;
 const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L;
 
-// </editor-fold> END Tempo Frets Variables
+// #endef END Tempo Frets Variables
 
-// <editor-fold> makeTempoFrets
+// #ef makeTempoFrets
 
 function makeTempoFrets() {
 
@@ -947,9 +957,9 @@ function makeTempoFrets() {
 
 } //makeTempoFrets() end
 
-// </editor-fold> END makeTempoFrets
+// #endef END makeTempoFrets
 
-// <editor-fold> wipeTempoFrets
+// #ef wipeTempoFrets
 function wipeTempoFrets() {
   tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
     arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
@@ -957,13 +967,13 @@ function wipeTempoFrets() {
     });
   });
 }
-// </editor-fold> END wipeTempoFrets
+// #endef END wipeTempoFrets
 
-// <editor-fold> updateTempoFrets
+// #ef updateTempoFrets
 
 function updateTempoFrets() {
 
-  // #region Loop for Lead In FRAMES
+  // ##ef Loop for Lead In FRAMES
   if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) { //LEAD_IN_FRAMES-1 cause loops start on 0 and go to length-1
 
     tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
@@ -980,9 +990,9 @@ function updateTempoFrets() {
     }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
 
   } // if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
-  // #endregion Loop for Lead In FRAMES
+  // ##endef Loop for Lead In FRAMES
 
-  //#region Loop for Regular TF Cycles
+  //##ef Loop for Regular TF Cycles
   else {
 
     // TEMPO FRETS TEMPO thisTempoLoop_numFrames
@@ -1001,18 +1011,18 @@ function updateTempoFrets() {
 
   } //else END
 
-  //#endregion Loop for Regular TF Cycles
+  //##endef Loop for Regular TF Cycles
 
 } //function updateTempoFrets()  END
 
 
-// </editor-fold> END updateTempoFrets
+// #endef END updateTempoFrets
 
-// </editor-fold> END Tempo Frets
+// #endef END Tempo Frets
 
-// <editor-fold> Bouncing Balls
+// #ef Bouncing Balls
 
-// <editor-fold> BouncingBalls Variables
+// #ef BouncingBalls Variables
 
 let bbSet = [];
 for (let trIx = 0; trIx < NUM_TRACKS; trIx++) bbSet.push({});
@@ -1029,9 +1039,9 @@ const BB_TRAVEL_DIST = BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY;
 const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 
-// </editor-fold> END BouncingBalls Variables
+// #endef END BouncingBalls Variables
 
-// <editor-fold> makeBouncingBalls
+// #ef makeBouncingBalls
 
 function makeBouncingBalls() {
 
@@ -1102,9 +1112,9 @@ function makeBouncingBalls() {
 
 } //makeBouncingBalls() end
 
-// </editor-fold> END makeBouncingBalls
+// #endef END makeBouncingBalls
 
-// <editor-fold> wipeBbComplex
+// #ef wipeBbComplex
 
 function wipeBbComplex() {
 
@@ -1119,9 +1129,9 @@ function wipeBbComplex() {
 
 }
 
-// </editor-fold> END wipeBbComplex
+// #endef END wipeBbComplex
 
-// <editor-fold> updateBbBouncePad
+// #ef updateBbBouncePad
 
 function updateBbBouncePad() {
 
@@ -1186,13 +1196,13 @@ function updateBbBouncePad() {
 
 } // function updateBbBouncePad() END
 
-// </editor-fold> END updateBbBouncePad
+// #endef END updateBbBouncePad
 
-// <editor-fold> updateBBs
+// #ef updateBBs
 
 function updateBBs() {
 
-  //#region Lead In - BBs
+  //##ef Lead In - BBs
   if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
 
     bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
@@ -1202,9 +1212,9 @@ function updateBBs() {
     }); //   bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) =>  END
 
   } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
-  //#endregion Lead In - bbs
+  //##endef Lead In - bbs
 
-  //#region Animate BBs
+  //##ef Animate BBs
   else {
 
     bbYpos_perTempo.forEach((bbYposSet, tempoIx) => { // Loop: set of goFrames
@@ -1219,20 +1229,20 @@ function updateBBs() {
 
   } //else END
 
-  //#endregion Animate BBs
+  //##endef Animate BBs
 
 
 } // function updateBbBouncePad() END
 
-// </editor-fold> END updateBBs
+// #endef END updateBBs
 
 
-// </editor-fold> END BouncingBalls
+// #endef END BouncingBalls
+
+// #ef Rhythmic Notation
 
 
-// <editor-fold> Rhythmic Notation
-
-// <editor-fold> rhythmicNotation Variables
+// #ef rhythmicNotation Variables
 
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
@@ -1261,7 +1271,7 @@ for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
   motivesByBeat.push({});
 }
 
-// <editor-fold> Beat Coordinates
+// #ef Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFF; beatLocIx++) {
   beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
@@ -1277,9 +1287,9 @@ for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
   }
 }
 
-// </editor-fold> Beat Coordinates
+// #endef Beat Coordinates
 
-// <editor-fold> notationSvgPaths_labels
+// #ef notationSvgPaths_labels
 let notationSvgPaths_labels = [{
     path: "/pieces/sf004/notationSVGs/quintuplet.svg",
     lbl: 'quintuplet'
@@ -1317,20 +1327,20 @@ let notationSvgPaths_labels = [{
     lbl: 'qtr_rest'
   }
 ];
-// </editor-fold> END notationSvgPaths_labels
+// #endef END notationSvgPaths_labels
 
-// <editor-fold> dynamicsAccents_paths_labels
+// #ef dynamicsAccents_paths_labels
 let dynamicsAccents_paths_labels = [{
   path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
   lbl: 'sf'
 }];
-// </editor-fold> END dynamicsAccents_paths_labels
+// #endef END dynamicsAccents_paths_labels
 
-// </editor-fold> END rhythmicNotation Variables
+// #endef END rhythmicNotation Variables
 
 function makeRhythmicNotation() {
 
-  // <editor-fold> DIV/SVG Container
+  // #ef DIV/SVG Container
 
   rhythmicNotationObj['div'] = mkDiv({
     canvas: worldPanel.content,
@@ -1349,9 +1359,9 @@ function makeRhythmicNotation() {
     y: 0
   });
 
-  // </editor-fold> END DIV/SVG Container
+  // #endef END DIV/SVG Container
 
-  // <editor-fold> StaffLines
+  // #ef StaffLines
   let rhythmicNotationStaffLines = [];
   for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
     let tStaffY = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES);
@@ -1367,9 +1377,9 @@ function makeRhythmicNotation() {
     rhythmicNotationStaffLines.push(tLine);
   }
   rhythmicNotationObj['staffLines'] = rhythmicNotationStaffLines;
-  // </editor-fold> END Staff Lines
+  // #endef END Staff Lines
 
-  // <editor-fold> Draw Initial Notation
+  // #ef Draw Initial Notation
 
   // Make all motives and make display:none; Display All Quarters
   function makeMotives() { // This function runs in loop below, after await so all image sizes are loaded
@@ -1423,11 +1433,11 @@ function makeRhythmicNotation() {
 
   }); //notationSvgPaths_labels.forEach((pathLblObj, i) end
 
-  // </editor-fold> END Draw Initial Notation
+  // #endef END Draw Initial Notation
 
 } //makeRhythmicNotation() end
 
-// <editor-fold> Notation Scrolling Cursors
+// #ef Notation Scrolling Cursors
 
 let tempoCursors = [];
 
@@ -1452,7 +1462,7 @@ function makeScrollingCursors() {
 
 }
 
-// <editor-fold> wipeTempoCsrs
+// #ef wipeTempoCsrs
 
 function wipeTempoCsrs() {
 
@@ -1465,11 +1475,11 @@ function wipeTempoCsrs() {
 
 }
 
-// </editor-fold> END wipeTempoCsrs
+// #endef END wipeTempoCsrs
 
-// </editor-fold> END Notation Scrolling Cursors
+// #endef END Notation Scrolling Cursors
 
-// <editor-fold> Player Tokens
+// #ef Player Tokens
 
 let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
 
@@ -1646,7 +1656,7 @@ function makePlayerTokens() {
 
 } //function makePlayerTokens() end
 
-// <editor-fold> wipePlayerTokens
+// #ef wipePlayerTokens
 
 function wipePlayerTokens() {
 
@@ -1666,11 +1676,11 @@ function wipePlayerTokens() {
 
 }
 
-// </editor-fold> END wipePlayerTokens
+// #endef END wipePlayerTokens
 
-// </editor-fold> END Player Tokens
+// #endef END Player Tokens
 
-// <editor-fold> wipeRhythmicNotation
+// #ef wipeRhythmicNotation
 
 function wipeRhythmicNotation() {
 
@@ -1687,14 +1697,14 @@ function wipeRhythmicNotation() {
 
 }
 
-// </editor-fold> END wipeRhythmicNotation
-
-// </editor-fold> END Rhythmic Notation
+// #endef END wipeRhythmicNotation
 
 
-// <editor-fold> Signs
+// #endef END Rhythmic Notation
 
-// <editor-fold> Signs Variables
+// #ef Signs
+
+// #ef Signs Variables
 
 const SIGN_W = TEMPO_FRET_W - 10;
 const SIGN_H = 150;
@@ -1702,9 +1712,9 @@ const HALF_SIGN_H = SIGN_H / 2;
 let signsByTrack = [];
 const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = NUM_TEMPO_FRETS_TO_FILL / 10;
 
-// </editor-fold> END Signs Variables
+// #endef END Signs Variables
 
-// <editor-fold> makeSigns
+// #ef makeSigns
 
 function makeSigns() {
 
@@ -1743,9 +1753,9 @@ function makeSigns() {
 
 } //makeSigns() end
 
-// </editor-fold> END makeSigns
+// #endef END makeSigns
 
-// <editor-fold> wipeSigns
+// #ef wipeSigns
 
 function wipeSigns() {
 
@@ -1761,14 +1771,13 @@ function wipeSigns() {
 
 }
 
-// </editor-fold> END wipeSigns
+// #endef END wipeSigns
 
-// </editor-fold> END Signs
+// #endef END Signs
 
+// #ef Pitch Sets
 
-// <editor-fold> Pitch Sets
-
-// <editor-fold> Pitch Sets Variables
+// #ef Pitch Sets Variables
 
 pitchSetsObj = {};
 pitchSetsObj['svgs'] = {};
@@ -1780,7 +1789,7 @@ let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
 let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
 let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
-// <editor-fold> pitchSetSvgs_path_lbl
+// #ef pitchSetSvgs_path_lbl
 
 let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
 
@@ -1802,13 +1811,13 @@ let pitchSetSvgs_path_lbl = [{
   }
 ];
 
-// </editor-fold> END pitchSetSvgs_path_lbl
+// #endef END pitchSetSvgs_path_lbl
 
-// </editor-fold> END Pitch Sets Variables
+// #endef END Pitch Sets Variables
 
 function makePitchSets() {
 
-  // <editor-fold> DIV/SVG Container
+  // #ef DIV/SVG Container
 
   pitchSetsObj['div'] = mkDiv({
     canvas: worldPanel.content,
@@ -1827,9 +1836,9 @@ function makePitchSets() {
     y: 0
   });
 
-  // </editor-fold> END DIV/SVG Container
+  // #endef END DIV/SVG Container
 
-  // <editor-fold> Make Pitch Set SVGs
+  // #ef Make Pitch Set SVGs
 
   function makePitchSetSvgs() { // This function runs in loop below, after await so all image sizes are loaded
 
@@ -1876,9 +1885,9 @@ function makePitchSets() {
 
   }); // pitchSetSvgs_path_lbl.forEach((pathLblObj, i) => END
 
-  // </editor-fold> END Make Pitch Set SVGs
+  // #endef END Make Pitch Set SVGs
 
-  // <editor-fold> Pitch Set Change Indicator
+  // #ef Pitch Set Change Indicator
 
   pitchSetsObj['chgIndicator'] = mkSvgRect({
     svgContainer: pitchSetsObj.svgCont,
@@ -1893,11 +1902,11 @@ function makePitchSets() {
 
   pitchSetsObj['chgIndicator'].setAttributeNS(null, 'display', 'none');
 
-  // </editor-fold> END Pitch Set Change Indicator
+  // #endef END Pitch Set Change Indicator
 
 }
 
-// <editor-fold> wipePitchSets
+// #ef wipePitchSets
 
 function wipePitchSets() {
 
@@ -1914,14 +1923,13 @@ function wipePitchSets() {
 
 }
 
-// </editor-fold> END wipePitchSets
+// #endef END wipePitchSets
 
-// </editor-fold> END Pitch Sets
+// #endef END Pitch Sets
 
+// #ef Articulations
 
-// <editor-fold> Articulations
-
-// <editor-fold> Articulations Variables
+// #ef Articulations Variables
 
 let articulationsPath = "/pieces/sf004/notationSVGs/dynamics_accents/";
 
@@ -1936,7 +1944,7 @@ let articulationsObj = {
   }
 };
 
-// <editor-fold> function posMarcato
+// #ef function posMarcato
 
 function posMarcato(beatNum, subdivision, partial) {
 
@@ -1962,9 +1970,9 @@ function posMarcato(beatNum, subdivision, partial) {
 
 } // function posMarcato(beatNum, subdivision, partial) end
 
-// </editor-fold> END function posMarcato
+// #endef END function posMarcato
 
-// </editor-fold> END Articulations Variables
+// #endef END Articulations Variables
 
 function makeArticulations() {
 
@@ -1997,7 +2005,7 @@ function makeArticulations() {
 
 } // makeArticulations() END
 
-// <editor-fold> wipeArticulations
+// #ef wipeArticulations
 
 function wipeArticulations() {
 
@@ -2015,19 +2023,19 @@ function wipeArticulations() {
 
 }
 
-// </editor-fold> END wipeArticulations
+// #endef END wipeArticulations
 
-// </editor-fold> END Articulations
-
-
-// </editor-fold> END WORLD
+// #endef END Articulations
 
 
-// <editor-fold> ANIMATION
+// #endef END WORLD
 
-//<editor-fold> Animation Engine
 
-// <editor-fold> Animation Engine Variables
+// #ef ANIMATION
+
+//#ef Animation Engine
+
+// #ef Animation Engine Variables
 
 const FRAMERATE = 60;
 const MS_PER_FRAME = Math.round(1000.0 / FRAMERATE);
@@ -2042,9 +2050,9 @@ let cumulativeChangeBtwnFrames_MS = 0;
 let lastFrame_epoch;
 let animationEngineIsRunning = false;
 
-// </editor-fold> END Animation Engine Variables
+// #endef END Animation Engine Variables
 
-//<editor-fold> Animation Engine
+//#ef Animation Engine
 
 function animationEngine(timestamp) {
 
@@ -2068,9 +2076,9 @@ function animationEngine(timestamp) {
 
 } // function animationEngine(timestamp) END
 
-//</editor-fold> Animation Engine END
+//#endef Animation Engine END
 
-//<editor-fold> Piece Clock
+//#ef Piece Clock
 
 function pieceClock(nowEpochTime) {
 
@@ -2079,9 +2087,9 @@ function pieceClock(nowEpochTime) {
 
 }
 
-//</editor-fold> Piece Clock
+//#endef Piece Clock
 
-// <editor-fold> Wipe
+// #ef Wipe
 function wipe() {
 
   wipeTempoFrets();
@@ -2096,9 +2104,9 @@ function wipe() {
 
 } // function wipe() END
 
-// </editor-fold> END Wipe
+// #endef END Wipe
 
-//<editor-fold> Update
+//#ef Update
 
 function update() {
 
@@ -2109,19 +2117,19 @@ function update() {
 
 }
 
-//</editor-fold> update END
+//#endef update END
 
-//<editor-fold> Draw
+//#ef Draw
 
 function draw() {
   RENDERER.render(SCENE, CAMERA);
 }
 
-//</editor-fold> Draw END
+//#endef Draw END
 
-//</editor-fold> Animation Engine END
+//#endef Animation Engine END
 
-// <editor-fold> markStartTime_startAnimation
+// #ef markStartTime_startAnimation
 
 let startTime_epoch = 0;
 
@@ -2151,19 +2159,19 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
 
 }); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
 
-// </editor-fold> END markStartTime_startAnimation
+// #endef END markStartTime_startAnimation
 
-//</editor-fold> ANIMATION
-
-
-// <editor-fold> PANELS
+//#endef ANIMATION
 
 
-// <editor-fold> SCORE DATA MANAGER
+// #ef PANELS
+
+
+// #ef SCORE DATA MANAGER
 
 function makeScoreDataManager() {
 
-  // <editor-fold> Score Data Manager Panel
+  // #ef Score Data Manager Panel
 
   let scoreDataManagerW = 300;
   let scoreDataManagerH = 500;
@@ -2196,10 +2204,10 @@ function makeScoreDataManager() {
     }
   });
 
-  // </editor-fold> END Score Data Manager Panel
+  // #endef END Score Data Manager Panel
 
 
-  // <editor-fold> Generate New Score Data Button
+  // #ef Generate New Score Data Button
 
   let generateNewScoreDataButton = mkButton({
     canvas: scoreDataManagerPanel.content,
@@ -2215,10 +2223,10 @@ function makeScoreDataManager() {
     }
   });
 
-  // </editor-fold> END Generate New Score Data Button
+  // #endef END Generate New Score Data Button
 
 
-  // <editor-fold> Save Score Data Button
+  // #ef Save Score Data Button
 
   let saveScoreDataButton = mkButton({
     canvas: scoreDataManagerPanel.content,
@@ -2235,10 +2243,10 @@ function makeScoreDataManager() {
     }
   });
 
-  // </editor-fold> END Save Score Data Button
+  // #endef END Save Score Data Button
 
 
-  // <editor-fold> Load Score Data From File Button
+  // #ef Load Score Data From File Button
 
   let loadScoreDataFromFileButton = mkButton({
     canvas: scoreDataManagerPanel.content,
@@ -2267,10 +2275,10 @@ function makeScoreDataManager() {
     }
   });
 
-  // </editor-fold> END Load Score Data Button
+  // #endef END Load Score Data Button
 
 
-  //<editor-fold> Load Score Data from Server Button
+  //#ef Load Score Data from Server Button
 
   let loadScoreDataFromServerButton = mkButton({
     canvas: scoreDataManagerPanel.content,
@@ -2344,18 +2352,18 @@ function makeScoreDataManager() {
 
   }); // SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) end
 
-  //</editor-fold> END Load Score Data from Server Button
+  //#endef END Load Score Data from Server Button
 
 
   scoreDataManagerPanel.smallify();
 
 }
 
-// </editor-fold> END SCORE DATA MANAGER
+// #endef END SCORE DATA MANAGER
 
-// <editor-fold> Control Panel
+// #ef Control Panel
 
-// <editor-fold> Control Panel Vars
+// #ef Control Panel Vars
 
 const CTRLPANEL_W = 89;
 const CTRLPANEL_H = 200;
@@ -2364,12 +2372,12 @@ const CTRLPANEL_BTN_H = 35;
 const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
 const CTRLPANEL_MARGIN = 7;
 
-// </editor-fold> END Control Panel Vars
+// #endef END Control Panel Vars
 
 
 function makeControlPanel() {
 
-  // <editor-fold> Control Panel Panel
+  // #ef Control Panel Panel
 
   let controlPanelPanel = mkPanel({
     w: CTRLPANEL_W,
@@ -2385,9 +2393,9 @@ function makeControlPanel() {
     clr: 'black'
   });
 
-  // </editor-fold> END Control Panel Panel
+  // #endef END Control Panel Panel
 
-  // <editor-fold> Start Piece Button
+  // #ef Start Piece Button
 
   let startButton = mkButton({
     canvas: controlPanelPanel.content,
@@ -2402,15 +2410,15 @@ function makeControlPanel() {
     }
   });
 
-  // </editor-fold> END Start Piece Button
+  // #endef END Start Piece Button
 
 } // function makeControlPanel() END
 
-// </editor-fold> END Control Panel
+// #endef END Control Panel
 
 
-// </editor-fold> PANELS
+// #endef PANELS
 
 
-// <editor-fold>
-// </editor-fold> END
+// #ef
+// #endef END

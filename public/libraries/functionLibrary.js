@@ -1,7 +1,7 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
-// <editor-fold> Colors
+// #ef Colors
 let clr_orange = 'rgba(240,75,0,255)';
 let clr_brightBlue = 'rgba(56,126,211,255)';
 let clr_mustard = 'rgba(244,182,0,255)';
@@ -18,9 +18,9 @@ let clr_blueGrey = '#708090';
 let clr_lightGreen = '#85b068';
 let clr_yellow = 'rgba(254,213,0,255)';
 let clr_neonMagenta = "rgb(255, 21, 160)";
-// </editor-fold> END Colors
+// #endef END Colors
 
-// <editor-fold> mkDivCanvas
+// #ef mkDivCanvas
 let mkDivCanvas = function({
   w = 200,
   h = 200,
@@ -43,9 +43,9 @@ let mkDivCanvas = function({
   t_div.style.left = left.toString() + 'px';
   return t_div;
 }
-// </editor-fold> END MAKE CANVAS DIV
+// #endef END MAKE CANVAS DIV
 
-// <editor-fold> mkSVGcanvas
+// #ef mkSVGcanvas
 let mkSVGcanvas = function({
   w = 200,
   h = 200,
@@ -61,9 +61,9 @@ let mkSVGcanvas = function({
   tsvgCanvas.style.backgroundColor = clr;
   return tsvgCanvas;
 }
-// </editor-fold> END MAKE SVG CANVAS
+// #endef END MAKE SVG CANVAS
 
-// <editor-fold> mkPanel
+// #ef mkPanel
 let mkPanel = function({
   canvasType = 0,
   w = 200,
@@ -154,9 +154,9 @@ let mkPanel = function({
 
 }
 
-// </editor-fold> END mkPanel
+// #endef END mkPanel
 
-// <editor-fold> mkSpan
+// #ef mkSpan
 
 let mkSpan = function({
   canvas,
@@ -190,9 +190,9 @@ let mkSpan = function({
   canvas.appendChild(lbl);
   return lbl;
 }
-// </editor-fold> END mkSpan
+// #endef END mkSpan
 
-// <editor-fold> mkDiv
+// #ef mkDiv
 let mkDiv = function({
   canvas,
   w = 50,
@@ -218,9 +218,9 @@ let mkDiv = function({
   canvas.appendChild(tDiv);
   return tDiv;
 }
-// </editor-fold> END mkDiv
+// #endef END mkDiv
 
-// <editor-fold> mkSVGcontainer
+// #ef mkSVGcontainer
 let mkSVGcontainer = function({
   canvas,
   w = 200,
@@ -242,9 +242,9 @@ let mkSVGcontainer = function({
   canvas.appendChild(tSvgCont);
   return tSvgCont;
 }
-// </editor-fold> END mkSVGcontainer
+// #endef END mkSVGcontainer
 
-//<editor-fold> mkInputField
+//#ef mkInputField
 function mkInputField({
   canvas,
   id = 'inputField',
@@ -283,9 +283,9 @@ function mkInputField({
   canvas.appendChild(inputField);
   return inputField;
 }
-// </editor-fold> END mkInputField
+// #endef END mkInputField
 
-// <editor-fold> mkCheckboxesHoriz
+// #ef mkCheckboxesHoriz
 let mkCheckboxesHoriz = function({
   canvas,
   numBoxes = 3,
@@ -346,9 +346,9 @@ let mkCheckboxesHoriz = function({
   }
   return cbArray;
 }
-// </editor-fold> END mkCheckBoxesHoriz
+// #endef END mkCheckBoxesHoriz
 
-// <editor-fold> mkMenu
+// #ef mkMenu
 function mkMenu({
   canvas,
   w = 200,
@@ -414,9 +414,9 @@ function mkMenu({
 
   return menuDiv;
 }
-// </editor-fold> END mkMenu
+// #endef END mkMenu
 
-// <editor-fold> mkButton
+// #ef mkButton
 function mkButton({
   canvas,
   w = 50,
@@ -448,9 +448,9 @@ function mkButton({
   canvas.appendChild(btn);
   return btn;
 }
-// </editor-fold>END mkButton
+// #endefEND mkButton
 
-// <editor-fold> getUrlArgs
+// #ef getUrlArgs
 function getUrlArgs() {
   let args = {};
   let parts = window.location.href.replace(
@@ -460,22 +460,22 @@ function getUrlArgs() {
     });
   return args;
 }
-// </editor-fold> END getUrlArgs()
+// #endef END getUrlArgs()
 
-// <editor-fold> rrand
+// #ef rrand
 function rrand(min, max) {
   return Math.random() * (max - min) + min;
 }
-// </editor-fold> END rrand
+// #endef END rrand
 
-// <editor-fold> rrandInt
+// #ef rrandInt
 let rrandInt = function(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
-// </editor-fold> END rrandInt
+// #endef END rrandInt
 
 
-// <editor-fold> choose
+// #ef choose
 
 let choose = function(choices) {
 
@@ -485,19 +485,19 @@ let choose = function(choices) {
 
 }
 
-// </editor-fold> END choose
+// #endef END choose
 
 
-// <editor-fold> generateFileNameWdate
+// #ef generateFileNameWdate
 let generateFileNameWdate = function(name) {
   let t_now = new Date();
   let month = t_now.getMonth() + 1;
   let fileName = name + '_' + t_now.getFullYear() + "_" + month + "_" + t_now.getUTCDate() + "_" + t_now.getHours() + "-" + t_now.getMinutes() + "-" + t_now.getSeconds() + '.txt';
   return fileName
 }
-// </editor-fold> END generateFileNameWdate
+// #endef END generateFileNameWdate
 
-// <editor-fold> downloadStrToHD
+// #ef downloadStrToHD
 // download('the content of the file', 'filename.txt', 'text/plain');
 let downloadStrToHD = function(strData, strFileName, strMimeType) {
   let D = document,
@@ -538,9 +538,9 @@ let downloadStrToHD = function(strData, strFileName, strMimeType) {
   }, 333);
   return true;
 }
-// </editor-fold> END downloadStrToHD
+// #endef END downloadStrToHD
 
-// <editor-fold> retrieveFileFromPath
+// #ef retrieveFileFromPath
 // USAGE: let data = await retrieveFileFromPath(path)
 // Every line after await will execute after file is retrived or the Promise is resolved
 // Text will be available as data.fileData
@@ -556,9 +556,9 @@ function retrieveFileFromPath(path) {
     request.send();
   })
 }
-// </editor-fold> END retrieveFileFromPath
+// #endef END retrieveFileFromPath
 
-// <editor-fold> retrieveFileFromFinder
+// #ef retrieveFileFromFinder
 let retrieveFileFromFinder = async function() {
   return new Promise((resolve, reject) => {
     let input = document.createElement('input');
@@ -576,15 +576,15 @@ let retrieveFileFromFinder = async function() {
   })
 }
 
-// </editor-fold> END retrieveFileFromFinder
+// #endef END retrieveFileFromFinder
 
-// <editor-fold> rads
+// #ef rads
 function rads(deg) {
   return (deg * Math.PI) / 180;
 }
-// </editor-fold> END rads
+// #endef END rads
 
-// <editor-fold> mkSvgCircle
+// #ef mkSvgCircle
 
 let mkSvgCircle = function({
   svgContainer,
@@ -615,9 +615,9 @@ let mkSvgCircle = function({
   return bbCircle;
 }
 
-// </editor-fold> END mkSvgCircle
+// #endef END mkSvgCircle
 
-// <editor-fold> mkSvgLine
+// #ef mkSvgLine
 
 let mkSvgLine = function({
   svgContainer,
@@ -649,9 +649,9 @@ let mkSvgLine = function({
   return svgLine;
 }
 
-// </editor-fold> END mkSvgLine
+// #endef END mkSvgLine
 
-// <editor-fold> mkSvgRect
+// #ef mkSvgRect
 
 let mkSvgRect = function({
   svgContainer,
@@ -688,9 +688,9 @@ let mkSvgRect = function({
   return svgRect;
 }
 
-// </editor-fold> END mkSvgRect
+// #endef END mkSvgRect
 
-// <editor-fold> describeArc
+// #ef describeArc
 
 let polarToCartesian = function(centerX, centerY, radius, angleInDegrees) {
   let angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
@@ -713,9 +713,9 @@ function describeArc(x, y, radius, startAngle, endAngle) {
   return d;
 }
 
-// </editor-fold> END describeArc
+// #endef END describeArc
 
-// <editor-fold> mkSvgArc
+// #ef mkSvgArc
 
 let mkSvgArc = function({
   svgContainer,
@@ -763,9 +763,9 @@ let mkSvgArc = function({
   return arc;
 }
 
-// </editor-fold> END mkSvgArc
+// #endef END mkSvgArc
 
-// <editor-fold> mkSvgTriangle
+// #ef mkSvgTriangle
 
 let mkSvgTriangle = function({
   svgContainer,
@@ -808,9 +808,9 @@ let mkSvgTriangle = function({
   return svgTriangle;
 }
 
-// </editor-fold> END mkSvgTriangle
+// #endef END mkSvgTriangle
 
-// <editor-fold> mkSvgText
+// #ef mkSvgText
 
 let mkSvgText = function({
   svgContainer,
@@ -853,9 +853,9 @@ let mkSvgText = function({
   svgContainer.appendChild(svgText);
   return svgText;
 }
-// </editor-fold> END mkSvgText
+// #endef END mkSvgText
 
-// <editor-fold> mkSvgDiamond
+// #ef mkSvgDiamond
 
 let mkSvgDiamond = function({
   svgContainer,
@@ -900,9 +900,9 @@ let mkSvgDiamond = function({
   return svgDiamond;
 }
 
-// </editor-fold> END mkSvgDiamond
+// #endef END mkSvgDiamond
 
-// <editor-fold> getImage (async)
+// #ef getImage (async)
 async function getImage(url) {
   return new Promise((resolve, reject) => {
     let img = new Image();
@@ -915,9 +915,9 @@ async function getImage(url) {
 function run_getImage(path) {
   return getImage(path);
 }
-// </editor-fold> END getImage (async)
+// #endef END getImage (async)
 
-// <editor-fold> generatePalindromeTimeContainers
+// #ef generatePalindromeTimeContainers
 
 let generatePalindromeTimeContainers = function({
 
@@ -951,9 +951,9 @@ let generatePalindromeTimeContainers = function({
 
 }
 
-// </editor-fold> END generatePalindromeTimeContainers
+// #endef END generatePalindromeTimeContainers
 
-// <editor-fold> plot
+// #ef plot
 
 function plot(fn, range, width, height) {
 
@@ -988,10 +988,10 @@ var coords = plot( function(x) {
 }, [0, 1, 0, 1], CRV_W, CRV_H);
 */
 
-// </editor-fold> END plot
+// #endef END plot
 
 
-// <editor-fold> deepCopy - array and object
+// #ef deepCopy - array and object
 
 // Helper function to deal with Objects
 const deepCopyObject = (obj) => {
@@ -1028,8 +1028,8 @@ const deepCopy = (arr) => {
 //USAGE:
 //const array2 = deepCopy(array1/obj1);
 
-// </editor-fold> END deepCopy - array and object
+// #endef END deepCopy - array and object
 
 
-// <editor-fold>
-// </editor-fold> END
+// #ef
+// #endef END
