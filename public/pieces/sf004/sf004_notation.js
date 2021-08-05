@@ -124,12 +124,13 @@ let generateScoreData = function() {
 
   // Generate 5 Tempos
   let baseTempo = choose([85, 91, 77]);
-  let tempoRangeMin = baseTempo - (baseTempo * 0.0085);
-  let tempoRangeMax = baseTempo + (baseTempo * 0.0085);
+  let tempoRangeVarianceMin = 0.0045;
+  let tempoRangeVarianceMax = 0.007;
 
+  let tTempo = baseTempo;
   for (let i = 0; i < 5; i++) {
-    let ttempo = rrand(tempoRangeMin, tempoRangeMax);
-    tempos.push(ttempo);
+    tTempo += rrand(tempoRangeVarianceMin, tempoRangeVarianceMax) * tTempo;
+    tempos.push(tTempo);
   }
 
   tempScoreData['tempos'] = tempos;
@@ -429,7 +430,6 @@ let calculateScore = function() {
       setOfGoFrames.push(goFrameNum);
 
     } //  for (let frmIx = 0; frmIx < maxNumGoFrames; frmIx++) END
-
     goFramesCycle_perTempo.push(setOfGoFrames);
 
     //#endregion CALCULATE GO FRAMES
@@ -455,6 +455,7 @@ let calculateScore = function() {
       thisTemposGoFrames.push(goFrmState);
 
     } // for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++)  END
+
     //#endregion Make Go Frames Cycle
 
     //#region Go Frames Blink
@@ -494,101 +495,58 @@ let calculateScore = function() {
 
     //#region Calc BBs
 
-    //#region Calc BB Vars
-    let framesPerBeat_ceil = Math.ceil(framesPerBeat);
-    let descentDurFrames = Math.round(framesPerBeat_ceil / 2);
-    let ascentDurFrames = framesPerBeat_ceil - descentDurFrames;
-    let bbMotionObj_thisTempo = {};
     let bbYpos_thisTempo = [];
-    //#endregion BB Vars
+    let leadInDescent = [];
 
-    //#region Calc BB Descent
+    setOfGoFrames.forEach((goFrm, goFrmIx) => { //setOfGoFrames contains the frame number of each go frame
 
-    let descentFactor = 3.5;
+      if (goFrmIx > 0) { //start on second so you can use previous index
 
-    let descentPlot = plot(function(x) {
-      return Math.pow(x, descentFactor);
-    }, [0, 1, 0, 1], descentDurFrames, BB_TRAVEL_DIST);
+        let previousGoFrame = setOfGoFrames[goFrmIx - 1];
+        let thisBeatDurInFrames = goFrm - previousGoFrame; //because of necessary rounding beats last various amounts of frames usually with in 1 frame difference
+        let ascentPct = 0.35; //looks best when descent is longer than ascent
+        let descentPct = 1 - ascentPct;
+        let numFramesUp = Math.floor(ascentPct * thisBeatDurInFrames);
+        let numFramesDown = Math.ceil(descentPct * thisBeatDurInFrames);
 
-    // Make array of number of frames length with px location
-    // Need to remove first coord and add a zero to the end of set
-    bbMotionObj_thisTempo['descent'] = [];
+        let ascentFactor = 0.2;
+        let descentFactor = 2.8;
 
-    descentPlot.forEach((coords, coordsIx) => {
+        let ascentPlot = plot(function(x) {
+          return Math.pow(x, ascentFactor);
+        }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
 
-      bbMotionObj_thisTempo.descent.push(Math.round(coords.y)); //round as these are pixels
+        ascentPlot.forEach((ascentPos) => {
 
-    }); // descentPlot.forEach((coords, coordsIx) => END
+          let tBbY = BBCIRC_TOP_CY + ascentPos.y; //calculate the absolute y position of bb
+          bbYpos_thisTempo.push(Math.round(tBbY)); //populate bbYpos_thisTempo array with bby position for every frame
 
-    //#endregion Calc BB Descent
+          //save first bounce for lead-in
+          if (goFrmIx == 1) {
+            leadInDescent.push(tBbY);
+          }
 
-    //#region Calc BB Ascent
+        });
 
-    let ascentFactor = 0.09;
+        let descentPlot = plot(function(x) {
+          return Math.pow(x, descentFactor);
+        }, [0, 1, 0, 1], numFramesDown, BB_TRAVEL_DIST);
 
-    let ascentPlot = plot(function(x) {
-      return Math.pow(x, ascentFactor);
-    }, [0, 1, 0, 1], ascentDurFrames, BB_TRAVEL_DIST);
+        descentPlot.forEach((descentPos) => {
 
-    // Make array of number of frames length with px location
-    // Need to remove first coord and add a zero to the end of set
-    bbMotionObj_thisTempo['ascent'] = [];
+          let tBbY = BBCIRC_BOTTOM_CY - descentPos.y;
+          bbYpos_thisTempo.push(Math.round(tBbY));
 
-    ascentPlot.forEach((coords, coordsIx) => {
+          //save first bounce for lead-in
+          if (goFrmIx == 1) {
+            leadInDescent.push(tBbY);
+          }
 
-      bbMotionObj_thisTempo.ascent.push(Math.round(coords.y)); //round as these are pixels
+        });
 
-    }); // ascentPlot.forEach((coords, coordsIx) => END
+      } // if(goFrmIx>0) END
 
-
-    //#endregion Calc BB Ascent
-
-    //#region Calc BB Bounce
-    let bbOneBeatBounce_thisTempo = [];
-
-    //ascent; starts at bottom position 0
-    bbMotionObj_thisTempo.ascent.forEach((ascentPos) => {
-      let tBbY = BBCIRC_TOP_CY + ascentPos;
-      bbOneBeatBounce_thisTempo.push(tBbY);
-    });
-    //descent
-    bbMotionObj_thisTempo.descent.forEach((descentPos) => {
-      let tBbY = BBCIRC_BOTTOM_CY - descentPos;
-      bbOneBeatBounce_thisTempo.push(tBbY);
-    });
-
-
-    //#endregion Calc BB Bounce
-
-    //#region Populate bbYpos_thisTempo with BB Y pos for every frame in this tempo's loop
-
-    for (let frmIx = 0; frmIx < thisTemposGoFrames.length; frmIx++) {
-
-      bbYpos_thisTempo.push(BBCIRC_TOP_CY); // Populate BB pos array with BBCIRC_TOP_CY
-
-      let frmState = thisTemposGoFrames[frmIx];
-
-      if (frmIx > 0) { // leave out initial beat at frames 0
-
-        if (frmState == 1) { //if go frame count back and find frame when descent starts, then replace values in bbYpos_thisTempo with proper bb-y position
-
-          let tCurrFrm = 0; //inc for counting frames backwards
-
-          for (let dFrmIx = bbMotionObj_thisTempo.descent.length - 1; dFrmIx >= 0; dFrmIx--) { //count backwards through descent array with last value being bottom cy
-
-            let newBBy = BBCIRC_BOTTOM_CY - bbMotionObj_thisTempo.descent[dFrmIx]; //descent array [0] contains largest value so take bottom bby and subtract the descent frame num frames
-            bbYpos_thisTempo[frmIx - tCurrFrm] = newBBy; //count back from this frame
-            tCurrFrm++;
-
-          } // for(let frmIx=bbMotionObj_thisTempo.descent.length-1;frmIx>=0;frmIx++) END
-
-        } // if (frmState == 1) END
-
-      } //if (frmIx > 0) END
-
-    } // for (var frmIx = 0; frmIx < goFrameCycles_perTempo[tTempo].length; frmIx++) END
-
-    //#endregion Populate bbYpos_thisTempo with BB Y pos for every frame in this tempo's loop
+    }); // setOfGoFrames.forEach((goFrm, goFrmIx) => END
 
     //#endregion Calc BBs
 
@@ -600,26 +558,26 @@ let calculateScore = function() {
       bbYpos_leadIn_thisTempo.push(BBCIRC_BOTTOM_CY);
     });
 
+    //make 1 descent just before first beat
+    leadInDescent.forEach((bbYpos, dIx) => { //leadInDescent is already reversed so first index is lowest bbYpos
+      let startIx = bbYpos_leadIn_thisTempo.length - 1 - leadInDescent.length;
+      let thisIx = startIx+dIx;
+      bbYpos_leadIn_thisTempo[thisIx] = bbYpos;
+    });
 
-    //make descent ascent one array and revise
-    if (thisTempo_leadIn_goFrames.length >= framesPerBeat) { //if long enough lead in to accommodate bb descent
-
-      bbMotionObj_thisTempo.descent.forEach((descentYpos, descentIx) => { //replace last few frames of bb leadin with descent
-        bbYpos_leadIn_thisTempo[bbYpos_leadIn_thisTempo.length - 1 - descentIx] = BBCIRC_BOTTOM_CY - descentYpos;
-      });
-
-    }
 
     //#endregion Lead In - BBs
 
-    // </editor-fold> END BBs
 
     bbYpos_perTempo.push(bbYpos_thisTempo);
     bbYpos_leadIn_perTempo.push(bbYpos_leadIn_thisTempo);
-    console.log(bbMotionObj_thisTempo);
+
+
+    // </editor-fold> END BBs
+
   }); // scoreData.tempos.forEach((tTempo) => END
 
-  console.log(bbYpos_perTempo);
+  // console.log(bbYpos_perTempo);
 
 } // let calculateScore = function()
 
@@ -2077,7 +2035,7 @@ let FRAMECOUNT = 0;
 let PIECE_TIME_MS = 0
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const LEAD_IN_TIME_SEC = 1;
+const LEAD_IN_TIME_SEC = 3;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 let cumulativeChangeBtwnFrames_MS = 0;
