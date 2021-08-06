@@ -312,6 +312,12 @@ let bbYpos_perTempo = [];
 let bbYpos_leadIn_perTempo = [];
 //##endef BBs
 
+//#ef Scrolling Cursors
+
+let scrollingCsrCoords_perTempo = [];
+
+//#endef Scrolling Cursors
+
 // #endef END Calculate Score Vars
 
 let calculateScore = function() {
@@ -563,7 +569,7 @@ let calculateScore = function() {
     //make 1 descent just before first beat
     leadInDescent.forEach((bbYpos, dIx) => { //leadInDescent is already reversed so first index is lowest bbYpos
       let startIx = bbYpos_leadIn_thisTempo.length - 1 - leadInDescent.length;
-      let thisIx = startIx+dIx;
+      let thisIx = startIx + dIx;
       bbYpos_leadIn_thisTempo[thisIx] = bbYpos;
     });
 
@@ -579,6 +585,41 @@ let calculateScore = function() {
 
     // #ef Scrolling Cursors
 
+    let scrollingCsrCoords_thisTempo = [];
+
+    // Calculate 1 16 beat cycle that will loop
+    let scrollingCsr_pxPerFrame = BEAT_L_PX / framesPerBeat;
+    let currScrCsrX = FIRST_BEAT_L; //start on first beat; but will loop to x=0 as the last beat of line is shorter and beat 8/16 finishes in the beginning of the line
+    let scrollingCursorLoop_totalNumFrames = Math.round(16 * framesPerBeat); //calc num frames in 16 beat loop
+    let numPxIn8beats = 8 * BEAT_L_PX; //for use to loop x
+    let beat9Frame = framesPerBeat * 8; //for use to know when to move to second line
+
+    for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) { // total number of frames in a 16 beat cycle
+
+      let tCoords = {};
+
+      currScrCsrX = (currScrCsrX + scrollingCsr_pxPerFrame)  % numPxIn8beats;
+      tCoords['x'] = currScrCsrX;
+
+      if (frmIx >= beat9Frame) { // which staff line Y
+
+        tCoords['y1'] = scrollingCursor_y1_l2;
+        tCoords['y2'] = scrollingCursor_y2_l2;
+      } else {
+        tCoords['y1'] = scrollingCursor_y1_l1;
+        tCoords['y2'] = scrollingCursor_y2_l1;
+
+      }
+
+      scrollingCsrCoords_thisTempo.push(tCoords);
+
+    } // for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) END
+
+    scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
+
+    //to test mark end of last beat to see if it loops there
+    //#endef Scrolling Cursors
+
 
   }); // scoreData.tempos.forEach((tTempo) => END
 
@@ -588,9 +629,6 @@ let calculateScore = function() {
 
 
 // #endef END Calculate Score
-
-
-// #endef Calculate Score
 
 
 //#endef RUNTIME
@@ -1022,6 +1060,7 @@ function updateTempoFrets() {
 
 // #ef Bouncing Balls
 
+
 // #ef BouncingBalls Variables
 
 let bbSet = [];
@@ -1289,6 +1328,11 @@ for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
 
 // #endef Beat Coordinates
 
+const scrollingCursor_y1_l1 = beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+const scrollingCursor_y2_l1 = beatCoords[0].y + HALF_NOTEHEAD_H
+const scrollingCursor_y1_l2 = beatCoords[8].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+const scrollingCursor_y2_l2 = beatCoords[8].y + HALF_NOTEHEAD_H
+
 // #ef notationSvgPaths_labels
 let notationSvgPaths_labels = [{
     path: "/pieces/sf004/notationSVGs/quintuplet.svg",
@@ -1478,6 +1522,45 @@ function wipeTempoCsrs() {
 // #endef END wipeTempoCsrs
 
 // #endef END Notation Scrolling Cursors
+
+// #ef updateScrollingCsrs
+
+function updateScrollingCsrs() {
+
+  //##ef Lead In - BBs
+  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+
+
+
+  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  //##endef Lead In - bbs
+
+  //##ef Animate BBs
+  else {
+
+    scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
+
+      let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+      let tX = posObjSet[setIx].x;
+      let tY1 = posObjSet[setIx].y1;
+      let tY2 = posObjSet[setIx].y2;
+      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
+      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
+
+    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
+
+  } //else END
+
+  //##endef Animate BBs
+
+
+} // function updateScrollingCsrs() END
+
+// #endef END updateScrollingCsrs
 
 // #ef Player Tokens
 
@@ -2114,6 +2197,7 @@ function update() {
   updateGoFrets();
   updateBBs();
   updateBbBouncePad();
+  updateScrollingCsrs();
 
 }
 

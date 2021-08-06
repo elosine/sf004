@@ -1,4 +1,4 @@
-//<editor-fold> LIBRARIES
+//#ef LIBRARIES
 var express = require('express');
 var app = express();
 var path = require('path');
@@ -6,30 +6,30 @@ var timesyncServer = require('timesync/server');
 var httpServer = require('http').createServer(app);
 io = require('socket.io').listen(httpServer);
 const fs = require('fs');
-//</editor-fold> END LIBRARIES
+//#endef END LIBRARIES
 
-//<editor-fold> HTTP SERVER
+//#ef HTTP SERVER
 const PORT = process.env.PORT || 5000
 httpServer.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-//</editor-fold> END HTTP SERVER
+//#endef END HTTP SERVER
 
-//<editor-fold> SERVE STATIC FILES THROUGH EXPRESS
+//#ef SERVE STATIC FILES THROUGH EXPRESS
 app.use(express.static(path.join(__dirname, '/public')));
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/pieces/sf004/sf004_launchPage.html'));
 });
-//</editor-fold> END SERVER STATIC FILES
+//#endef END SERVER STATIC FILES
 
-//<editor-fold> TIMESYNC SERVER
+//#ef TIMESYNC SERVER
 app.use('/timesync', timesyncServer.requestHandler);
-//</editor-fold> END TIMESYNC SERVER
+//#endef END TIMESYNC SERVER
 
-//<editor-fold> SOCKET IO
+//#ef SOCKET IO
 
 io.on('connection', function(socket) {
 
 
-  //<editor-fold> LOAD PIECE FROM SERVER
+  //#ef LOAD PIECE FROM SERVER
   // Request for load piece from splash page
   socket.on('sf004_loadPieceFromServer', function(data) {
     let pieceId = data.pieceId;
@@ -52,9 +52,9 @@ io.on('connection', function(socket) {
       });
     });
   });
-  //</editor-fold> END LOAD PIECE FROM SERVER
+  //#endef END LOAD PIECE FROM SERVER
 
-  //<editor-fold> Set Start Time Broadcast
+  //#ef Set Start Time Broadcast
 
   socket.on('sf004_newStartTimeBroadcast_toServer', function(data) {
     console.log(data);
@@ -73,8 +73,8 @@ io.on('connection', function(socket) {
 
   }); // socket.on('sf004_newStartTimeBroadcast_send', function(data) END
 
-  //</editor-fold> END Set Start Time Broadcast
+  //#endef END Set Start Time Broadcast
 
 }); // End Socket IO
 
-//</editor-fold> >> END SOCKET IO
+//#endef >> END SOCKET IO
