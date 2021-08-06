@@ -474,6 +474,7 @@ let rrandInt = function(min, max) {
 }
 // #endef END rrandInt
 
+
 // #ef choose
 
 let choose = function(choices) {
@@ -485,6 +486,7 @@ let choose = function(choices) {
 }
 
 // #endef END choose
+
 
 // #ef generateFileNameWdate
 let generateFileNameWdate = function(name) {
@@ -988,6 +990,7 @@ var coords = plot( function(x) {
 
 // #endef END plot
 
+
 // #ef deepCopy - array and object
 
 // Helper function to deal with Objects
@@ -1010,12 +1013,12 @@ const deepCopyObject = (obj) => {
 const deepCopy = (arr) => {
   let copy = [];
   arr.forEach(elem => {
-    if (Array.isArray(elem)) {
+    if(Array.isArray(elem)){
       copy.push(deepCopy(elem))
-    } else {
+    }else{
       if (typeof elem === 'object') {
         copy.push(deepCopyObject(elem))
-      } else {
+    } else {
         copy.push(elem)
       }
     }
@@ -1026,199 +1029,6 @@ const deepCopy = (arr) => {
 //const array2 = deepCopy(array1/obj1);
 
 // #endef END deepCopy - array and object
-
-// #ef playerTokens
-
-let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
-
-  let playerTokenObj = {}
-  let yAdjSvg = 0;
-  let yAdjTxt = 0;
-
-  switch (type) {
-
-    case 0:
-
-      yAdjSvg = 10;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
-      yAdjTxt = 10;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
-
-      let tCirc = mkSvgCircle({
-        svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
-        r: 9,
-        fill: 'none',
-        stroke: clr_neonMagenta,
-        strokeW: 3
-      });
-
-      playerTokenObj['svg'] = tCirc;
-
-      let tCircText = mkSvgText({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
-        justifyH: 'middle',
-        justifyV: 'central',
-        fontSz: 13,
-        txt: '1'
-      });
-
-      playerTokenObj['txt'] = tCircText;
-
-      break;
-
-    case 1:
-
-      yAdjSvg = 12;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
-      yAdjTxt = 8;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
-
-      let tTri = mkSvgTriangle({
-        svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
-        h: 23,
-        w: 23,
-        fill: 'none',
-        stroke: clr_neonMagenta,
-        strokeW: 3
-      });
-
-      playerTokenObj['svg'] = tTri;
-
-      let tTriText = mkSvgText({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
-        justifyH: 'middle',
-        justifyV: 'central',
-        fontSz: 13,
-        txt: '2'
-      });
-
-      playerTokenObj['txt'] = tTriText;
-
-      break;
-
-    case 2:
-
-      yAdjSvg = 14;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
-      yAdjTxt = 14;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
-
-      let tDia = mkSvgDiamond({
-        svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
-        h: 21,
-        w: 21,
-        fill: 'none',
-        stroke: clr_neonMagenta,
-        strokeW: 3
-      });
-
-      playerTokenObj['svg'] = tDia;
-
-      let tDiaText = mkSvgText({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
-        justifyH: 'middle',
-        justifyV: 'central',
-        fontSz: 13,
-        txt: '3'
-      });
-
-      playerTokenObj['txt'] = tDiaText;
-
-      break;
-
-    case 3:
-
-      yAdjSvg = 16;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
-      yAdjTxt = 8;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
-
-      let tArc = mkSvgArc({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjSvg,
-        radius: 15,
-        startAngle: 90,
-        endAngle: 270,
-        fill: 'none',
-        stroke: clr_neonMagenta,
-        strokeW: 3,
-        strokeCap: 'round'
-      });
-
-      playerTokenObj['svg'] = tArc;
-
-      let tArcText = mkSvgText({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
-        justifyH: 'middle',
-        justifyV: 'central',
-        fontSz: 13,
-        txt: '4'
-      });
-
-      playerTokenObj['txt'] = tArcText;
-
-      break;
-
-    case 4:
-
-      yAdjSvg = 19;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
-      yAdjTxt = 10;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
-
-      let tSqr = mkSvgRect({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjSvg,
-        w: 18,
-        h: 18,
-        fill: 'none',
-        stroke: clr_neonMagenta,
-        strokeW: 3
-      });
-
-      playerTokenObj['svg'] = tSqr;
-
-      let tSqrText = mkSvgText({
-        svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
-        justifyH: 'middle',
-        justifyV: 'central',
-        fontSz: 13,
-        txt: '5'
-      });
-
-      playerTokenObj['txt'] = tSqrText;
-
-      break;
-
-  } //switch (type) end
-
-
-} //function makePlayerTokens() end
-
-// #endef END playerTokens
-
-
-
-
-
 
 
 // #ef

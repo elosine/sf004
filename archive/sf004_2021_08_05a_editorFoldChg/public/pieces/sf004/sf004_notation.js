@@ -312,12 +312,6 @@ let bbYpos_perTempo = [];
 let bbYpos_leadIn_perTempo = [];
 //##endef BBs
 
-//#ef Scrolling Cursors
-
-let scrollingCsrCoords_perTempo = [];
-
-//#endef Scrolling Cursors
-
 // #endef END Calculate Score Vars
 
 let calculateScore = function() {
@@ -569,7 +563,7 @@ let calculateScore = function() {
     //make 1 descent just before first beat
     leadInDescent.forEach((bbYpos, dIx) => { //leadInDescent is already reversed so first index is lowest bbYpos
       let startIx = bbYpos_leadIn_thisTempo.length - 1 - leadInDescent.length;
-      let thisIx = startIx + dIx;
+      let thisIx = startIx+dIx;
       bbYpos_leadIn_thisTempo[thisIx] = bbYpos;
     });
 
@@ -585,44 +579,6 @@ let calculateScore = function() {
 
     // #ef Scrolling Cursors
 
-    let scrollingCsrCoords_thisTempo = [];
-
-    // Calculate 1 16 beat cycle that will loop
-    let scrollingCsr_pxPerFrame = BEAT_L_PX / framesPerBeat;
-    let lastBeatOfLine_durFrames = LAST_BEAT_W/scrollingCsr_pxPerFrame; // first beat starts at FIRST_BEAT_L so part of last beat of line is before first beat; last beat is shorter
-    let currScrCsrX = FIRST_BEAT_L; //start on first beat; but will loop to x=0 as the last beat of line is shorter and beat 8/16 finishes in the beginning of the line
-    let scrollingCursorLoop_totalNumFrames = Math.round(16 * framesPerBeat); //calc num frames in 16 beat loop
-    console.log(scrollingCursorLoop_totalNumFrames);
-    let numPxIn8beats = 8 * BEAT_L_PX; //for use to loop x
-    let lastFrameOfFirstLine = Math.floor((framesPerBeat*7) + lastBeatOfLine_durFrames); //for use to know when to move to second line
-    console.log('fd ' + lastFrameOfFirstLine);
-
-    for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) { // total number of frames in a 16 beat cycle
-
-      let tCoords = {};
-
-      currScrCsrX = (currScrCsrX + scrollingCsr_pxPerFrame) % numPxIn8beats;
-      tCoords['x'] = currScrCsrX;
-
-      if (frmIx >= lastFrameOfFirstLine) { // which staff line Y
-
-        tCoords['y1'] = scrollingCursor_y1_l2;
-        tCoords['y2'] = scrollingCursor_y2_l2;
-      } else {
-        tCoords['y1'] = scrollingCursor_y1_l1;
-        tCoords['y2'] = scrollingCursor_y2_l1;
-
-      }
-
-      scrollingCsrCoords_thisTempo.push(tCoords);
-
-    } // for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) END
-
-    scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
-
-    //to test mark end of last beat to see if it loops there
-    //#endef Scrolling Cursors
-
 
   }); // scoreData.tempos.forEach((tTempo) => END
 
@@ -632,6 +588,9 @@ let calculateScore = function() {
 
 
 // #endef END Calculate Score
+
+
+// #endef Calculate Score
 
 
 //#endef RUNTIME
@@ -1063,7 +1022,6 @@ function updateTempoFrets() {
 
 // #ef Bouncing Balls
 
-
 // #ef BouncingBalls Variables
 
 let bbSet = [];
@@ -1331,11 +1289,6 @@ for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
 
 // #endef Beat Coordinates
 
-const scrollingCursor_y1_l1 = beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const scrollingCursor_y2_l1 = beatCoords[0].y + HALF_NOTEHEAD_H
-const scrollingCursor_y1_l2 = beatCoords[8].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const scrollingCursor_y2_l2 = beatCoords[8].y + HALF_NOTEHEAD_H
-
 // #ef notationSvgPaths_labels
 let notationSvgPaths_labels = [{
     path: "/pieces/sf004/notationSVGs/quintuplet.svg",
@@ -1526,49 +1479,6 @@ function wipeTempoCsrs() {
 
 // #endef END Notation Scrolling Cursors
 
-// #ef updateScrollingCsrs
-
-function updateScrollingCsrs() {
-
-  //##ef Lead In
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
-
-
-
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
-  //##endef Lead
-
-  //##ef Loop
-  else {
-
-    scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
-
-      let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-      let tX = posObjSet[setIx].x;
-      let tY1 = posObjSet[setIx].y1;
-      let tY2 = posObjSet[setIx].y2;
-      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
-      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
-
-
-      if(FRAMECOUNT < (LEAD_IN_FRAMES + (20*60))){
-        console.log('tempo:' + tempoIx + ' ' + 'setIx:' + setIx + ' ' + 'x:' + tX);
-      }
-    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
-
-  } //else END
-
-  //##endef Loop
-
-
-} // function updateScrollingCsrs() END
-
-// #endef END updateScrollingCsrs
-
 // #ef Player Tokens
 
 let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
@@ -1582,15 +1492,160 @@ function makePlayerTokens() {
 
     for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
 
-      let tPlrObj = {};
-      let tBaseX = beatCoords[15].x; // initial location of player tokens at beginning of last beat
-      let tBaseY = beatCoords[15].y - NOTATION_CURSOR_H; //initial Y loc of plrTkns; base because each token has different y adjustment
+      let tPlrObj = {}
 
-      let thisPlrTokenObj = mkPlrTkns(rhythmicNotationObj.svgCont, playerIx, tBaseX, tBaseY);
+      switch (playerIx) {
 
-      // tPlrObj['svg'].setAttributeNS(null, "display", 'none');
-      // tPlrObj['txt'].setAttributeNS(null, "display", 'none');
+        case 0:
 
+          let tCirc = mkSvgCircle({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 10,
+            r: 9,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tCirc;
+
+          let tCircText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 10,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 13,
+            txt: '1'
+          });
+
+          tPlrObj['txt'] = tCircText;
+
+          break;
+
+        case 1:
+
+          let tTri = mkSvgTriangle({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 12,
+            h: 23,
+            w: 23,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tTri;
+
+          let tTriText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 8,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 13,
+            txt: '2'
+          });
+
+          tPlrObj['txt'] = tTriText;
+
+          break;
+
+        case 2:
+
+          let tDia = mkSvgDiamond({
+            svgContainer: rhythmicNotationObj.svgCont,
+            cx: beatCoords[15].x,
+            cy: beatCoords[15].y - NOTATION_CURSOR_H - 14,
+            h: 21,
+            w: 21,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tDia;
+
+          let tDiaText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 14,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 13,
+            txt: '3'
+          });
+
+          tPlrObj['txt'] = tDiaText;
+
+          break;
+
+        case 3:
+
+          let tArc = mkSvgArc({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 16,
+            radius: 15,
+            startAngle: 90,
+            endAngle: 270,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3,
+            strokeCap: 'round'
+          });
+
+          tPlrObj['svg'] = tArc;
+
+          let tArcText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 8,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 13,
+            txt: '4'
+          });
+
+          tPlrObj['txt'] = tArcText;
+
+          break;
+
+        case 4:
+
+          let tSqr = mkSvgRect({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x - 9,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 19,
+            w: 18,
+            h: 18,
+            fill: 'none',
+            stroke: clr_neonMagenta,
+            strokeW: 3
+          });
+
+          tPlrObj['svg'] = tSqr;
+
+          let tSqrText = mkSvgText({
+            svgContainer: rhythmicNotationObj.svgCont,
+            x: beatCoords[15].x,
+            y: beatCoords[15].y - NOTATION_CURSOR_H - 10,
+            justifyH: 'middle',
+            justifyV: 'central',
+            fontSz: 13,
+            txt: '5'
+          });
+
+          tPlrObj['txt'] = tSqrText;
+
+          break;
+
+      } //switch (playerIx) end
+
+      tPlrObj['svg'].setAttributeNS(null, "display", 'none');
+      tPlrObj['txt'].setAttributeNS(null, "display", 'none');
       tPlrSet.push(tPlrObj);
 
     } //for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
@@ -1606,19 +1661,17 @@ function makePlayerTokens() {
 function wipePlayerTokens() {
 
   playerTokens.forEach((thisTemposPlrTokensDict) => {
-    thisTemposPlrTokensDict.forEach((plrTknObj) => {
 
-      for (let key in plrTknObj) {
+    for (let key in thisTemposPlrTokensDict) {
 
-        let plrTknSvg = plrTknObj[key].svg;
-        let plrTknTxt = plrTknObj[key].txt;
+      let plrTknSvg = thisTemposPlrTokensDict[key].svg;
+      let plrTknTxt = thisTemposPlrTokensDict[key].txt;
 
-        plrTknSvg.setAttributeNS(null, 'display', 'none');
-        plrTknTxt.setAttributeNS(null, 'display', 'none');
+      plrTknSvg.setAttributeNS(null, 'display', 'none');
+      plrTknTxt.setAttributeNS(null, 'display', 'none');
 
-      }
+    }
 
-    });
   });
 
 }
@@ -1990,7 +2043,7 @@ let FRAMECOUNT = 0;
 let PIECE_TIME_MS = 0
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const LEAD_IN_TIME_SEC = 2;
+const LEAD_IN_TIME_SEC = 3;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 let cumulativeChangeBtwnFrames_MS = 0;
@@ -2044,7 +2097,7 @@ function wipe() {
   wipeSigns();
   wipeBbComplex();
   wipePitchSets();
-  // wipeRhythmicNotation();
+  wipeRhythmicNotation();
   wipeTempoCsrs();
   wipePlayerTokens();
   wipeArticulations();
@@ -2061,7 +2114,6 @@ function update() {
   updateGoFrets();
   updateBBs();
   updateBbBouncePad();
-  updateScrollingCsrs();
 
 }
 
