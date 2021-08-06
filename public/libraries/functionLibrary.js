@@ -1,18 +1,30 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
+
+let a = [0,1,2,3,4,5,6,7,8,9];
+let s = 2;
+let e = 4;
+let amt = e-s +1;
+let b = a.splice(2, amt);
+console.log(a);
+
+
 // #ef Colors
-let clr_orange = 'rgba(240,75,0,255)';
+let clr_brightOrange = 'rgba(240,75,0,255)';
+let clr_brightOrange2 = '#ea4607';
 let clr_brightBlue = 'rgba(56,126,211,255)';
 let clr_mustard = 'rgba(244,182,0,255)';
 let clr_brightRed = 'rgba(229,42,25,255)';
+let clr_brightRed2 = '#dc3f3d';
+let clr_darkRed2 = '#9a0504';
+let clr_darkRed = '#a60701';
 let clr_green = 'rgba(0,147,92,255)';
 let clr_limeGreen = 'rgb(153,255,0)';
 let clr_brightGreen = '#31d196';
 let clr_navyBlue = 'rgba(28,72,121,255)';
 let clr_plum = 'rgba(82,44,85,255)';
 let clr_lavander = 'rgba(162,126,198,255)';
-let clr_darkRed = '#a60701';
 let clr_lightGrey = '#adadb7';
 let clr_blueGrey = '#708090';
 let clr_lightGreen = '#85b068';

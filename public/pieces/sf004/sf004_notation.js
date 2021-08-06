@@ -1,11 +1,12 @@
 //#ef RUNTIME
 
 
-// #ef Global Vars
+//#ef Global Vars
 
 const NUM_TEMPOS = 5;
 const NUM_PLAYERS = 5;
-const TEMPO_COLORS = [clr_orange, clr_brightGreen, clr_brightRed, clr_brightBlue, clr_lavander];
+const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
+// const TEMPO_COLORS = [clr_brightOrange, clr_lavander, clr_brightGreen, clr_brightBlue, clr_darkRed2];
 
 // #endef END Global Vars
 
@@ -113,6 +114,7 @@ function processUrlArgs() {
 
 // #ef Generate Score Data
 
+
 let scoreData;
 
 let generateScoreData = function() {
@@ -138,10 +140,9 @@ let generateScoreData = function() {
 
   //##endef Tempos
 
-
   //##ef Tempo Changes Per Player
 
-  let tempoChangeTimes_perPlayer = [];
+  let tempoChangeFrameNum_perPlayer = [];
 
   for (let plrNum = 0; plrNum < NUM_PLAYERS; plrNum++) {
 
@@ -208,15 +209,14 @@ let generateScoreData = function() {
 
     //##endef Generate Set of when tempo changes are to occur in beats
 
-    tempoChangeTimes_perPlayer.push(tempoChangeFrames_thisPlayer);
+    tempoChangeFrameNum_perPlayer.push(tempoChangeFrames_thisPlayer);
 
   } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
 
-  tempScoreData['tempoChanges'] = tempoChangeTimes_perPlayer;
+  // tempScoreData['tempoChanges'] = tempoChangeFrameNum_perPlayer;
 
 
   //##endef Tempo Changes Per Player
-
 
   //##ef Unison Tempo Changes
 
@@ -277,12 +277,57 @@ let generateScoreData = function() {
     }
 
   }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
-
-  tempScoreData['unisons'] = unisonTempoChangeObjs;
+  console.log(unisonTempoChangeObjs);
+  console.log(tempoChangeFrameNum_perPlayer);
+  // tempScoreData['unisons'] = unisonTempoChangeObjs;
 
   //##endef Unison Tempo Changes
 
+  //##ef Combined Tempo Changes Per Player
 
+  tempoChangeFrameNum_perPlayer.forEach((tempoChgTimes_thisPlr) => {
+
+    let combinedTempoChgFrameNums_thisPlr = deepCopy(tempoChgTimes_thisPlr); //make a copy; once unisons are intermingled, keep this set
+
+    unisonTempoChangeObjs.forEach((unisonTempoChgObj, i) => { //For each unison, look at a players tempo changes and replace
+
+      let unisonStartFrm = unisonTempoChgObj.frame;
+      let unisonDur = unisonTempoChgObj.durFrames;
+      let unisonEndFrm = unisonStartFrm + unisonDur;
+      let replaceStartIx, replaceEndIx; //remove up to and including start and end
+
+      for (let tempoChgFrmSetIx = 0; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) { // look thru og set to find which indexes to replace with this unison
+
+        let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
+
+        if (ogTempoChgFrame >= unisonStartFrm) { //find where to begin replace in original set
+          replaceStartIx = tempoChgFrmSetIx;
+          break;
+        }
+
+      } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
+
+      for (let tempoChgFrmSetIx = replaceStartIx; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) {
+
+        let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
+
+        if (ogTempoChgFrame >= unisonEndFrm) { //find where to begin replace in original set
+          if (ogTempoChgFrame == unisonEndFrm) {
+            replaceEndIx = tempoChgFrmSetIx;
+          } else if (ogTempoChgFrame > unisonEndFrm) {
+             replaceEndIx = tempoChgFrmSetIx -1;
+          }
+          break;
+        } // if (ogTempoChgFrame >= unisonEndFrm) END
+
+      } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
+
+    }); // unisonTempoChangeObjs.forEach((item, i) => END
+
+  }); // tempoChangeFrameNum_perPlayer.forEach((tempoChgTimesSet) => END
+
+
+  //##endef Combined Tempo Changes Per Player
 
   return tempScoreData;
 
@@ -295,6 +340,7 @@ let generateScoreData = function() {
 
 
 // #ef Calculate Score Vars
+
 
 //##ef Tempo Frets
 let tempoFretLocs_eachFrame_perTempo = [];
@@ -318,28 +364,27 @@ let scrollingCsrCoords_perTempo = [];
 
 //#endef Scrolling Cursors
 
+
 // #endef END Calculate Score Vars
 
 let calculateScore = function() {
-
   scoreData.tempos.forEach((tTempo, thisTempoIx) => {
-
 
     // #ef Tempo Frets
 
     //##ef Comments
     // There will be an array of tempo fret locations for each tempo
     // The array will contain an array of Tempo Fret locations for each frame
-    // The array can loop and is tempoLoopLength beats long, can change below
+    // The array can loop and is tempoLoopLengthBeats beats long, can change below
     //##endef Comments
 
     //##ef Tempo Fret Vars
     let beatsPerSec = tTempo / 60;
     let pxPerBeat_pxBtwnFrets = PX_PER_SEC / beatsPerSec;
     let framesPerBeat = pxPerBeat_pxBtwnFrets / PX_PER_FRAME;
-    let tempoLoopLength = 100;
+    let tempoLoopLengthBeats = TOTAL_NUM_BEATS * 10;
     let tfSetCycle = Math.ceil(framesPerBeat); // num of frames that need to pass to travel one beat worth of distance
-    let thisTempoLoop_numFrames = Math.round(framesPerBeat * tempoLoopLength); // number equal to tempoLoopLength beats worth of frames this will be the number of frames in the cycle
+    let thisTempoLoop_numFrames = Math.round(framesPerBeat * tempoLoopLengthBeats); // number equal to tempoLoopLengthBeats beats worth of frames this will be the number of frames in the cycle
     let maxLocsToCalc = thisTempoLoop_numFrames * tfSetCycle; //the maximum number of tempo fret locations to calculate so that there will be enough locations in the last frame of the cycle
     //##endef Tempo Fret Vars
 
@@ -585,48 +630,58 @@ let calculateScore = function() {
 
     // #ef Scrolling Cursors
 
-    let scrollingCsrCoords_thisTempo = [];
+    let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
+    let currBeatNum_InLoop = 0;
+    let incWithinBeat_eachFrame = 0; //how much to add to x between goframes/beats
 
-    // Calculate 1 16 beat cycle that will loop
-    let scrollingCsr_pxPerFrame = BEAT_L_PX / framesPerBeat;
-    let lastBeatOfLine_durFrames = LAST_BEAT_W/scrollingCsr_pxPerFrame; // first beat starts at FIRST_BEAT_L so part of last beat of line is before first beat; last beat is shorter
-    let currScrCsrX = FIRST_BEAT_L; //start on first beat; but will loop to x=0 as the last beat of line is shorter and beat 8/16 finishes in the beginning of the line
-    let scrollingCursorLoop_totalNumFrames = Math.round(16 * framesPerBeat); //calc num frames in 16 beat loop
-    console.log(scrollingCursorLoop_totalNumFrames);
-    let numPxIn8beats = 8 * BEAT_L_PX; //for use to loop x
-    let lastFrameOfFirstLine = Math.floor((framesPerBeat*7) + lastBeatOfLine_durFrames); //for use to know when to move to second line
-    console.log('fd ' + lastFrameOfFirstLine);
+    thisTemposGoFrames.forEach((goFrmState, frmIx) => { //use go frames array so that all tempo elements are coordinated by go frame
 
-    for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) { // total number of frames in a 16 beat cycle
+      let tCoordsObj = {}; //{x:,y1:,y2:}
+      let notationPxPerFrame_thisTempo = BEAT_L_PX / framesPerBeat; //how many pixels to advance per frame for this tempo
 
-      let tCoords = {};
+      if (goFrmState == 1) { //what happens on goframes; go frames will coordinate all so cursors will be on beat each goframe
 
-      currScrCsrX = (currScrCsrX + scrollingCsr_pxPerFrame) % numPxIn8beats;
-      tCoords['x'] = currScrCsrX;
+        if (frmIx > 0) currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS; //increment beat in notation loop; don't increment first beat
 
-      if (frmIx >= lastFrameOfFirstLine) { // which staff line Y
+        // store coordinates for this beat
+        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x; //look up x coordinate for this beat
+        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
 
-        tCoords['y1'] = scrollingCursor_y1_l2;
-        tCoords['y2'] = scrollingCursor_y2_l2;
-      } else {
-        tCoords['y1'] = scrollingCursor_y1_l1;
-        tCoords['y2'] = scrollingCursor_y2_l1;
+        incWithinBeat_eachFrame = 0; //reset the x incrementer between beats
 
-      }
+      } // if (goFrmState == 1) END
+      //
+      else { // What happens between go frames
 
-      scrollingCsrCoords_thisTempo.push(tCoords);
+        incWithinBeat_eachFrame += notationPxPerFrame_thisTempo; //increment cursor 1 frame worth of beat
+        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + incWithinBeat_eachFrame;
+        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
 
-    } // for (let frmIx = 0; frmIx < scrollingCursorLoop_totalNumFrames; frmIx++) END
+      } // else { // What happens between go frames END
+
+      scrollingCsrCoords_thisTempo.push(tCoordsObj);
+
+    }); // thisTemposGoFrames.forEach((goFrmState, frmIx) => END
 
     scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
 
-    //to test mark end of last beat to see if it loops there
     //#endef Scrolling Cursors
 
+    //#ef Calc Tempo Changes
+
+
+
+    //#endef Calc Tempo Changes
+
+    //#ef Player Tokens
+
+
+
+    //#endef Player Tokens
 
   }); // scoreData.tempos.forEach((tTempo) => END
-
-  // console.log(bbYpos_perTempo);
 
 } // let calculateScore = function()
 
@@ -635,7 +690,6 @@ let calculateScore = function() {
 
 
 //#endef RUNTIME
-
 
 // #ef WORLD
 
@@ -1295,15 +1349,16 @@ const VERT_DIST_BTWN_STAVES = 133;
 const VERT_DIST_BTWN_STAFF_LINES = 8;
 const FIRST_BEAT_L = 12;
 const LAST_BEAT_W = BEAT_L_PX - FIRST_BEAT_L;
-const NUM_BEATS_PER_STAFF = 8;
+const NUM_BEATS_PER_STAFFLINE = 8;
+const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
 const STAFF_BTM_MARGIN = 40;
-const NUM_STAVES = 2;
-const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFF * NUM_STAVES;
+const NUM_STAFFLINES = 2;
+const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
 const NOTEHEAD_W = 10;
 const NOTEHEAD_H = 8;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
-const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFF) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
-const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAVES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 const NOTATION_CURSOR_H = 83;
@@ -1315,13 +1370,13 @@ for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
 
 // #ef Beat Coordinates
 let beatXLocations = [];
-for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFF; beatLocIx++) {
+for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
   beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
 }
 
 let beatCoords = [];
-for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
-  for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFF; beatPerStaffIx++) {
+for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
+  for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFFLINE; beatPerStaffIx++) {
     let tCoordObj = {};
     tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_L_PX);
     tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
@@ -1410,7 +1465,7 @@ function makeRhythmicNotation() {
 
   // #ef StaffLines
   let rhythmicNotationStaffLines = [];
-  for (let staffIx = 0; staffIx < NUM_STAVES; staffIx++) {
+  for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
     let tStaffY = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES);
     let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
@@ -1554,10 +1609,6 @@ function updateScrollingCsrs() {
       tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
       tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
 
-
-      if(FRAMECOUNT < (LEAD_IN_FRAMES + (20*60))){
-        console.log('tempo:' + tempoIx + ' ' + 'setIx:' + setIx + ' ' + 'x:' + tX);
-      }
     }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
 
   } //else END
@@ -1977,7 +2028,6 @@ function wipeArticulations() {
 
 // #endef END WORLD
 
-
 // #ef ANIMATION
 
 //#ef Animation Engine
@@ -2110,7 +2160,6 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
 // #endef END markStartTime_startAnimation
 
 //#endef ANIMATION
-
 
 // #ef PANELS
 
@@ -2366,7 +2415,3 @@ function makeControlPanel() {
 
 
 // #endef PANELS
-
-
-// #ef
-// #endef END
