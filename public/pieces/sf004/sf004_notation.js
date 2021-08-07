@@ -288,6 +288,7 @@ let generateScoreData = function() {
   tempoChangeFrameNum_perPlayer.forEach((tempoChgTimes_thisPlr) => {
 
     let combinedTempoChgFrameNums_thisPlr = deepCopy(tempoChgTimes_thisPlr); //make a copy; once unisons are intermingled, keep this set
+    let combinedTempoChgFrameNums_thisPlr_spliceObjs = []; //[{start:,numIxs:}]
 
     unisonTempoChangeObjs.forEach((unisonTempoChgObj, i) => { //For each unison, look at a players tempo changes and replace
 
@@ -296,6 +297,7 @@ let generateScoreData = function() {
       let unisonEndFrm = unisonStartFrm + unisonDur;
       let replaceStartIx, replaceEndIx; //remove up to and including start and end
 
+      //Get replaceStartIx. First index to replace with unison
       for (let tempoChgFrmSetIx = 0; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) { // look thru og set to find which indexes to replace with this unison
 
         let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
@@ -307,23 +309,27 @@ let generateScoreData = function() {
 
       } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
 
-      for (let tempoChgFrmSetIx = replaceStartIx; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) {
+      //Get replaceEndIx. Index when unison is over
+      for (let tempoChgFrmSetIx = 0; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) { // look thru og set to find which indexes to replace with this unison
 
         let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
 
         if (ogTempoChgFrame >= unisonEndFrm) { //find where to begin replace in original set
-          if (ogTempoChgFrame == unisonEndFrm) {
-            replaceEndIx = tempoChgFrmSetIx;
-          } else if (ogTempoChgFrame > unisonEndFrm) {
-             replaceEndIx = tempoChgFrmSetIx -1;
-          }
+          replaceEndIx = tempoChgFrmSetIx;
           break;
-        } // if (ogTempoChgFrame >= unisonEndFrm) END
+        }
 
       } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
 
-    }); // unisonTempoChangeObjs.forEach((item, i) => END
+      // Make set of index numbers to replace in splice format: startIx, numOfIxToReplace
+      let spliceObj = {};
+      let replaceNumIx = replaceEndIx - replaceStartIx + 1;
+      spliceObj['start'] = replaceStartIx;
+      spliceObj['numIxs'] = replaceNumIx;
 
+      combinedTempoChgFrameNums_thisPlr_spliceObjs.push(spliceObj);
+    }); // unisonTempoChangeObjs.forEach((item, i) => END
+    console.log(combinedTempoChgFrameNums_thisPlr_spliceObjs);
   }); // tempoChangeFrameNum_perPlayer.forEach((tempoChgTimesSet) => END
 
 
