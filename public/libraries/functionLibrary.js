@@ -2,14 +2,6 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
 
-let a = [0,1,2,3,4,5,6,7,8,9];
-let s = 2;
-let e = 4;
-let amt = e-s +1;
-let b = a.splice(2, amt);
-console.log(a);
-
-
 // #ef Colors
 let clr_brightOrange = 'rgba(240,75,0,255)';
 let clr_brightOrange2 = '#ea4607';
@@ -488,15 +480,27 @@ let rrandInt = function(min, max) {
 
 // #ef choose
 
-let choose = function(choices) {
+let choose = function(choicesArr) {
 
-  let randpick = rrandInt(0, choices.length - 1);
+  let randpick = rrandInt(0, choicesArr.length - 1);
 
-  return choices[randpick];
+  return choicesArr[randpick];
 
 }
 
 // #endef END choose
+
+// #ef chooseIndex
+
+let chooseIndex = function(choicesArr) {
+
+  let randpick = rrandInt(0, choicesArr.length - 1);
+
+  return randpick;
+
+}
+
+// #endef END chooseIndex
 
 // #ef generateFileNameWdate
 let generateFileNameWdate = function(name) {

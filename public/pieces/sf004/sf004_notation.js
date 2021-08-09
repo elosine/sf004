@@ -213,7 +213,7 @@ let generateScoreData = function() {
 
   } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
 
-  // tempScoreData['tempoChanges'] = tempoChangeFrameNum_perPlayer;
+  tempScoreData['tempoChanges'] = tempoChangeFrameNum_perPlayer;
 
 
   //##endef Tempo Changes Per Player
@@ -277,63 +277,11 @@ let generateScoreData = function() {
     }
 
   }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
-  console.log(unisonTempoChangeObjs);
-  console.log(tempoChangeFrameNum_perPlayer);
+
+
   // tempScoreData['unisons'] = unisonTempoChangeObjs;
 
   //##endef Unison Tempo Changes
-
-  //##ef Combined Tempo Changes Per Player
-
-  tempoChangeFrameNum_perPlayer.forEach((tempoChgTimes_thisPlr) => {
-
-    let combinedTempoChgFrameNums_thisPlr = deepCopy(tempoChgTimes_thisPlr); //make a copy; once unisons are intermingled, keep this set
-    let combinedTempoChgFrameNums_thisPlr_spliceObjs = []; //[{start:,numIxs:}]
-
-    unisonTempoChangeObjs.forEach((unisonTempoChgObj, i) => { //For each unison, look at a players tempo changes and replace
-
-      let unisonStartFrm = unisonTempoChgObj.frame;
-      let unisonDur = unisonTempoChgObj.durFrames;
-      let unisonEndFrm = unisonStartFrm + unisonDur;
-      let replaceStartIx, replaceEndIx; //remove up to and including start and end
-
-      //Get replaceStartIx. First index to replace with unison
-      for (let tempoChgFrmSetIx = 0; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) { // look thru og set to find which indexes to replace with this unison
-
-        let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
-
-        if (ogTempoChgFrame >= unisonStartFrm) { //find where to begin replace in original set
-          replaceStartIx = tempoChgFrmSetIx;
-          break;
-        }
-
-      } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
-
-      //Get replaceEndIx. Index when unison is over
-      for (let tempoChgFrmSetIx = 0; tempoChgFrmSetIx < combinedTempoChgFrameNums_thisPlr.length; tempoChgFrmSetIx++) { // look thru og set to find which indexes to replace with this unison
-
-        let ogTempoChgFrame = combinedTempoChgFrameNums_thisPlr[tempoChgFrmSetIx];
-
-        if (ogTempoChgFrame >= unisonEndFrm) { //find where to begin replace in original set
-          replaceEndIx = tempoChgFrmSetIx;
-          break;
-        }
-
-      } // for(let tempoChgFrmSetIx = 0;tempoChgFrmSetIx<combinedTempoChgFrameNums_thisPlr.length;tempoChgFrmSetIx++) END
-
-      // Make set of index numbers to replace in splice format: startIx, numOfIxToReplace
-      let spliceObj = {};
-      let replaceNumIx = replaceEndIx - replaceStartIx + 1;
-      spliceObj['start'] = replaceStartIx;
-      spliceObj['numIxs'] = replaceNumIx;
-
-      combinedTempoChgFrameNums_thisPlr_spliceObjs.push(spliceObj);
-    }); // unisonTempoChangeObjs.forEach((item, i) => END
-    console.log(combinedTempoChgFrameNums_thisPlr_spliceObjs);
-  }); // tempoChangeFrameNum_perPlayer.forEach((tempoChgTimesSet) => END
-
-
-  //##endef Combined Tempo Changes Per Player
 
   return tempScoreData;
 
@@ -365,16 +313,22 @@ let bbYpos_leadIn_perTempo = [];
 //##endef BBs
 
 //#ef Scrolling Cursors
-
 let scrollingCsrCoords_perTempo = [];
-
 //#endef Scrolling Cursors
+
+//#ef Tempo Change Flags
+let tempoChgsByFrame_perPlr = [];
+//#endef Tempo Change Flags
 
 
 // #endef END Calculate Score Vars
 
 let calculateScore = function() {
+
+
+  //#ef Calculations Per Tempo
   scoreData.tempos.forEach((tTempo, thisTempoIx) => {
+
 
     // #ef Tempo Frets
 
@@ -687,8 +641,57 @@ let calculateScore = function() {
 
     //#endef Player Tokens
 
-  }); // scoreData.tempos.forEach((tTempo) => END
 
+  }); // scoreData.tempos.forEach((tTempo) => END
+  //#endef Calculations Per Tempo
+
+
+  //#ef Calculations Per Player
+  scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => {
+
+
+    //#ef Tempo Change Flags
+    //make set that accomodates last tempo change frame number in this set and adds a gap til next tempo change when it loops
+    //random choose tempo, but loop through all tempos
+
+    let tempoChgsByFrame_thisPlr = [];
+    let tTempoSet = [0, 1, 2, 3, 4, 5];
+
+    //make array of frames with -1 = last entry
+    for (let i = 0; i < tempoChgFrameNumSet[tempoChgFrameNumSet.length - 1]; i++) {
+      tempoChgsByFrame_thisPlr.push(-1);
+    }
+
+    tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => { // replace -1 in appropriate frame with tempo number
+
+      if (setIx != tempoChgFrameNumSet.length - 1) { // don't use last tempo change, to give gap to loop
+
+        //decide which tempo; cycle through them all
+        if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4, 5]; //when all used up replenish
+        let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
+        let tNewTempo = tTempoSet[tTempoIx];
+        tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
+
+        tempoChgsByFrame_thisPlr[frmToChgTempo] = tNewTempo;
+
+
+        //add in flag animation
+
+
+
+      } //   if(setIx!=tempoChgFrameNumSet.length-1) END
+
+    }); // tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => END
+
+    tempoChgsByFrame_perPlr.push(tempoChgsByFrame_thisPlr);
+
+    //#endef Tempo Change Flags
+
+
+  }); // scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => END
+  //#endef Calculations Per Player
+
+  console.log(tempoChgsByFrame_perPlr);
 } // let calculateScore = function()
 
 
