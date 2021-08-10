@@ -105,7 +105,8 @@ function init() {
 // #ef URL Args
 
 let PIECE_ID;
-let partsToRun = [];
+// let partsToRun = [];
+let partsToRun = [0, 1, 2, 3, 4];
 let TOTAL_NUM_PARTS_TO_RUN;
 
 function processUrlArgs() {
@@ -664,6 +665,10 @@ let calculateScore = function() {
   scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => {
 
 
+    //Redo this
+    //Store each tempo change with all pixels in its own array w/frame numbers
+    //Collect these into a frame by frame array with an array of signs on screen for each frame
+
     //#ef Tempo Change Flags
     //make set that accomodates last tempo change frame number in this set and adds a gap til next tempo change when it loops
     //random choose tempo, but loop through all tempos
@@ -700,11 +705,15 @@ let calculateScore = function() {
 
     //#ef Build set of flag pos/temponum
 
+
+    //Redo this
+    //Store each tempo change with all pixels in its own array w/frame numbers
+    //Collect these into a frame by frame array with an array of signs on screen for each frame
     tempoChgsByFrame_thisPlr.forEach((tempoNum, frmNum) => {
       if (tempoNum != -1) { //frames with tempo change have vals 0-4 otherwise is -1
-        for (let i=0;i<RUNWAY_L_IN_NUMFRAMES;i++) { //we are going to replace the values in the previous set counting backwards from the frame there is a tempo change and moving the sign back
+        for (let i = 0; i < RUNWAY_L_IN_NUMFRAMES; i++) { //we are going to replace the values in the previous set counting backwards from the frame there is a tempo change and moving the sign back
           let numOfFrameToReplace = frmNum - i;
-          if(numOfFrameToReplace>0){ //make sure we are not going into negative index
+          if (numOfFrameToReplace > 0) { //make sure we are not going into negative index
             let tempoNum_zPos_obj = {};
             tempoNum_zPos_obj['tempoNum'] = tempoNum;
             let zLoc = Math.round(-PX_PER_FRAME * i);
@@ -1745,6 +1754,7 @@ function wipeRhythmicNotation() {
 
 // #ef Signs
 
+
 // #ef Signs Variables
 
 const SIGN_W = TEMPO_FRET_W - 10;
@@ -1813,6 +1823,50 @@ function wipeSigns() {
 }
 
 // #endef END wipeSigns
+
+// #ef updateSigns
+
+function updateSigns() {
+
+  //##ef Lead In
+  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+
+
+
+  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  //##endef Lead
+
+  //##ef Loop
+  else { // loop after lead-in
+
+    tempoChgsByFrame_perPlr.forEach((tempoChgObjSet, plrIx) => { // Loop: set of goFrames
+      if (partsToRun.includes(plrIx)) {
+
+        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % tempoChgObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+        let tempoObj = tempoChgObjSet[setIx]; //{tempoNum:,zLoc:}
+        let tempoNum = tTempoObj.tempoNum;
+        let zLoc = tTempoObj.zLoc;
+
+        if (tempoNum != -1) {
+
+
+          //
+          // signsByTrack[tempoNum]
+
+        } // if(tempoNum != -1) END
+
+      } // if (partsToRun.includes(plrIx) END
+    }); // tempoChgsByFrame_perPlr.forEach((posObjSet, tempoIx) =>  END
+
+  } //else END
+
+  //##endef Loop
+
+
+} // function updateScrollingCsrs() END
+
+// #endef END updateSigns
+
 
 // #endef END Signs
 
