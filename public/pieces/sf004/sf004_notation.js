@@ -8,6 +8,20 @@ const NUM_PLAYERS = 5;
 const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
 // const TEMPO_COLORS = [clr_brightOrange, clr_lavander, clr_brightGreen, clr_brightBlue, clr_darkRed2];
 
+// #ef Animation Engine Variables
+
+const FRAMERATE = 60;
+const MS_PER_FRAME = Math.round(1000.0 / FRAMERATE);
+let FRAMECOUNT = 0;
+let PIECE_TIME_MS = 0
+const PX_PER_SEC = 100;
+const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
+const LEAD_IN_TIME_SEC = 2;
+const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
+const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
+
+// #endef END Animation Engine Variables
+
 // #endef END Global Vars
 
 //#ef SOCKET IO
@@ -683,6 +697,26 @@ let calculateScore = function() {
 
     }); // tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => END
 
+
+    //#ef Build set of flag pos/temponum
+
+    tempoChgsByFrame_thisPlr.forEach((tempoNum, frmNum) => {
+      if (tempoNum != -1) { //frames with tempo change have vals 0-4 otherwise is -1
+        for (let i=0;i<RUNWAY_L_IN_NUMFRAMES;i++) { //we are going to replace the values in the previous set counting backwards from the frame there is a tempo change and moving the sign back
+          let numOfFrameToReplace = frmNum - i;
+          if(numOfFrameToReplace>0){ //make sure we are not going into negative index
+            let tempoNum_zPos_obj = {};
+            tempoNum_zPos_obj['tempoNum'] = tempoNum;
+            let zLoc = Math.round(-PX_PER_FRAME * i);
+            tempoNum_zPos_obj['zLoc'] = zLoc;
+            tempoChgsByFrame_thisPlr[numOfFrameToReplace] = tempoNum_zPos_obj;
+          }
+        }
+      }
+    });
+
+    //#endef Build set of flag pos/temponum
+
     tempoChgsByFrame_perPlr.push(tempoChgsByFrame_thisPlr);
 
     //#endef Tempo Change Flags
@@ -810,9 +844,9 @@ const RUNWAY_H = RENDERER_H;
 const RUNWAY_L = 1000;
 const HALF_RUNWAY_W = RUNWAY_W / 2;
 const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
+const RUNWAY_L_IN_NUMFRAMES = Math.round(RUNWAY_L / PX_PER_FRAME);
 
 // #endef END Runway Variables
-
 
 // #ef makeRunway
 
@@ -2043,15 +2077,6 @@ function wipeArticulations() {
 
 // #ef Animation Engine Variables
 
-const FRAMERATE = 60;
-const MS_PER_FRAME = Math.round(1000.0 / FRAMERATE);
-let FRAMECOUNT = 0;
-let PIECE_TIME_MS = 0
-const PX_PER_SEC = 100;
-const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const LEAD_IN_TIME_SEC = 2;
-const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
-const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 let cumulativeChangeBtwnFrames_MS = 0;
 let lastFrame_epoch;
 let animationEngineIsRunning = false;
