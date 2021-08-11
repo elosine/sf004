@@ -665,76 +665,88 @@ let calculateScore = function() {
   scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => {
 
 
-    //Redo this
-    //Store each tempo change with all pixels in its own array w/frame numbers
-    //Collect these into a frame by frame array with an array of signs on screen for each frame
-
     //#ef Tempo Change Flags
-    //make set that accomodates last tempo change frame number in this set and adds a gap til next tempo change when it loops
-    //random choose tempo, but loop through all tempos
 
-    let tempoChgsByFrame_thisPlr = [];
+    //##ef Choose Tempo for each tempo change
+    let tempoChangesByFrameNum_thisPlr = []; //{tempo:,frameNum}
     let tTempoSet = [0, 1, 2, 3, 4, 5];
-
-    //make array of frames with -1 = last entry
-    for (let i = 0; i < tempoChgFrameNumSet[tempoChgFrameNumSet.length - 1]; i++) {
-      tempoChgsByFrame_thisPlr.push(-1);
-    }
 
     tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => { // replace -1 in appropriate frame with tempo number
 
       if (setIx != tempoChgFrameNumSet.length - 1) { // don't use last tempo change, to give gap to loop
 
+        let tNewTempo_frmNum_obj = {};
         //decide which tempo; cycle through them all
         if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4, 5]; //when all used up replenish
         let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
         let tNewTempo = tTempoSet[tTempoIx];
         tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
 
-        tempoChgsByFrame_thisPlr[frmToChgTempo] = tNewTempo;
+        tNewTempo_frmNum_obj['tempo'] = tNewTempo;
+        tNewTempo_frmNum_obj['frameNum'] = frmToChgTempo;
+        tempoChangesByFrameNum_thisPlr.push(tNewTempo_frmNum_obj);
 
-
-        //add in flag animation
-
-
-
-      } //   if(setIx!=tempoChgFrameNumSet.length-1) END
+      } // if(setIx!=tempoChgFrameNumSet.length-1) END
 
     }); // tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => END
+    //##endef Choose Tempo for each tempo change
+
+    //##ef Each Tempo Change sign will have an array of frames that it is on screen
+
+    let allTempoChgs_byTempoChg = [];
+
+    tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
+        let thisTempoChg_signLocByFrame = []; //{frameNum:,tempoNum:,zLoc:}
+
+        let tempoNum = tempoFrmNumObj.tempo;
+        let goFrmNum = tempoFrmNumObj.frameNum;
 
 
-    //#ef Build set of flag pos/temponum
+        for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) { //
 
+          let frame_tempoNum_zPos_obj = {};
+          let frameNum = goFrmNum - i;
 
-    //Redo this
-    //Store each tempo change with all pixels in its own array w/frame numbers
-    //Collect these into a frame by frame array with an array of signs on screen for each frame
-    tempoChgsByFrame_thisPlr.forEach((tempoNum, frmNum) => {
-      if (tempoNum != -1) { //frames with tempo change have vals 0-4 otherwise is -1
-        for (let i = 0; i < RUNWAY_L_IN_NUMFRAMES; i++) { //we are going to replace the values in the previous set counting backwards from the frame there is a tempo change and moving the sign back
-          let numOfFrameToReplace = frmNum - i;
-          if (numOfFrameToReplace > 0) { //make sure we are not going into negative index
-            let tempoNum_zPos_obj = {};
-            tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          if (frameNum >= 0) {
+
+            frame_tempoNum_zPos_obj['frameNum'] = frameNum;
+            frame_tempoNum_zPos_obj['tempoNum'] = tempoNum;
             let zLoc = Math.round(-PX_PER_FRAME * i);
-            tempoNum_zPos_obj['zLoc'] = zLoc;
-            tempoChgsByFrame_thisPlr[numOfFrameToReplace] = tempoNum_zPos_obj;
-          }
-        }
-      }
+            frame_tempoNum_zPos_obj['zLoc'] = zLoc;
+
+            thisTempoChg_signLocByFrame.push(frame_tempoNum_zPos_obj);
+
+          } // if (frameNum >= 0) END
+
+        } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+
+        allTempoChgs_byTempoChg.push(thisTempoChg_signLocByFrame);
+
+
+
+    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
+    console.log(allTempoChgs_byTempoChg);
+    // go through allTempoChgs_byTempoChg and create a frame by frame set of arrays each array containing all the signs on screen that frame with their zlocation
+    allTempoChgs_byTempoChg.forEach((tempoChgSet) => {
+
+      tempoChgSet.forEach((frmTempoZlocObj, setIx) => {});
+
     });
 
-    //#endef Build set of flag pos/temponum
 
-    tempoChgsByFrame_perPlr.push(tempoChgsByFrame_thisPlr);
+    //##endef Each Tempo Change sign will have an array of frames that it is on screen
+
+
+
 
     //#endef Tempo Change Flags
 
 
   }); // scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => END
+
   //#endef Calculations Per Player
 
-  console.log(tempoChgsByFrame_perPlr);
+
 } // let calculateScore = function()
 
 
