@@ -105,8 +105,8 @@ function init() {
 // #ef URL Args
 
 let PIECE_ID;
-// let partsToRun = [];
-let partsToRun = [0, 1, 2, 3, 4];
+let partsToRun = [];
+// let partsToRun = [0, 1, 2, 3, 4];
 let TOTAL_NUM_PARTS_TO_RUN;
 
 function processUrlArgs() {
@@ -668,21 +668,21 @@ let calculateScore = function() {
 
 
     let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame
-    for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push(-1); // populate with -1 to replace later
+    for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push([]); // populate with -1 to replace later
 
     //##ef Choose Tempo for each tempo change
 
     // scoreData.tempoChanges or here tempoChgFrameNumSet lists which framenumber to change tempo on for this player
     // This section will decide which tempo to use
     let tempoChangesByFrameNum_thisPlr = []; //{tempo:,frameNum}
-    let tTempoSet = [0, 1, 2, 3, 4, 5];
+    let tTempoSet = [0, 1, 2, 3, 4];
 
     tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => {
 
       let tNewTempo_frmNum_obj = {};
 
       //decide which tempo; cycle through them all
-      if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4, 5]; //when all used up replenish
+      if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
       let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
       let tNewTempo = tTempoSet[tTempoIx];
       tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
@@ -705,7 +705,7 @@ let calculateScore = function() {
     tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
 
       let tempoNum = tempoFrmNumObj.tempo;
-      let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret; harmonized with go fret's and bb's etc.'s  frames
+      let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret
 
       for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
 
@@ -717,7 +717,7 @@ let calculateScore = function() {
           tempoNum_zPos_obj['tempoNum'] = tempoNum;
           let zLoc = Math.round(-PX_PER_FRAME * i);
           tempoNum_zPos_obj['zLoc'] = zLoc;
-          tempoFlagLocsByFrame_thisPlr[frameNum] = tempoNum_zPos_obj; //replace the index in main array for this frame
+          tempoFlagLocsByFrame_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
           //pop off last frame for looping
           if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) { //last tempo change with tempo num and frame num for this player
@@ -1771,47 +1771,53 @@ function wipeRhythmicNotation() {
 const SIGN_W = TEMPO_FRET_W - 10;
 const SIGN_H = 150;
 const HALF_SIGN_H = SIGN_H / 2;
-let signsByTrack = [];
-const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = NUM_TEMPO_FRETS_TO_FILL / 10;
+let signsByPlrByTrack = [];
+const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = Math.round(NUM_TEMPO_FRETS_TO_FILL / 10);
 
 // #endef END Signs Variables
 
 // #ef makeSigns
 
-function makeSigns() {
+function makeSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
 
   let signGeometry = new THREE.PlaneBufferGeometry(SIGN_W, SIGN_H, 32);
 
-  xPosOfTracks.forEach((trXpos, trIx) => {
+  for (let plrIx = 0; plrIx < NUM_PLAYERS; plrIx++) {
+    let thisPlrsSigns = [];
+    xPosOfTracks.forEach((trXpos, trIx) => {
 
-    let thisTracksSigns = [];
+      let thisTracksSigns = [];
 
-    for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+      for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
 
-      let signMaterial =
-        new THREE.MeshLambertMaterial({
-          color: TEMPO_COLORS[trIx],
-          side: THREE.DoubleSide,
-          opacity: 0.7,
-          transparent: true,
-        });
+        let signMaterial =
+          new THREE.MeshLambertMaterial({
+            color: TEMPO_COLORS[trIx],
+            side: THREE.DoubleSide,
+            opacity: 0.7,
+            transparent: true,
+          });
 
-      let sign = new THREE.Mesh(signGeometry, signMaterial);
+        let sign = new THREE.Mesh(signGeometry, signMaterial);
 
-      sign.position.z = GO_Z;
-      sign.position.x = trXpos;
-      sign.position.y = 0;
-      sign.rotation.x = rads(CAM_ROTATION_X);
+        sign.position.z = GO_Z;
+        sign.position.x = trXpos;
+        sign.position.y = 0;
+        sign.rotation.x = rads(CAM_ROTATION_X);
 
-      SCENE.add(sign);
-      sign.visible = false;
-      thisTracksSigns.push(sign);
+        SCENE.add(sign);
+        sign.visible = false;
+        thisTracksSigns.push(sign);
 
-    } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+      } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
 
-    signsByTrack.push(thisTracksSigns);
+      thisPlrsSigns.push(thisTracksSigns);
 
-  }); // xPosOfTracks.forEach((trXpos, trIx) end
+    }); // xPosOfTracks.forEach((trXpos, trIx) end
+
+    signsByPlrByTrack.push(thisPlrsSigns);
+
+  } // for(let plrIx=0;plrIx<NUM_PLAYERS;plrIx++) END
 
 } //makeSigns() end
 
@@ -1821,14 +1827,12 @@ function makeSigns() {
 
 function wipeSigns() {
 
-  signsByTrack.forEach((arrayOfSignsForOneTrack) => {
-
-    arrayOfSignsForOneTrack.forEach((tSign) => {
-
-      tSign.visible = false;
-
+  signsByPlrByTrack.forEach((arrayOfSignsForThisPlayer) => {
+    arrayOfSignsForThisPlayer.forEach((arrayOfSignsForOneTrack) => {
+      arrayOfSignsForOneTrack.forEach((tSign) => {
+        tSign.visible = false;
+      });
     });
-
   });
 
 }
@@ -1852,22 +1856,23 @@ function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH
   else { // loop after lead-in
 
     tempoFlagLocsByFrame_perPlr.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
-
       if (partsToRun.includes(plrIx)) {
 
         let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % tempoFlagLocsByFrame_thisPlr.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
-        if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) { //if there is a flag on scene
+        if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
 
-          let tempoObj = tempoFlagLocsByFrame_thisPlr[setIx]; //{tempoNum:,zLoc:}
-          let tempoNum = tTempoObj.tempoNum;
-          let zLoc = tTempoObj.zLoc;
+          tempoFlagLocsByFrame_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
 
-           let tSign = //signsByTrack[tempoNum][several signs in this array, enough to have several per track, figure out how to cycle through them];
-          //rewrite make signs above to have a bunch of signs rather than signs per track
-          tSign.position.z = GO_Z + zLoc;
-          tSign.position.x = xPosOfTracks[tempoNum];
-          sign.visible = true;
+            let tempo_trackNum = signObj.tempoNum;
+            let zLoc = signObj.zLoc;
+            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+            tSign.position.z = GO_Z + zLoc;
+            tSign.position.x = xPosOfTracks[tempo_trackNum];
+            tSign.visible = true;
+
+          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
 
         } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
 
@@ -2217,6 +2222,7 @@ function update() {
   updateBBs();
   updateBbBouncePad();
   updateScrollingCsrs();
+  updateSigns();
 
 }
 
