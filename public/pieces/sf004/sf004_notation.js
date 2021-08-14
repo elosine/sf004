@@ -16,7 +16,7 @@ let FRAMECOUNT = 0;
 let PIECE_TIME_MS = 0
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const LEAD_IN_TIME_SEC = 2;
+const LEAD_IN_TIME_SEC = 8;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 
@@ -78,6 +78,8 @@ function init() {
   makeScrollingCursors();
 
   makePlayerTokens();
+
+
   // playerTokens[3][3].svg.setAttributeNS(null, 'display', 'yes');
   // playerTokens[3][3].txt.setAttributeNS(null, 'display', 'yes');
   //
@@ -333,7 +335,12 @@ let scrollingCsrCoords_perTempo = [];
 
 //#ef Tempo Change Flags
 let tempoFlagLocsByFrame_perPlr = [];
+let leadIn_tempoFlagLocsByFrame_perPlr = [];
 //#endef Tempo Change Flags
+
+//#ef Player Tokens
+let playerTokenLocationByFrame_perPlr = [];
+//#endef Player Tokens
 
 
 // #endef END Calculate Score Vars
@@ -341,10 +348,12 @@ let tempoFlagLocsByFrame_perPlr = [];
 let calculateScore = function() {
 
   //#ef Calculations Per Tempo
+
+
   scoreData.tempos.forEach((tTempo, thisTempoIx) => {
 
-
     // #ef Tempo Frets
+
 
     //##ef Comments
     // There will be an array of tempo fret locations for each tempo
@@ -390,7 +399,7 @@ let calculateScore = function() {
 
     //##endef LEAD IN FRAMES
 
-    //##ef Tempo Frets
+    //##ef Tempo Frets Loop
     let tFrameCt = 0;
     let pxAdv = 0; // cumulitive frames*PX_PER_FRAME
 
@@ -423,7 +432,8 @@ let calculateScore = function() {
     } //or (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) END
 
     tempoFretLocs_eachFrame_perTempo.push(thisTemposTfLocByFrameCycle);
-    //##endef Tempo Frets
+    //##endef Tempo Frets Loop
+
 
     // #endef END Tempo Frets
 
@@ -655,8 +665,9 @@ let calculateScore = function() {
 
     //#endef Player Tokens
 
-
   }); // scoreData.tempos.forEach((tTempo) => END
+
+
   //#endef Calculations Per Tempo
 
   //#ef Calculations Per Player
@@ -664,11 +675,14 @@ let calculateScore = function() {
 
   scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => {
 
+
     //#ef Tempo Change Flags
 
 
-    let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame
+    let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
     for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push([]); // populate with -1 to replace later
+    let leadIn_tempoFlagLocsByFrame_thisPlr = []; //make a set of lead in frames
+    for (let i = 0; i < (RUNWAY_L_IN_NUMFRAMES - 1); i++) leadIn_tempoFlagLocsByFrame_thisPlr.push([]);
 
     //##ef Choose Tempo for each tempo change
 
@@ -729,6 +743,15 @@ let calculateScore = function() {
           } //   if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) END
 
         } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          leadIn_tempoFlagLocsByFrame_thisPlr[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } //else END
 
       } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
 
@@ -737,9 +760,38 @@ let calculateScore = function() {
     //##endef  Determine Sign Z Position for each tempo change for each frame - this player
 
     tempoFlagLocsByFrame_perPlr.push(tempoFlagLocsByFrame_thisPlr);
+    leadIn_tempoFlagLocsByFrame_perPlr.push(leadIn_tempoFlagLocsByFrame_thisPlr);
 
 
     //#endef Tempo Change Flags
+
+    //#ef Player Tokens
+
+
+    //An Array length = to playerTokenLocationByFrame, that contains the current tempo for this player for this frame
+    //In Update look up that frame's scrolling cursor location for the right tempo listed here
+    let playerTokenLocationByFrame_thisPlr = new Array(tempoFlagLocsByFrame_thisPlr.length).fill(-1);
+
+    tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => {
+      if (tchgIx > 0) { //cause we are looking backwards
+
+        let thisTempo = tempoChgObj.tempo;
+        let thisFrameNum = tempoChgObj.frameNum;
+        let lastTempo = tempoChangesByFrameNum_thisPlr[tchgIx - 1].tempo;
+        let lastFrameNum = tempoChangesByFrameNum_thisPlr[tchgIx - 1].frameNum;
+        let tNumToFill = thisFrameNum - lastFrameNum;
+
+        for (let i = 0; i < tNumToFill; i++) {
+          playerTokenLocationByFrame_thisPlr[lastFrameNum + i] = lastTempo;
+        }
+
+      } // if (tchgIx > 0) END
+    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => END
+
+    playerTokenLocationByFrame_perPlr.push(playerTokenLocationByFrame_thisPlr);
+
+    //#endef Player Tokens
+
 
   }); // scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => END
 
@@ -1005,7 +1057,7 @@ function wipeGoFrets() {
 
 function updateGoFrets() {
 
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+  if (FRAMECOUNT < LEAD_IN_FRAMES) {
 
     goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
 
@@ -1033,7 +1085,7 @@ function updateGoFrets() {
 
     }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
 
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
   else {
 
     goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
@@ -1132,7 +1184,7 @@ function wipeTempoFrets() {
 function updateTempoFrets() {
 
   // ##ef Loop for Lead In FRAMES
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) { //LEAD_IN_FRAMES-1 cause loops start on 0 and go to length-1
+  if (FRAMECOUNT < LEAD_IN_FRAMES) { //LEAD_IN_FRAMES-1 cause loops start on 0 and go to length-1
 
     tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
 
@@ -1147,7 +1199,7 @@ function updateTempoFrets() {
 
     }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
 
-  } // if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  } // if (FRAMECOUNT < LEAD_IN_FRAMES) END
   // ##endef Loop for Lead In FRAMES
 
   //##ef Loop for Regular TF Cycles
@@ -1294,7 +1346,7 @@ function wipeBbComplex() {
 
 function updateBbBouncePad() {
 
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+  if (FRAMECOUNT < LEAD_IN_FRAMES) {
 
     goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
 
@@ -1322,7 +1374,7 @@ function updateBbBouncePad() {
 
     }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
 
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
   else {
 
     goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
@@ -1362,7 +1414,7 @@ function updateBbBouncePad() {
 function updateBBs() {
 
   //##ef Lead In - BBs
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+  if (FRAMECOUNT < LEAD_IN_FRAMES) {
 
     bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
 
@@ -1370,7 +1422,7 @@ function updateBBs() {
 
     }); //   bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) =>  END
 
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
+  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
   //##endef Lead In - bbs
 
   //##ef Animate BBs
@@ -1646,18 +1698,10 @@ function wipeTempoCsrs() {
 
 // #ef updateScrollingCsrs
 
+
 function updateScrollingCsrs() {
 
-  //##ef Lead In
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
-
-
-
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
-  //##endef Lead
-
-  //##ef Loop
-  else {
+  if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for scrolling cursors
 
     scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
 
@@ -1674,16 +1718,14 @@ function updateScrollingCsrs() {
 
     }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
 
-  } //else END
-
-  //##endef Loop
-
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
 
 } // function updateScrollingCsrs() END
 
+
 // #endef END updateScrollingCsrs
 
-// #ef Player Tokens
+// #ef Make Player Tokens
 
 let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
 
@@ -1696,16 +1738,15 @@ function makePlayerTokens() {
 
     for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
 
-      let tPlrObj = {};
       let tBaseX = beatCoords[15].x; // initial location of player tokens at beginning of last beat
       let tBaseY = beatCoords[15].y - NOTATION_CURSOR_H; //initial Y loc of plrTkns; base because each token has different y adjustment
 
       let thisPlrTokenObj = mkPlrTkns(rhythmicNotationObj.svgCont, playerIx, tBaseX, tBaseY);
 
-      // tPlrObj['svg'].setAttributeNS(null, "display", 'none');
-      // tPlrObj['txt'].setAttributeNS(null, "display", 'none');
+      thisPlrTokenObj.svg.setAttributeNS(null, "display", 'none');
+      thisPlrTokenObj.txt.setAttributeNS(null, "display", 'none');
 
-      tPlrSet.push(tPlrObj);
+      tPlrSet.push(thisPlrTokenObj);
 
     } //for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
 
@@ -1715,22 +1756,20 @@ function makePlayerTokens() {
 
 } //function makePlayerTokens() end
 
+//#endef Make Player Tokens
+
 // #ef wipePlayerTokens
 
 function wipePlayerTokens() {
 
-  playerTokens.forEach((thisTemposPlrTokensDict) => {
-    thisTemposPlrTokensDict.forEach((plrTknObj) => {
+  playerTokens.forEach((thisTemposPlrTokens) => {
+    thisTemposPlrTokens.forEach((plrTknObj) => {
 
-      for (let key in plrTknObj) {
 
-        let plrTknSvg = plrTknObj[key].svg;
-        let plrTknTxt = plrTknObj[key].txt;
+        plrTknObj.svg.setAttributeNS(null, 'display', 'none');
+        plrTknObj.txt.setAttributeNS(null, 'display', 'none');
 
-        plrTknSvg.setAttributeNS(null, 'display', 'none');
-        plrTknTxt.setAttributeNS(null, 'display', 'none');
 
-      }
 
     });
   });
@@ -1739,7 +1778,40 @@ function wipePlayerTokens() {
 
 // #endef END wipePlayerTokens
 
-// #endef END Player Tokens
+//#ef Update Player Tokens
+
+// {yAdjSvg: 10, yAdjTxt: 10, svg: circle, txt: text}
+
+function updatePlayerTokens() {
+
+  playerTokenLocationByFrame_perPlr.forEach((playerTokenLocationByFrame, plrIx) => { //{tempoNum}
+    if (partsToRun.includes(plrIx)) {
+
+      if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for player Tokens
+
+
+        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+
+        let tTempoNum = playerTokenLocationByFrame[setIx];
+        let tPlrTokenObj = playerTokens[plrIx][tTempoNum];
+        let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][setIx].x;
+        let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][setIx].y1;
+
+        tPlrTokenObj.move(tBaseX, tBaseY);
+        tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
+
+
+      } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+
+    } // function updatePlayerTokens() END
+  });
+
+}
+
+
+// #endef END Update Player Tokens
 
 // #ef wipeRhythmicNotation
 
@@ -1844,20 +1916,35 @@ function wipeSigns() {
 
 function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
 
-  //##ef Lead In
-  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) {
+  tempoFlagLocsByFrame_perPlr.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
+    if (partsToRun.includes(plrIx)) {
+
+      //##ef Lead In
+      if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length)) {
+
+        let setIx = leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length - LEAD_IN_FRAMES + FRAMECOUNT;
+        if (leadIn_tempoFlagLocsByFrame_perPlr[plrIx][setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+
+          leadIn_tempoFlagLocsByFrame_perPlr[plrIx][setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+            let tempo_trackNum = signObj.tempoNum;
+            let zLoc = signObj.zLoc;
+            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+            tSign.position.z = GO_Z + zLoc;
+            tSign.position.x = xPosOfTracks[tempo_trackNum];
+            tSign.visible = true;
+
+          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+
+        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+
+      } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
+      //##endef Lead
 
 
-
-  } //  if (FRAMECOUNT <= (LEAD_IN_FRAMES - 1)) END
-  //##endef Lead
-
-  //##ef Loop
-  else { // loop after lead-in
-
-    tempoFlagLocsByFrame_perPlr.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
-      if (partsToRun.includes(plrIx)) {
-
+      //##ef Loop After Lead In
+      else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
         let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % tempoFlagLocsByFrame_thisPlr.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
         if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
@@ -1875,14 +1962,16 @@ function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH
           }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
 
         } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+      } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
+      //##endef Loop After Lead In
 
-      } // if (partsToRun.includes(plrIx) END
 
-    }); // tempoFlagLocsByFrame_perPlr.forEach((posObjSet, tempoIx) =>  END
 
-  } //else END
 
-  //##endef Loop
+
+    } // if (partsToRun.includes(plrIx) END
+
+  }); // tempoFlagLocsByFrame_perPlr.forEach((posObjSet, tempoIx) =>  END
 
 } // function updateSigns() END
 
@@ -2223,6 +2312,7 @@ function update() {
   updateBbBouncePad();
   updateScrollingCsrs();
   updateSigns();
+  updatePlayerTokens();
 
 }
 

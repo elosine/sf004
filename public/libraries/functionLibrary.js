@@ -1047,7 +1047,7 @@ const deepCopy = (arr) => {
 
 let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
 
-  let playerTokenObj = {}
+  let playerTokenObj = {};
   let yAdjSvg = 0;
   let yAdjTxt = 0;
 
@@ -1071,6 +1071,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tCirc;
+      thisSvg = tCirc;
 
       let tCircText = mkSvgText({
         svgContainer: svgCanvas,
@@ -1083,6 +1084,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tCircText;
+      thisText = tCircText;
 
       break;
 
@@ -1105,6 +1107,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tTri;
+      thisSvg = tTri;
 
       let tTriText = mkSvgText({
         svgContainer: svgCanvas,
@@ -1117,6 +1120,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tTriText;
+      thisText = tTriText;
 
       break;
 
@@ -1139,6 +1143,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tDia;
+      thisSvg = tDia;
 
       let tDiaText = mkSvgText({
         svgContainer: svgCanvas,
@@ -1151,6 +1156,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tDiaText;
+      thisText = tDiaText;
 
       break;
 
@@ -1175,6 +1181,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tArc;
+      thisSvg = tArc;
 
       let tArcText = mkSvgText({
         svgContainer: svgCanvas,
@@ -1187,6 +1194,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tArcText;
+      thisText = tArcText;
 
       break;
 
@@ -1209,6 +1217,7 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tSqr;
+      thisSvg = tSqr;
 
       let tSqrText = mkSvgText({
         svgContainer: svgCanvas,
@@ -1221,11 +1230,59 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tSqrText;
+      thisText = tSqrText;
 
       break;
 
   } //switch (type) end
 
+  playerTokenObj['move'] = function(mvBaseX, mvBaseY) {
+
+    switch (type) {
+
+      case 0:
+        playerTokenObj.svg.setAttributeNS(null, "cx", mvBaseX);
+        playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
+        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
+        break;
+
+      case 1:
+        playerTokenObj.svg.setAttributeNS(null, "cx", mvBaseX);
+        playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
+        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
+        break;
+
+      case 2:
+        // tcresFollowRect.setAttributeNS(null, "transform", "translate( 0, -3)");
+
+        let tY = mvBaseY - yAdjSvg;
+        playerTokenObj.svg.setAttributeNS(null, "transform", "translate(" + mvBaseX.toString() + "," + tY.toString() + ")");
+        // playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
+        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
+        break;
+
+      case 3:
+        playerTokenObj.svg.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.svg.setAttributeNS(null, "y", (mvBaseY - yAdjSvg));
+        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
+        break;
+
+      case 4:
+        playerTokenObj.svg.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.svg.setAttributeNS(null, "y", (mvBaseY - yAdjSvg));
+        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
+        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
+        break;
+    }
+
+
+  } // playerTokenObj['move'] = function(mvBaseX, mvBaseY) END
+
+  return playerTokenObj;
 
 } //function makePlayerTokens() end
 
