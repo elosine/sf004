@@ -16,7 +16,7 @@ let FRAMECOUNT = 0;
 let PIECE_TIME_MS = 0
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const LEAD_IN_TIME_SEC = 8;
+const LEAD_IN_TIME_SEC = 2;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 
@@ -78,7 +78,6 @@ function init() {
   makeScrollingCursors();
 
   makePlayerTokens();
-
 
   // playerTokens[3][3].svg.setAttributeNS(null, 'display', 'yes');
   // playerTokens[3][3].txt.setAttributeNS(null, 'display', 'yes');
@@ -1738,13 +1737,7 @@ function makePlayerTokens() {
 
     for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
 
-      let tBaseX = beatCoords[15].x; // initial location of player tokens at beginning of last beat
-      let tBaseY = beatCoords[15].y - NOTATION_CURSOR_H; //initial Y loc of plrTkns; base because each token has different y adjustment
-
-      let thisPlrTokenObj = mkPlrTkns(rhythmicNotationObj.svgCont, playerIx, tBaseX, tBaseY);
-
-      thisPlrTokenObj.svg.setAttributeNS(null, "display", 'none');
-      thisPlrTokenObj.txt.setAttributeNS(null, "display", 'none');
+      let thisPlrTokenObj = mkPlrTkns(rhythmicNotationObj.svgCont, playerIx);
 
       tPlrSet.push(thisPlrTokenObj);
 
@@ -1766,8 +1759,8 @@ function wipePlayerTokens() {
     thisTemposPlrTokens.forEach((plrTknObj) => {
 
 
-        plrTknObj.svg.setAttributeNS(null, 'display', 'none');
-        plrTknObj.txt.setAttributeNS(null, 'display', 'none');
+      plrTknObj.svg.setAttributeNS(null, 'display', 'none');
+      plrTknObj.txt.setAttributeNS(null, 'display', 'none');
 
 
 
@@ -1792,15 +1785,16 @@ function updatePlayerTokens() {
 
         let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
-
         let tTempoNum = playerTokenLocationByFrame[setIx];
-        let tPlrTokenObj = playerTokens[plrIx][tTempoNum];
-        let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][setIx].x;
-        let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][setIx].y1;
+        let tPlrTokenObj = playerTokens[tTempoNum][plrIx];
+        let coordLookUpIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scrollingCsrCoords_perTempo[tTempoNum].length;
+        let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
+        let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
 
         tPlrTokenObj.move(tBaseX, tBaseY);
         tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
         tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
 
 
       } // if (FRAMECOUNT > LEAD_IN_FRAMES) END

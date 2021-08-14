@@ -1045,7 +1045,7 @@ const deepCopy = (arr) => {
 
 // #ef playerTokens
 
-let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
+let mkPlrTkns = function(svgCanvas, type) {
 
   let playerTokenObj = {};
   let yAdjSvg = 0;
@@ -1056,14 +1056,12 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
     case 0:
 
       yAdjSvg = 10;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
       yAdjTxt = 10;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
 
       let tCirc = mkSvgCircle({
         svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
+        cx: 0,
+        cy: -yAdjSvg,
         r: 9,
         fill: 'none',
         stroke: clr_neonMagenta,
@@ -1071,12 +1069,11 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tCirc;
-      thisSvg = tCirc;
 
       let tCircText = mkSvgText({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
+        x: 0,
+        y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
         fontSz: 13,
@@ -1084,21 +1081,18 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tCircText;
-      thisText = tCircText;
 
       break;
 
     case 1:
 
       yAdjSvg = 12;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
       yAdjTxt = 8;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
 
       let tTri = mkSvgTriangle({
         svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
+        cx: 0,
+        cy: -yAdjSvg,
         h: 23,
         w: 23,
         fill: 'none',
@@ -1107,12 +1101,11 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tTri;
-      thisSvg = tTri;
 
       let tTriText = mkSvgText({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
+        x: 0,
+        y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
         fontSz: 13,
@@ -1120,21 +1113,18 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tTriText;
-      thisText = tTriText;
 
       break;
 
     case 2:
 
       yAdjSvg = 14;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
       yAdjTxt = 14;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
 
       let tDia = mkSvgDiamond({
         svgContainer: svgCanvas,
-        cx: baseX,
-        cy: baseY - yAdjSvg,
+        cx: 0,
+        cy: -yAdjSvg,
         h: 21,
         w: 21,
         fill: 'none',
@@ -1143,12 +1133,11 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tDia;
-      thisSvg = tDia;
 
       let tDiaText = mkSvgText({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
+        x: 0,
+        y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
         fontSz: 13,
@@ -1156,21 +1145,18 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tDiaText;
-      thisText = tDiaText;
 
       break;
 
     case 3:
 
       yAdjSvg = 16;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
       yAdjTxt = 8;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
 
       let tArc = mkSvgArc({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjSvg,
+        x: 0,
+        y: -yAdjSvg,
         radius: 15,
         startAngle: 90,
         endAngle: 270,
@@ -1181,12 +1167,11 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tArc;
-      thisSvg = tArc;
 
       let tArcText = mkSvgText({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
+        x: 0,
+        y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
         fontSz: 13,
@@ -1194,21 +1179,18 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tArcText;
-      thisText = tArcText;
 
       break;
 
     case 4:
 
       yAdjSvg = 19;
-      playerTokenObj['yAdjSvg'] = yAdjSvg;
       yAdjTxt = 10;
-      playerTokenObj['yAdjTxt'] = yAdjTxt;
 
       let tSqr = mkSvgRect({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjSvg,
+        x: -9,
+        y: -yAdjSvg,
         w: 18,
         h: 18,
         fill: 'none',
@@ -1217,12 +1199,11 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['svg'] = tSqr;
-      thisSvg = tSqr;
 
       let tSqrText = mkSvgText({
         svgContainer: svgCanvas,
-        x: baseX,
-        y: baseY - yAdjTxt,
+        x: 0,
+        y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
         fontSz: 13,
@@ -1230,55 +1211,17 @@ let mkPlrTkns = function(svgCanvas, type, baseX, baseY) {
       });
 
       playerTokenObj['txt'] = tSqrText;
-      thisText = tSqrText;
 
       break;
 
   } //switch (type) end
 
-  playerTokenObj['move'] = function(mvBaseX, mvBaseY) {
+  playerTokenObj.svg.setAttributeNS(null, "display", 'none');
+  playerTokenObj.txt.setAttributeNS(null, "display", 'none');
 
-    switch (type) {
-
-      case 0:
-        playerTokenObj.svg.setAttributeNS(null, "cx", mvBaseX);
-        playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
-        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
-        break;
-
-      case 1:
-        playerTokenObj.svg.setAttributeNS(null, "cx", mvBaseX);
-        playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
-        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
-        break;
-
-      case 2:
-        // tcresFollowRect.setAttributeNS(null, "transform", "translate( 0, -3)");
-
-        let tY = mvBaseY - yAdjSvg;
-        playerTokenObj.svg.setAttributeNS(null, "transform", "translate(" + mvBaseX.toString() + "," + tY.toString() + ")");
-        // playerTokenObj.svg.setAttributeNS(null, "cy", (mvBaseY - yAdjSvg));
-        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
-        break;
-
-      case 3:
-        playerTokenObj.svg.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.svg.setAttributeNS(null, "y", (mvBaseY - yAdjSvg));
-        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
-        break;
-
-      case 4:
-        playerTokenObj.svg.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.svg.setAttributeNS(null, "y", (mvBaseY - yAdjSvg));
-        playerTokenObj.txt.setAttributeNS(null, "x", mvBaseX);
-        playerTokenObj.txt.setAttributeNS(null, "y", (mvBaseY - yAdjTxt));
-        break;
-    }
-
+  playerTokenObj['move'] = function(aX, aY) {
+    playerTokenObj.svg.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
+    playerTokenObj.txt.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
 
   } // playerTokenObj['move'] = function(mvBaseX, mvBaseY) END
 
