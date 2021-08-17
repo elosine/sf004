@@ -57,7 +57,7 @@ io.on('connection', function(socket) {
   //#ef Set Start Time Broadcast
 
   socket.on('sf004_newStartTimeBroadcast_toServer', function(data) {
-    console.log(data);
+
     let pieceId = data.pieceId;
     let startTime_epoch = data.startTime_epoch;
 

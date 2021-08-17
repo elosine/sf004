@@ -295,7 +295,7 @@ let generateScoreData = function() {
   }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
 
 
-  // tempScoreData['unisons'] = unisonTempoChangeObjs;
+  tempScoreData['unisons'] = unisonTempoChangeObjs;
 
   //##endef Unison Tempo Changes
 
@@ -340,6 +340,10 @@ let leadIn_tempoFlagLocsByFrame_perPlr = [];
 //#ef Player Tokens
 let playerTokenLocationByFrame_perPlr = [];
 //#endef Player Tokens
+
+//#ef Unisons
+let unisonsByFrame = [];
+//#endef Unisons
 
 
 // #endef END Calculate Score Vars
@@ -796,6 +800,25 @@ let calculateScore = function() {
 
 
   //#endef Calculations Per Player
+
+  //#ef Calculations for Unisons
+
+  //Make loop size array to store unison state for each frame in loop
+  let lastFrameInUnisonLoop = scoreData.unisons[scoreData.unisons.length-1].frame + scoreData.unisons[scoreData.unisons.length-1].durFrames;
+  for(let i=0;i<lastFrameInUnisonLoop;i++){
+    unisonsByFrame.push(-1);
+  }
+
+  scoreData.unisons.forEach((unisonObj, uniIx) => { // {frame:,durFrames:}
+
+    let tFrameNum = unisonObj.frame;
+    let tDur = unisonObj.durFrames;
+    //look at signs, have to find out unison sign zlocation for each frame also where is the tempo #? figure out lead in as well
+
+  });
+
+
+  //#endef Calculations for Unisons
 
 } // let calculateScore = function()
 
