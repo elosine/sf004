@@ -235,7 +235,7 @@ let generateScoreData = function() {
   //##endef Tempo Changes Per Player
 
   //##ef Unison Tempo Changes
-
+  //TOO MANY UNISONS REVISE THIS
   let unisonTempoChangeObjs = [];
   let unisonDurSet = [4, 4, 3, 3, 7, 9];
   let unisonTempo = [0, 1, 2, 3, 4];
@@ -275,6 +275,7 @@ let generateScoreData = function() {
   unison_gapRange_numIterations.forEach((gapIterDict) => {
 
     let numIter = gapIterDict.numIter;
+    let tTempoSet = [0, 1, 2, 3, 4];
 
     for (let iterIx = 0; iterIx < numIter; iterIx++) {
 
@@ -285,6 +286,11 @@ let generateScoreData = function() {
       let tDur = choose(unisonDurSet);
       let tDurFrames = Math.round(tDur * FRAMERATE); //convert to frames
       tChgObj['durFrames'] = tDurFrames;
+      if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
+      let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
+      let tNewTempo = tTempoSet[tTempoIx];
+      tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
+      tChgObj['tempo'] = tNewTempo;
       let timeToNextUnison = rrand(gapIterDict.gapRange[0], gapIterDict.gapRange[1]);
       unisonTime += timeToNextUnison;
 
@@ -342,7 +348,8 @@ let playerTokenLocationByFrame_perPlr = [];
 //#endef Player Tokens
 
 //#ef Unisons
-let unisonsByFrame = [];
+let unisonFlagLocByFrame = [];
+let leadIn_unisonFlagLocByFrame = [];
 //#endef Unisons
 
 
@@ -714,8 +721,6 @@ let calculateScore = function() {
 
     //##ef Determine Sign Z Position for each tempo change for each frame - this player
 
-    //STILL DOESN'T SOLVE MULTIPLE SIGNS ON SCENE AT THE SAME TIME, FIGURE THIS OUT!!!!
-    //EVERY FRAME WILL HAVE A SET OF OBJECTS ON SCENE
 
     let tempoChg_signPos_thisPlayer = [];
 
@@ -803,23 +808,73 @@ let calculateScore = function() {
 
   //#ef Calculations for Unisons
 
+  //REDO WITH ARRAYS LIKE SIGNS IN CASE MORE THAN ONE SIGN ON Scene
   //Make loop size array to store unison state for each frame in loop
-  let lastFrameInUnisonLoop = scoreData.unisons[scoreData.unisons.length-1].frame + scoreData.unisons[scoreData.unisons.length-1].durFrames;
-  for(let i=0;i<lastFrameInUnisonLoop;i++){
-    unisonsByFrame.push(-1);
+  let lastFrameInUnisonLoop = scoreData.unisons[scoreData.unisons.length - 1].frame + scoreData.unisons[scoreData.unisons.length - 1].durFrames;
+  for (let i = 0; i < lastFrameInUnisonLoop; i++) {
+    unisonFlagLocByFrame.push(-1);
   }
 
   scoreData.unisons.forEach((unisonObj, uniIx) => { // {frame:,durFrames:}
 
-    let tFrameNum = unisonObj.frame;
-    let tDur = unisonObj.durFrames;
-    //look at signs, have to find out unison sign zlocation for each frame also where is the tempo #? figure out lead in as well
+    let goFrmNum = unisonObj.frame;
+    let tDurFrames = unisonObj.durFrames;
+    let tempoNum = unisonObj.tempo;
 
-  });
+
+
+    //FIGURE OUT DUR
+    // WHEN FLAG GETS TO GO FRET HOLD UNTIL UNISON DONE
+    for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+      let tempoNum_zPos_obj = {};
+      let frameNum = goFrmNum - i; //
+
+      if (frameNum >= 0) { //so you don't go to negative array index
+
+        tempoNum_zPos_obj['tempoNum'] = tempoNum;
+        let zLoc = Math.round(-PX_PER_FRAME * i);
+        tempoNum_zPos_obj['zLoc'] = zLoc;
+        unisonFlagLocByFrame[frameNum] = tempoNum_zPos_obj; //replace the index in main array for this frame
+
+
+
+      } // if (frameNum >= 0) END
+      //
+      else { //for lead-in
+
+        tempoNum_zPos_obj['tempoNum'] = tempoNum;
+        let zLoc = Math.round(-PX_PER_FRAME * i);
+        tempoNum_zPos_obj['zLoc'] = zLoc;
+        leadIn_unisonFlagLocByFrame.push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+      } //else END
+
+
+
+
+    } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+
+    //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+    for(let i=1;i<tDurFrames;i++){
+      let tempoNum_zPos_obj = {};
+
+      tempoNum_zPos_obj['tempoNum'] = tempoNum;
+      tempoNum_zPos_obj['zLoc'] = 0;
+      let tFrameNum = goFrmNum + i;
+      unisonFlagLocByFrame[tFrameNum] = tempoNum_zPos_obj;
+
+    }
+
+  }); // scoreData.unisons.forEach((unisonObj, uniIx) => END
+
+
+
 
 
   //#endef Calculations for Unisons
-
+  console.log(scoreData.unisons);
+  console.log(unisonFlagLocByFrame);
 } // let calculateScore = function()
 
 
