@@ -238,20 +238,19 @@ let generateScoreData = function() {
   //TOO MANY UNISONS REVISE THIS
   let unisonTempoChangeObjs = [];
   let unisonDurSet = [4, 4, 3, 3, 7, 9];
-  let unisonTempo = [0, 1, 2, 3, 4];
   let unisonTime = 0;
 
   let unison_gapRange_numIterations = [{
-      gapRange: [11, 13],
-      numIter: 4
+      gapRange: [21, 23],
+      numIter: 1
     },
     {
-      gapRange: [18, 21],
-      numIter: 3
+      gapRange: [38, 41],
+      numIter: 2
     },
     {
       gapRange: [34, 36],
-      numIter: 2
+      numIter: 3
     },
     {
       gapRange: [60, 65],
@@ -259,15 +258,15 @@ let generateScoreData = function() {
     },
     {
       gapRange: [34, 36],
-      numIter: 2
-    },
-    {
-      gapRange: [18, 21],
       numIter: 3
     },
     {
-      gapRange: [11, 13],
-      numIter: 4
+      gapRange: [38, 41],
+      numIter: 2
+    },
+    {
+      gapRange: [21, 23],
+      numIter: 1
     }
   ];
 
@@ -286,11 +285,13 @@ let generateScoreData = function() {
       let tDur = choose(unisonDurSet);
       let tDurFrames = Math.round(tDur * FRAMERATE); //convert to frames
       tChgObj['durFrames'] = tDurFrames;
+      //choose tempo
       if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
       let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
       let tNewTempo = tTempoSet[tTempoIx];
       tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
       tChgObj['tempo'] = tNewTempo;
+
       let timeToNextUnison = rrand(gapIterDict.gapRange[0], gapIterDict.gapRange[1]);
       unisonTime += timeToNextUnison;
 
@@ -816,56 +817,56 @@ let calculateScore = function() {
   }
 
   scoreData.unisons.forEach((unisonObj, uniIx) => { // {frame:,durFrames:}
+    if (uniIx > 0) {
+      let goFrmNum = unisonObj.frame;
+      let tDurFrames = unisonObj.durFrames;
+      let tempoNum = unisonObj.tempo;
 
-    let goFrmNum = unisonObj.frame;
-    let tDurFrames = unisonObj.durFrames;
-    let tempoNum = unisonObj.tempo;
+
+
+      //FIGURE OUT DUR
+      // WHEN FLAG GETS TO GO FRET HOLD UNTIL UNISON DONE
+      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+        let tempoNum_zPos_obj = {};
+        let frameNum = goFrmNum - i; //
+
+        if (frameNum >= 0) { //so you don't go to negative array index
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          unisonFlagLocByFrame[frameNum] = tempoNum_zPos_obj; //replace the index in main array for this frame
 
 
 
-    //FIGURE OUT DUR
-    // WHEN FLAG GETS TO GO FRET HOLD UNTIL UNISON DONE
-    for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+        } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
 
-      let tempoNum_zPos_obj = {};
-      let frameNum = goFrmNum - i; //
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          leadIn_unisonFlagLocByFrame.push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
-      if (frameNum >= 0) { //so you don't go to negative array index
+        } //else END
+
+
+
+
+      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+
+      //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+      for (let i = 1; i < tDurFrames; i++) {
+        let tempoNum_zPos_obj = {};
 
         tempoNum_zPos_obj['tempoNum'] = tempoNum;
-        let zLoc = Math.round(-PX_PER_FRAME * i);
-        tempoNum_zPos_obj['zLoc'] = zLoc;
-        unisonFlagLocByFrame[frameNum] = tempoNum_zPos_obj; //replace the index in main array for this frame
+        tempoNum_zPos_obj['zLoc'] = 0;
+        let tFrameNum = goFrmNum + i;
+        unisonFlagLocByFrame[tFrameNum] = tempoNum_zPos_obj;
 
-
-
-      } // if (frameNum >= 0) END
-      //
-      else { //for lead-in
-
-        tempoNum_zPos_obj['tempoNum'] = tempoNum;
-        let zLoc = Math.round(-PX_PER_FRAME * i);
-        tempoNum_zPos_obj['zLoc'] = zLoc;
-        leadIn_unisonFlagLocByFrame.push(tempoNum_zPos_obj); //replace the index in main array for this frame
-
-      } //else END
-
-
-
-
-    } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
-
-    //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
-    for(let i=1;i<tDurFrames;i++){
-      let tempoNum_zPos_obj = {};
-
-      tempoNum_zPos_obj['tempoNum'] = tempoNum;
-      tempoNum_zPos_obj['zLoc'] = 0;
-      let tFrameNum = goFrmNum + i;
-      unisonFlagLocByFrame[tFrameNum] = tempoNum_zPos_obj;
-
+      }
     }
-
   }); // scoreData.unisons.forEach((unisonObj, uniIx) => END
 
 
@@ -2052,6 +2053,88 @@ function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH
 
 
 // #endef END Signs
+
+//#ef Unisons
+let unisonSignsByTrack = [];
+
+//#ef Make Unison Signs
+
+
+function makeUnisonSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
+
+  let signGeometry = new THREE.PlaneBufferGeometry(SIGN_W, SIGN_H, 32);
+
+    xPosOfTracks.forEach((trXpos, trIx) => {
+
+      let thisTracksSigns = [];
+
+      for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+        let signMaterial =
+          new THREE.MeshLambertMaterial({
+            color: TEMPO_COLORS[trIx],
+            side: THREE.DoubleSide,
+            opacity: 0.7,
+            transparent: true,
+          });
+
+        let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+        sign.position.z = GO_Z;
+        sign.position.x = trXpos;
+        sign.position.y = 0;
+        sign.rotation.x = rads(CAM_ROTATION_X);
+
+        SCENE.add(sign);
+        sign.visible = false;
+        thisTracksSigns.push(sign);
+
+      } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+      unisonSignsByTrack.push(thisTracksSigns);
+
+    }); // xPosOfTracks.forEach((trXpos, trIx) end
+
+
+
+} //makeUnisonSigns() end
+
+
+
+//#endef Make Unison Signs
+
+//#ef Make Unison Tokens
+
+
+
+//#endef Make Unison Tokens
+
+//#ef Wipe Unison Signs
+
+
+
+//#endef Wipe Unison Signs
+
+//#ef Wipe Unison Tokens
+
+
+
+//#endef Wipe Unison Tokens
+
+//#ef Update Unison Signs
+
+
+
+//#endef Wipe Unison Signs
+
+//#ef Update Unison Tokens
+
+
+
+//#endef Wipe Unison Tokens
+
+
+//#endef Unisons
 
 // #ef Pitch Sets
 
