@@ -936,16 +936,16 @@ function run_getImage(path) {
 let generatePalindromeTimeContainers = function({
 
   numContainersOneWay = 4,
-  largestCont_minMax = [90, 110],
+  startCont_minMax = [90, 110],
   pctChg_minMax = [-0.25, -0.31]
 } = {
   numContainersOneWay: 4,
-  largestCont_minMax: [90, 110],
+  startCont_minMax: [90, 110],
   pctChg_minMax: [-0.25, -0.31]
 }) {
 
   let timeContainers = [];
-  let firstTimeContDur = rrand(largestCont_minMax[0], largestCont_minMax[1]);
+  let firstTimeContDur = rrand(startCont_minMax[0], startCont_minMax[1]);
   timeContainers.push(firstTimeContDur);
 
   for (let contIx = 1; contIx < numContainersOneWay; contIx++) { //make first half of palindrome
@@ -1230,6 +1230,50 @@ let mkPlrTkns = function(svgCanvas, type) {
 } //function makePlayerTokens() end
 
 // #endef END playerTokens
+
+//#ef chooseAndCycle
+
+let chooseAndCycle = function({
+  loopSet = [0, 1, 2, 3],
+  num = 99
+} = {
+  loopSet: [0, 1, 2, 3],
+  num: 99
+}) {
+
+  let setToReturn = [];
+  let tSet = deepCopy(loopSet);
+
+  for (let i = 0; i < num; i++) {
+    if (tSet.length == 0) tSet = deepCopy(loopSet);
+    let newIx = chooseIndex(tSet); //select the index number from the remaining tempo set
+    setToReturn.push(tSet[newIx]);
+    tSet.splice(newIx, 1); //remove this tempo from set
+  }
+
+  return setToReturn
+
+}
+
+//#endef choooseAndCycle
+
+//#ef numberedSetFromSize
+
+let numberedSetFromSize = function({
+  sz = 10
+} = {
+  sz: 10
+}) {
+
+  let setToReturn = [];
+  for (let i = 0; i < sz; i++) {
+    setToReturn.push(i);
+  }
+  return setToReturn;
+
+}
+
+//#endef numberedSetFromSize
 
 
 

@@ -22,6 +22,47 @@ const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
 
 // #endef END Animation Engine Variables
 
+// #ef notationSvgPaths_labels
+let notationSvgPaths_labels = [{
+    path: "/pieces/sf004/notationSVGs/quarter.svg",
+    lbl: 'quarter'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
+    lbl: 'quintuplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
+    lbl: 'quadruplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/triplet.svg",
+    lbl: 'triplet'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
+    lbl: 'dot8thR_16th'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
+    lbl: 'two16th_8thR'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
+    lbl: 'eighthR_two16ths'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
+    lbl: 'eighthR_8th'
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
+    lbl: 'qtr_rest'
+  }
+];
+// #endef END notationSvgPaths_labels
+
+
 // #endef END Global Vars
 
 //#ef SOCKET IO
@@ -169,7 +210,7 @@ let generateScoreData = function() {
     // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
     let tempoChgTimeCont = generatePalindromeTimeContainers({
       numContainersOneWay: 4,
-      largestCont_minMax: [90, 110],
+      startCont_minMax: [90, 110],
       pctChg_minMax: [-0.25, -0.31]
     });
     //##endef Generate time containers within which a certian speed of tempo will take place
@@ -307,6 +348,124 @@ let generateScoreData = function() {
   tempScoreData['unisons'] = unisonTempoChangeObjs;
 
   //##endef Unison Tempo Changes
+
+  //##ef Notation Motives
+
+
+  //Time Containers & amount of rests
+  // 11 containers in a palindrome short-longer-longer ... longest-mirror
+  let restsTimeContainers = generatePalindromeTimeContainers({
+    numContainersOneWay: 6,
+    startCont_minMax: [5, 7],
+    pctChg_minMax: [0.27, 0.36]
+  });
+  //find out total time
+  let restsLoopTotalTime = 0;
+  restsTimeContainers.forEach((tTime) => {
+    restsLoopTotalTime += tTime;
+  });
+  // Overall loop length will be x times restsLoopTotalTime
+  let numRestsLoop = 7;
+  let maxNumRests = 13;
+  let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
+  for (let i = 0; i < 100000; i++) {
+    if ((restsByFrameSetLength % maxNumRests) == 0) {
+      break;
+    } else {
+      restsByFrameSetLength++;
+    }
+  }
+
+  // Figure out which frames will add/subtract rest
+  let restsByFrame = [];
+  let tCumFrmCt_rests = 0;
+  let addMinusRestsCt = 0;
+  let restType = 0;
+  let restSetInc = 0;
+  for (let i = 0; i < restsByFrameSetLength; i++) {
+    let tOb = {};
+    let sec = restsTimeContainers[restSetInc];
+    let incInFrms = Math.round(sec * FRAMERATE);
+    tCumFrmCt_rests += incInFrms;
+    tOb['frame'] = tCumFrmCt_rests;
+    if (addMinusRestsCt == 0) restType = (restType + 1) % 2
+    tOb['restType'] = restType;
+    restSetInc = (restSetInc + 1) % restsTimeContainers.length;
+    addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
+    restsByFrame.push(tOb);
+  }
+  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame;
+  console.log(restsByFrame);
+
+  //For motives, do a choose for dur between changes
+  //Make a set as long as restsTimeContainers
+  //cycle through all the motives - Make function
+  let motiveNumberSet = numberedSetFromSize({
+    sz: notationSvgPaths_labels.length
+  });
+  let orderedMotiveNumSet = chooseAndCycle({
+    loopSet: motiveNumberSet,
+    num: 5000
+  });
+  let dursBtwnMotiveChgSet = [5, 7, 3, 6, 11, 13, 8, 9, 17];
+  //Make big set of motive change objects: {motiveNum:, time:}
+  let motiveChangeTimesObjSet = [];
+  let cumMotiveChgTime = 0;
+
+  for (let i = 0; i < 100000; i++) {
+
+    let tObj = {};
+    cumMotiveChgTime += choose(dursBtwnMotiveChgSet);
+    let chgFrmNum = Math.round(cumMotiveChgTime * FRAMERATE);
+    tObj['motiveNum'] = orderedMotiveNumSet[i];
+    tObj['frame'] = chgFrmNum;
+    motiveChangeTimesObjSet.push(tObj);
+
+    if (cumMotiveChgTime > (restsLoopTotalTime * numRestsLoop)) break;
+
+  } // for (let i = 0; i < 100000; i++) END
+  console.log(motiveChangeTimesObjSet);
+
+
+  //Make a frame by frame set with all the rests and motive changes state of all 8 beats each frame
+  // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
+  let tInitMotiveSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //initial motives all quarters
+  //fill all frames with all quarters then replace
+  let motiveChgByFrameSet = [];
+  for (let i = 0; i < motiveSetByFrame_length-1; i++) {
+    motiveChgByFrameSet.push(tInitMotiveSet);
+  }
+
+  //START HERE ERRORS
+  restsByFrame.forEach((restObj) => {
+    let tfrm = restObj.frame;
+    let ttype = restObj.restType;
+    if (ttype == 1) { //add rest
+      for (let i = 0; i < 1000; i++) {
+        let tIx = chooseIndex(motiveChgByFrameSet[tfrm]);
+        if (motiveChgByFrameSet[tfrm][tIx] != -1){
+          motiveChgByFrameSet[tfrm][tIx] = -1;
+          break;
+        }
+      }
+    }
+
+
+  else if (ttype == 0) { //add rest
+      for (let i = 0; i < 1000; i++) {
+        let tIx = chooseIndex(motiveChgByFrameSet[tfrm]);
+        if (motiveChgByFrameSet[tfrm][tIx] == -1){
+          let tmotiveNum = choose(orderedMotiveNumSet);
+          motiveChgByFrameSet[tfrm][tIx] = tmotiveNum;
+          break;
+        }
+      }
+    }
+
+  });
+  console.log(motiveChgByFrameSet);
+
+  //##endef Notation Motives
 
   return tempScoreData;
 
@@ -1581,46 +1740,6 @@ const scrollingCursor_y2_l1 = beatCoords[0].y + HALF_NOTEHEAD_H
 const scrollingCursor_y1_l2 = beatCoords[8].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
 const scrollingCursor_y2_l2 = beatCoords[8].y + HALF_NOTEHEAD_H
 
-// #ef notationSvgPaths_labels
-let notationSvgPaths_labels = [{
-    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
-    lbl: 'quintuplet'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
-    lbl: 'quadruplet'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/triplet.svg",
-    lbl: 'triplet'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
-    lbl: 'dot8thR_16th'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
-    lbl: 'two16th_8thR'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
-    lbl: 'eighthR_two16ths'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
-    lbl: 'eighthR_8th'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/quarter.svg",
-    lbl: 'quarter'
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
-    lbl: 'qtr_rest'
-  }
-];
-// #endef END notationSvgPaths_labels
-
 // #ef dynamicsAccents_paths_labels
 let dynamicsAccents_paths_labels = [{
   path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
@@ -2110,9 +2229,9 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 function wipeUnisonSigns() {
 
   unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-      arrayOfSignsForOneTrack.forEach((tSign) => {
-        tSign.visible = false;
-      });
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
   });
 
 }
@@ -2129,50 +2248,50 @@ function wipeUnisonSigns() {
 
 function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
 
-      //##ef Lead In
-      if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
+  //##ef Lead In
+  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
 
-        let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
-        if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
+    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
 
-          leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-            console.log(flagIx);
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = unisonSignsByTrack[tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+        console.log(flagIx);
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
+        let tSign = unisonSignsByTrack[tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
 
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
 
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
 
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
 
-      } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-      //##endef Lead
+  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
+  //##endef Lead
 
-      //##ef Loop After Lead In
-      else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+  //##ef Loop After Lead In
+  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
+    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
-        if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+    if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
 
-          setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+      setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
 
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
+        let tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
 
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
 
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
 
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-      } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-      //##endef Loop After Lead In
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
+  //##endef Loop After Lead In
 
 } // function updateUnisonSigns() END
 
