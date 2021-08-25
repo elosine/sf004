@@ -426,134 +426,47 @@ let generateScoreData = function() {
 
   //Make a frame by frame set with all the rests and motive changes state of all 8 beats each frame
   // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
-
+  let tInitMotiveSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //initial motives all quarters
   //fill all frames with all quarters then replace
-  //##ef Insert Rests
   let motiveChgByFrameSet = [];
   for (let i = 0; i < motiveSetByFrame_length; i++) {
-    motiveChgByFrameSet.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    motiveChgByFrameSet.push(tInitMotiveSet);
   }
-  let motiveChgByFrameSet_currSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  console.log(restsByFrame);
+  restsByFrame.forEach((restObj) => {
+    let tfrm = restObj.frame;
+    let ttype = restObj.restType;
+        let tIxToChg;
+    if (ttype == 1) { //add rest
+      console.log(motiveChgByFrameSet[tfrm]);
+      let tShufSet = shuffle(motiveChgByFrameSet[tfrm]);
 
-
-  for (var restIx = 1; restIx < restsByFrame.length; restIx++) {
-
-    let restObj = restsByFrame[restIx - 1];
-    let restFrame = restObj.frame;
-    let restType = restObj.restType;
-    let next_restObj = restsByFrame[restIx];
-    let next_restFrame = next_restObj.frame;
-    let next_restType = next_restObj.restType;
-
-    if (restType == 1) { //add rest
-
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
-
-        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
-
-        if (tNotesSet[tChoice] != -1) {
-
-          tNotesSet[tChoice] = -1; //add a rest
-
-          //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
-
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if(tchgFrmNum == frmIx){
-
-                for(let j=0;j<100;j++) {
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix]!= -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
-
-
-              }
-
-            });
-
-            //Work in motiveChangeTimesObjSet
-            let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
-          }
-
-          // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
-
+      for (let i = 0; i < motiveChgByFrameSet[tfrm].length; i++) {
+        if (motiveChgByFrameSet[tfrm][i] != -1) {
+          motiveChgByFrameSet[tfrm][i] = -1;
+          tIxToChg = i;
           break;
+        }
+      }
 
-        } //   if (tNotesSet[noteIx] != -1) END
-
-      } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
-
-
-
-
-    if (restType == 0) { //add rest
-
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
-
-        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
-
-        if (tNotesSet[tChoice] == -1) {
-
-          tNotesSet[tChoice] = 0; //use motiveChangeTimesObjSet here
-
-          //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
-
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if(tchgFrmNum == frmIx){
-
-                for(let j=0;j<100;j++) {
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix]!= -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
-
-
-              }
-
-            });
-
-
-            let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
-          }
-
-          // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
-
+    }
+        motiveChgByFrameSet[tfrm][tIxToChg]= -1;
+    /*
+    else if (ttype == 0) { //remove rest
+      for (let i = 0; i < 1000; i++) {
+        let tIx = chooseIndex(motiveChgByFrameSet[tfrm]);
+        if (motiveChgByFrameSet[tfrm][tIx] == -1) {
+          let tmotiveNum = choose(motiveNumberSet);
+          motiveChgByFrameSet[tfrm][tIx] = tmotiveNum;
           break;
+        }
+      }
+    }
+    */
+  });
+  console.log(motiveChgByFrameSet);
 
-        } //   if (tNotesSet[noteIx] != -1) END
-
-      } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
-
-
-
-  } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
-
-  //##endef Insert Rests
-
-
-    //##endef Notation Motives
+  //##endef Notation Motives
 
   return tempScoreData;
 
@@ -1909,7 +1822,6 @@ function makeRhythmicNotation() {
       }); //notationSvgPaths_labels.forEach((pathLblObj)  END
 
     }); //beatCoords.forEach((beatCoordsObj) END
-    console.log(  motivesByBeat);
 
   } //function makeMotives() END
 
@@ -2110,53 +2022,6 @@ function wipeRhythmicNotation() {
 
 // #endef END wipeRhythmicNotation
 
-//#ef Update Notation
-
-function updateNotation() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  //##ef Lead In
-  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
-    /*
-    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
-    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-        console.log(flagIx);
-        let tempo_trackNum = signObj.tempoNum;
-        let zLoc = signObj.zLoc;
-        let tSign = unisonSignsByTrack[tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
-
-        tSign.position.z = GO_Z + zLoc;
-        tSign.position.x = xPosOfTracks[tempo_trackNum];
-        tSign.visible = true;
-
-      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-    */
-  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-  //##endef Lead
-
-
-  //##ef Loop After Lead In
-  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % motiveChgByFrameSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-
-      motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-        // make numbered array out of motivesByBeat[beatNum][motiveNum]
-
-        motivesByBeat[beatNum][motiveNum].setAttributeNS(null, "display", 'yes');
-
-      }); //   motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => END
-
-  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-  //##endef Loop After Lead In
-
-} // function updateNotation() END
-
-//#endef Update Notation
 
 // #endef END Rhythmic Notation
 
