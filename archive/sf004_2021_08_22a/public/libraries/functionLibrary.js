@@ -1046,14 +1046,44 @@ const deepCopy = (arr) => {
 // #ef playerTokens
 
 let mkPlrTkns = function(svgCanvas, type) {
-
+  console.log('fdsaf');
   let playerTokenObj = {};
   let yAdjSvg = 0;
   let yAdjTxt = 0;
 
   switch (type) {
 
-    case 0:
+    case 6:
+
+      yAdjSvg = 10;
+      yAdjTxt = 10;
+
+      let tCirc = mkSvgCircle({
+        svgContainer: svgCanvas,
+        cx: 0,
+        cy: -yAdjSvg,
+        r: 9,
+        fill: 'none',
+        stroke: clr_neonMagenta,
+        strokeW: 3
+      });
+
+      playerTokenObj['svg'] = tCirc;
+
+      let tCircText = mkSvgText({
+        svgContainer: svgCanvas,
+        x: 0,
+        y: -yAdjTxt,
+        justifyH: 'middle',
+        justifyV: 'central',
+        fontSz: 13,
+        txt: '1'
+      });
+
+      playerTokenObj['txt'] = tCircText;
+
+      break;
+      case 0:
 
       yAdjSvg = 10;
       yAdjTxt = 10;

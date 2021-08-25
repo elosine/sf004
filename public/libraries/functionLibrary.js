@@ -822,6 +822,49 @@ let mkSvgTriangle = function({
   return svgTriangle;
 }
 
+
+let mkSvgTriangle2 = function({
+  svgContainer,
+  cx = 25,
+  cy = 25,
+  h = 10,
+  w = 10,
+  fill = 'green',
+  stroke = 'black',
+  strokeW = 3
+} = {
+  svgContainer,
+  cx: 25,
+  cy: 25,
+  h: 10,
+  w: 10,
+  fill: 'green',
+  stroke: 'black',
+  strokeW: 3
+}) {
+
+  let x1, x2, x3, y1, y2, y3;
+  let halfH = h / 2;
+  let halfW = w / 2;
+
+  x3 = cx;
+  y1 = cy - halfH;
+  x2 = cx + halfW;
+  y2 = cy - halfH;
+  x1 = cx - halfW;
+  y3 = cy + halfH;
+
+  let pointsString = x1.toString() + ',' + y1.toString() + ' ' + x2.toString() + ',' + y2.toString() + ' ' + x3.toString() + ',' + y3.toString();
+
+  var svgTriangle = document.createElementNS(SVG_NS, "polygon");
+  svgTriangle.setAttributeNS(null, "points", pointsString);
+  svgTriangle.setAttributeNS(null, "fill", fill);
+  svgTriangle.setAttributeNS(null, "stroke", stroke);
+  svgTriangle.setAttributeNS(null, "stroke-width", strokeW);
+  svgContainer.appendChild(svgTriangle);
+  return svgTriangle;
+}
+
 // #endef END mkSvgTriangle
 
 // #ef mkSvgText
@@ -1211,6 +1254,40 @@ let mkPlrTkns = function(svgCanvas, type) {
       });
 
       playerTokenObj['txt'] = tSqrText;
+
+      break;
+
+    case 5:
+
+      yAdjSvg = 15;
+      yAdjTxt = 21;
+
+      let tTri2 = mkSvgTriangle2({
+        svgContainer: svgCanvas,
+        cx: 0,
+        cy: -yAdjSvg,
+        h: 40,
+        w: 40,
+        fill: 'none',
+        stroke: clr_neonMagenta,
+        strokeW: 3
+      });
+
+      playerTokenObj['svg'] = tTri2;
+
+      let tCircText2 = mkSvgText({
+        svgContainer: svgCanvas,
+        x: 0,
+        y: -yAdjTxt,
+        justifyH: 'middle',
+        justifyV: 'central',
+        fontSz: 28,
+        txt: 'U'
+      });
+
+      tCircText2.setAttributeNS(null, 'font-weight', 'bolder');
+      tCircText2.setAttributeNS(null, 'fill', clr_yellow);
+      playerTokenObj['txt'] = tCircText2;
 
       break;
 
