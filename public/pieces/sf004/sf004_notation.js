@@ -97,6 +97,8 @@ function init() {
 
   makeUnisonSigns();
 
+  makeUnisonToken();
+
   RENDERER.render(SCENE, CAMERA);
 
   makeControlPanel();
@@ -353,6 +355,7 @@ let playerTokenLocationByFrame_perPlr = [];
 //#ef Unisons
 let setOfUnisonFlagLocByFrame = [];
 let leadInSet_unisonFlagLocByFrame = [];
+let unisonPlrTokenLocByFrame;
 //#endef Unisons
 
 
@@ -766,6 +769,21 @@ let calculateScore = function() {
 
       } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
 
+      //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+      if (tempChgIx < tempoChangesByFrameNum_thisPlr.length - 1) {
+        let tDurFrames = tempoChangesByFrameNum_thisPlr[tempChgIx + 1].frameNum - goFrmNum;
+        for (let i = 1; i < tDurFrames; i++) {
+
+          let tempoNum_zPos_obj = {};
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          tempoNum_zPos_obj['zLoc'] = 0;
+          let tFrameNum = goFrmNum + i;
+          tempoFlagLocsByFrame_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
+
+        } // for (let i = 1; i < tDurFrames; i++) END
+      }
+
     }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
 
     //##endef  Determine Sign Z Position for each tempo change for each frame - this player
@@ -812,7 +830,7 @@ let calculateScore = function() {
   //#ef Calculations for Unisons
 
 
-  // UNISON DUR INDICATOR AS CYLINDAR ON TRACK
+  //#ef Unison Flags
 
   //Make loop size array to store unison state for each frame in loop
   let lastFrameInUnisonLoop = scoreData.unisons[scoreData.unisons.length - 1].frame + scoreData.unisons[scoreData.unisons.length - 1].durFrames;
@@ -841,6 +859,7 @@ let calculateScore = function() {
         tempoNum_zPos_obj['tempoNum'] = tempoNum;
         let zLoc = Math.round(-PX_PER_FRAME * i);
         tempoNum_zPos_obj['zLoc'] = zLoc;
+        tempoNum_zPos_obj['end'] = false;
         setOfUnisonFlagLocByFrame[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
       } // if (frameNum >= 0) END
@@ -850,6 +869,7 @@ let calculateScore = function() {
         tempoNum_zPos_obj['tempoNum'] = tempoNum;
         let zLoc = Math.round(-PX_PER_FRAME * i);
         tempoNum_zPos_obj['zLoc'] = zLoc;
+        tempoNum_zPos_obj['end'] = false;
         leadInSet_unisonFlagLocByFrame[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
       } //else END
@@ -863,15 +883,83 @@ let calculateScore = function() {
 
       tempoNum_zPos_obj['tempoNum'] = tempoNum;
       tempoNum_zPos_obj['zLoc'] = 0;
+      tempoNum_zPos_obj['end'] = false;
       let tFrameNum = goFrmNum + i;
       setOfUnisonFlagLocByFrame[tFrameNum].push(tempoNum_zPos_obj);
 
     } // for (let i = 1; i < tDurFrames; i++) END
 
-  }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
+  }); // scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => END
+
+
+  // FOR SET OF UNISON OFF FLAGS
+  scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
+
+    if (tempChgIx < scoreData.unisons.length - 1) {
+
+      let tempoNum = tempoFrmNumObj.tempo;
+      let goFrmNum = tempoFrmNumObj.frame + tempoFrmNumObj.durFrames; //this is the frame num where the sign is at the go fret
+      let tDurFrames = tempoFrmNumObj.durFrames;
+
+      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+        let tempoNum_zPos_obj = {};
+        let frameNum = goFrmNum - i; //
+
+        if (frameNum >= 0) { //so you don't go to negative array index
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoNum_zPos_obj['end'] = true;
+          setOfUnisonFlagLocByFrame[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoNum_zPos_obj['end'] = true;
+          leadInSet_unisonFlagLocByFrame[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } //else END
+
+      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+    }
+
+  }); // scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => END
+
+  //#endef Unison Flags
+
+  //#ef Unison Player Token
+
+  //#ef Unison Player Tokens
+
+  unisonPlrTokenLocByFrame = new Array(setOfUnisonFlagLocByFrame.length).fill(-1);
+
+  scoreData.unisons.forEach((tempoChgObj, tchgIx) => {
+
+    let thisTempo = tempoChgObj.tempo;
+    let thisFrameNum = tempoChgObj.frame;
+    let tNumToFill = tempoChgObj.durFrames;
+
+    for (let i = 0; i < tNumToFill; i++) {
+      unisonPlrTokenLocByFrame[thisFrameNum + i] = thisTempo;
+    }
+
+  }); // tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => END
+
+
+  //#endef Unison Player Tokens
+
+  //#endef Unison Player Token
 
 
   //#endef Calculations for Unisons
+
+
 
 } // let calculateScore = function()
 
@@ -1576,10 +1664,6 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 
 // #endef Beat Coordinates
 
-const scrollingCursor_y1_l1 = beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const scrollingCursor_y2_l1 = beatCoords[0].y + HALF_NOTEHEAD_H
-const scrollingCursor_y1_l2 = beatCoords[8].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const scrollingCursor_y2_l2 = beatCoords[8].y + HALF_NOTEHEAD_H
 
 // #ef notationSvgPaths_labels
 let notationSvgPaths_labels = [{
@@ -1849,7 +1933,6 @@ function wipePlayerTokens() {
 
 //#ef Update Player Tokens
 
-// {yAdjSvg: 10, yAdjTxt: 10, svg: circle, txt: text}
 
 function updatePlayerTokens() {
 
@@ -2054,10 +2137,12 @@ function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH
 //#ef Unisons
 
 
-let unisonSignsByTrack = [];
 
 //#ef Make Unison Signs
 
+
+let unisonSignsByTrack = [];
+let unisonOffSignsByTrack = [];
 
 function makeUnisonSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
 
@@ -2066,6 +2151,7 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
   xPosOfTracks.forEach((trXpos, trIx) => {
 
     let thisTracksSigns = [];
+    let thisTracksOffSigns = [];
 
     for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
 
@@ -2092,6 +2178,32 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 
     unisonSignsByTrack.push(thisTracksSigns);
 
+    // UNISON OFF SIGNS
+    for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+      let signMaterial =
+        new THREE.MeshLambertMaterial({
+          color: "black",
+          side: THREE.DoubleSide,
+          opacity: 0.7,
+          transparent: true,
+        });
+
+      let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+      sign.position.z = GO_Z;
+      sign.position.x = trXpos;
+      sign.position.y = 0;
+      sign.rotation.x = rads(CAM_ROTATION_X);
+
+      SCENE.add(sign);
+      sign.visible = false;
+      thisTracksOffSigns.push(sign);
+
+    } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+    unisonOffSignsByTrack.push(thisTracksOffSigns);
+
   }); // xPosOfTracks.forEach((trXpos, trIx) end
 
 } //makeUnisonSigns() end
@@ -2102,6 +2214,14 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 //#ef Make Unison Tokens
 
 
+let unisonToken;
+
+function makeUnisonToken() {
+
+  unisonToken = mkPlrTkns(rhythmicNotationObj.svgCont, 5);
+
+}
+
 
 //#endef Make Unison Tokens
 
@@ -2110,9 +2230,15 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 function wipeUnisonSigns() {
 
   unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-      arrayOfSignsForOneTrack.forEach((tSign) => {
-        tSign.visible = false;
-      });
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
+  });
+
+  unisonOffSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
   });
 
 }
@@ -2121,7 +2247,12 @@ function wipeUnisonSigns() {
 
 //#ef Wipe Unison Tokens
 
+function wipeUnisonToken() {
 
+  unisonToken.svg.setAttributeNS(null, 'display', 'none');
+  unisonToken.txt.setAttributeNS(null, 'display', 'none');
+
+}
 
 //#endef Wipe Unison Tokens
 
@@ -2129,50 +2260,62 @@ function wipeUnisonSigns() {
 
 function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
 
-      //##ef Lead In
-      if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
+  //##ef Lead In
+  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
 
-        let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
-        if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
+    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
 
-          leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-            console.log(flagIx);
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = unisonSignsByTrack[tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
 
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
 
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+        let tSign;
+        if (signObj.end) {
+          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+        } else {
+          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        }
 
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
 
-      } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-      //##endef Lead
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
 
-      //##ef Loop After Lead In
-      else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
 
-        if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
+  //##endef Lead
 
-          setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+  //##ef Loop After Lead In
+  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
+    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+    if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
 
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
+      setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
 
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
 
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-      } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-      //##endef Loop After Lead In
+        let tSign;
+        if (signObj.end) {
+          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+        } else {
+          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        }
+
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
+
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
+  //##endef Loop After Lead In
 
 } // function updateUnisonSigns() END
 
@@ -2182,7 +2325,34 @@ function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FO
 
 
 
-//#endef Wipe Unison Tokens
+function updateUnisonPlayerToken() {
+
+  if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for player Tokens
+
+    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % unisonPlrTokenLocByFrame.length;
+
+    if (unisonPlrTokenLocByFrame[setIx] != -1) {
+      let tTempoNum = unisonPlrTokenLocByFrame[setIx];
+      let coordLookUpIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scrollingCsrCoords_perTempo[tTempoNum].length;
+      let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
+      let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
+
+      unisonToken.move(tBaseX, tBaseY);
+      unisonToken.svg.setAttributeNS(null, "display", 'yes');
+      unisonToken.txt.setAttributeNS(null, "display", 'yes');
+      unisonToken.svg.setAttributeNS(null, "fill", TEMPO_COLORS[tTempoNum]);
+      unisonToken.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
+
+    }
+
+
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+
+
+}
+
+
+//#endef Update Unison Tokens
 
 
 //#endef Unisons
@@ -2504,6 +2674,7 @@ function wipe() {
   wipePlayerTokens();
   wipeArticulations();
   wipeUnisonSigns();
+  wipeUnisonToken();
 
 } // function wipe() END
 
@@ -2521,6 +2692,7 @@ function update() {
   updateSigns();
   updatePlayerTokens();
   updateUnisonSigns();
+  updateUnisonPlayerToken();
 
 }
 
