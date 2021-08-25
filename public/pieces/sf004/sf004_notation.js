@@ -402,7 +402,7 @@ let generateScoreData = function() {
   //Make a set as long as restsTimeContainers
   //cycle through all the motives - Make function
   let motiveNumberSet = numberedSetFromSize({
-    sz: notationSvgPaths_labels.length
+    sz: (notationSvgPaths_labels.length - 1)
   });
   let orderedMotiveNumSet = chooseAndCycle({
     loopSet: motiveNumberSet,
@@ -465,11 +465,11 @@ let generateScoreData = function() {
             motiveChangeTimesObjSet.forEach((mObj) => {
               let tchgFrmNum = mObj.frame;
               let tmNum = mObj.motiveNum;
-              if(tchgFrmNum == frmIx){
+              if (tchgFrmNum == frmIx) {
 
-                for(let j=0;j<100;j++) {
+                for (let j = 0; j < 100; j++) {
                   let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix]!= -1) {
+                  if (tNotesSet[tix] != -1) {
                     tNotesSet[tix] = tmNum;
                     break;
                   }
@@ -517,11 +517,11 @@ let generateScoreData = function() {
             motiveChangeTimesObjSet.forEach((mObj) => {
               let tchgFrmNum = mObj.frame;
               let tmNum = mObj.motiveNum;
-              if(tchgFrmNum == frmIx){
+              if (tchgFrmNum == frmIx) {
 
-                for(let j=0;j<100;j++) {
+                for (let j = 0; j < 100; j++) {
                   let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix]!= -1) {
+                  if (tNotesSet[tix] != -1) {
                     tNotesSet[tix] = tmNum;
                     break;
                   }
@@ -551,11 +551,12 @@ let generateScoreData = function() {
 
 
   } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
+  tempScoreData['motiveSet'] = motiveChgByFrameSet;
 
   //##endef Insert Rests
 
 
-    //##endef Notation Motives
+  //##endef Notation Motives
 
   return tempScoreData;
 
@@ -1889,6 +1890,17 @@ const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 const NOTATION_CURSOR_H = 83;
 
 let motivesByBeat = [];
+let motiveDict = {
+  '-1': 'qtr_rest',
+  '0': 'quarter',
+  '1': 'dot8thR_16th',
+  '2': 'eighthR_8th',
+  '3': 'eighthR_two16ths',
+  '4': 'quadruplet',
+  '5': 'quintuplet',
+  '6': 'triplet',
+  '7': 'two16th_8thR'
+}
 for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
   motivesByBeat.push({});
 }
@@ -1993,7 +2005,7 @@ function makeRhythmicNotation() {
       }); //notationSvgPaths_labels.forEach((pathLblObj)  END
 
     }); //beatCoords.forEach((beatCoordsObj) END
-    console.log(  motivesByBeat);
+
 
   } //function makeMotives() END
 
@@ -2195,51 +2207,25 @@ function wipeRhythmicNotation() {
 
 //#ef Update Notation
 
+
 function updateNotation() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
 
-  //##ef Lead In
-  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
-    /*
-    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
-    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+  if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
+    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scoreData.motiveSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
-      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-        console.log(flagIx);
-        let tempo_trackNum = signObj.tempoNum;
-        let zLoc = signObj.zLoc;
-        let tSign = unisonSignsByTrack[tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+    scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
 
-        tSign.position.z = GO_Z + zLoc;
-        tSign.position.x = xPosOfTracks[tempo_trackNum];
-        tSign.visible = true;
+      motivesByBeat[beatNum][motiveDict[motiveNum]].setAttributeNS(null, "display", 'yes');
 
-      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-    */
-  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-  //##endef Lead
-
-
-  //##ef Loop After Lead In
-  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % motiveChgByFrameSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-
-      motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-        // make numbered array out of motivesByBeat[beatNum][motiveNum]
-
-        motivesByBeat[beatNum][motiveNum].setAttributeNS(null, "display", 'yes');
-
-      }); //   motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => END
+    }); //   motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => END
 
   } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-  //##endef Loop After Lead In
 
 } // function updateNotation() END
 
+
 //#endef Update Notation
+
 
 // #endef END Rhythmic Notation
 
@@ -2924,7 +2910,7 @@ function wipe() {
   wipeSigns();
   wipeBbComplex();
   wipePitchSets();
-  // wipeRhythmicNotation();
+  wipeRhythmicNotation();
   wipeTempoCsrs();
   wipePlayerTokens();
   wipeArticulations();
@@ -2948,6 +2934,7 @@ function update() {
   updatePlayerTokens();
   updateUnisonSigns();
   updateUnisonPlayerToken();
+  updateNotation();
 
 }
 
