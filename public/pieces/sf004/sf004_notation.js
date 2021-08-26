@@ -140,6 +140,8 @@ function init() {
 
   makeUnisonToken();
 
+  makeScrollingBBs();
+
   RENDERER.render(SCENE, CAMERA);
 
   makeControlPanel();
@@ -2074,6 +2076,98 @@ function wipeTempoCsrs() {
 // #endef END wipeTempoCsrs
 
 // #endef END Notation Scrolling Cursors
+
+// #ef Make Scrolling BB
+
+
+// #ef Scrolling BBs Variables
+
+let scr_bbSet = [];
+for (let i = 0; i < NUM_TEMPOS; i++) scr_bbSet.push({});
+const SCR_BB_W = 26;
+const SCR_BB_H = NOTATION_CURSOR_H;
+const SCR_BB_TOP = beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+const SCR_BB_CENTER = SCR_BB_W / 2;
+const SCR_BB_PAD_LEFT = 4;
+// const BB_GAP = 16;
+const SCR_BBCIRC_RADIUS = 6;
+const SCR_BBCIRC_TOP_CY = SCR_BBCIRC_RADIUS + 2;
+const SCR_BBCIRC_BOTTOM_CY = SCR_BB_H - SCR_BBCIRC_RADIUS;
+const SCR_BB_TRAVEL_DIST = SCR_BBCIRC_BOTTOM_CY - SCR_BBCIRC_TOP_CY;
+const SCR_BB_BOUNCE_WEIGHT = 6;
+const SCR_HALF_BB_BOUNCE_WEIGHT = SCR_BB_BOUNCE_WEIGHT / 2;
+
+// #endef END Scrolling BBs Variables
+
+function makeScrollingBBs() {
+
+  for (let scrBbIx = 0; scrBbIx < NUM_TEMPOS; scrBbIx++) {
+
+          bbSet[scrBbIx]['div'] = mkDiv({
+          canvas: rhythmicNotationObj.svgCont,
+          w: SCR_BB_W,
+          h: SCR_BB_H,
+          top: SCR_BB_TOP,
+          left:   beatCoords[0].x - SCR_BB_W,
+          bgClr: 'white'
+        });
+
+        bbSet[scrBbIx]['svgCont'] = mkSVGcontainer({
+          canvas: bbSet[scrBbIx].div,
+          w: SCR_BB_W,
+          h: SCR_BB_H,
+          x: 0,
+          y: 0
+        });
+
+        bbSet[scrBbIx]['bbCirc'] = mkSvgCircle({
+          svgContainer: bbSet[scrBbIx].svgCont,
+          cx: SCR_BB_CENTER,
+          cy: SCR_BBCIRC_TOP_CY,
+          r: SCR_BBCIRC_RADIUS,
+          fill: TEMPO_COLORS[scrBbIx],
+          stroke: 'white',
+          strokeW: 0
+        });
+
+        bbSet[scrBbIx]['bbBouncePadOff'] = mkSvgLine({
+          svgContainer: bbSet[scrBbIx].svgCont,
+          x1: 0,
+          y1: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
+          x2: SCR_BB_W,
+          y2: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
+          stroke: 'black',
+          strokeW: SCR_BB_BOUNCE_WEIGHT
+        });
+
+        bbSet[scrBbIx]['bbBouncePadOn'] = mkSvgLine({
+          svgContainer: bbSet[scrBbIx].svgCont,
+          x1: 0,
+          y1: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
+          x2: SCR_BB_W,
+          y2: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
+          stroke: 'yellow',
+          strokeW: SCR_BB_BOUNCE_WEIGHT + 2
+        });
+        bbSet[scrBbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+
+
+        bbSet[scrBbIx]['offIndicator'] = mkSvgRect({
+          svgContainer: bbSet[scrBbIx].svgCont,
+          x: 0,
+          y: 0,
+          w: SCR_BB_W,
+          h: SCR_BB_H,
+          fill: 'rgba(173, 173, 183, 0.9)',
+        });
+        bbSet[scrBbIx].offIndicator.setAttributeNS(null, 'display', 'none');
+
+  } //for (let scrBbIx = 0; scrBbIx < NUM_TEMPOS; scrBbIx++) END
+
+} // function makeScrollingBBs() END
+
+
+// #endef END Make Scrolling BB
 
 // #ef updateScrollingCsrs
 
