@@ -3,8 +3,10 @@
 
 let scoreData;
 let NUM_TEMPOS = 5;
+let NUM_PLAYERS = 5;
 let TOTAL_NUM_BEATS = 16
 const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
+
 
 
 //##ef Timing
@@ -96,6 +98,73 @@ const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 //##endef BBs Variables
 
+// #ef rhythmicNotation Variables
+
+let rhythmicNotationObj = {};
+let notationImageObjectSet = {};
+
+const BEAT_L_PX = 85;
+const TOP_STAFF_LINE_Y = 113;
+const VERT_DIST_BTWN_STAVES = 133;
+const VERT_DIST_BTWN_STAFF_LINES = 8;
+const FIRST_BEAT_L = 12;
+const LAST_BEAT_W = BEAT_L_PX - FIRST_BEAT_L;
+const NUM_BEATS_PER_STAFFLINE = 8;
+const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
+const STAFF_BTM_MARGIN = 40;
+const NUM_STAFFLINES = 2;
+const NOTEHEAD_W = 10;
+const NOTEHEAD_H = 8;
+const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
+const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
+const NOTATION_CURSOR_H = 83;
+
+let motivesByBeat = [];
+let motiveDict = {
+  '-1': 'qtr_rest',
+  '0': 'quarter',
+  '1': 'dot8thR_16th',
+  '2': 'eighthR_8th',
+  '3': 'eighthR_two16ths',
+  '4': 'quadruplet',
+  '5': 'quintuplet',
+  '6': 'triplet',
+  '7': 'two16th_8thR'
+}
+for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
+  motivesByBeat.push({});
+}
+
+// #ef Beat Coordinates
+let beatXLocations = [];
+for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
+  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
+}
+
+let beatCoords = [];
+for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
+  for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFFLINE; beatPerStaffIx++) {
+    let tCoordObj = {};
+    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_L_PX);
+    tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
+    beatCoords.push(tCoordObj);
+  }
+}
+// #endef Beat Coordinates
+
+
+// #ef dynamicsAccents_paths_labels
+let dynamicsAccents_paths_labels = [{
+  path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
+  lbl: 'sf'
+}];
+// #endef END dynamicsAccents_paths_labels
+
+// #endef END rhythmicNotation Variables
+
 
 //#endef GLOBAL VARIABLES
 
@@ -128,6 +197,8 @@ function generateScoreData() {
   scoreDataObject['leadIn_tempoFretLocations_perTempo'] = [];
   scoreDataObject['bbYpos_perTempo'] = [];
   scoreDataObject['leadIn_bbYpos_perTempo'] = [];
+  scoreDataObject['scrollingCsrCoords_perTempo'] = [];
+  scoreDataObject['tempoChanges_perPlayer'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -145,20 +216,19 @@ function generateScoreData() {
 
   //##endef Generate Tempos
 
-
-  scoreDataObject.tempos.forEach((tempo) => { // CALCULATE FOR EACH TEMPO
+  //##ef CALCULATIONS PER TEMPO
+  scoreDataObject.tempos.forEach((tempo) => {
 
 
     //##ef Calculate Loop Length & Go Frames
 
 
-    // make about an hours worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
+    // make about 11 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
     let framesPerBeat = FRAMERATE / (tempo / 60);
-    let beatsPerHour = (tempo * 60);
-    let beatsPerCycle = Math.floor(beatsPerHour / TOTAL_NUM_BEATS);
+    let beatsPerCycle = Math.round(tempo * 11);
     while ((beatsPerCycle % TOTAL_NUM_BEATS) != 0) { //keep adding beats until the cycle is divisible by TOTAL_NUM_BEATS
       beatsPerCycle++;
-      if (beatsPerCycle > 9999) break;
+      if (beatsPerCycle > 99999) break;
     }
 
     // MAKE A SET OF GO FRAMES FOR THIS CYCLE
@@ -344,48 +414,205 @@ function generateScoreData() {
     //##ef Calculate Scrolling Cursors
 
 
+    //look at every go frame, starting at 1; calc num frames since last go frame; map the distance between two beat coordinates
     let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
     let currBeatNum_InLoop = 0;
-    let incWithinBeat_eachFrame = 0; //how much to add to x between goframes/beats
+    goFrames_thisTempo.forEach((goFrameNumber, ix) => {
+      if (ix > 0) { //start on ix=1 so you can look back
 
-    thisTemposGoFrames.forEach((goFrmState, frmIx) => { //use go frames array so that all tempo elements are coordinated by go frame
+        let distFrames = goFrameNumber - goFrames_thisTempo[ix - 1];
+        let incInPx = BEAT_L_PX / distFrames;
 
-      let tCoordsObj = {}; //{x:,y1:,y2:}
-      let notationPxPerFrame_thisTempo = BEAT_L_PX / framesPerBeat; //how many pixels to advance per frame for this tempo
+        for (let i = 0; i < distFrames; i++) {
+          let tCoordsObj = {}; //{x:,y1:,y2:}
+          tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + (i * incInPx);
+          tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+          tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
+          scrollingCsrCoords_thisTempo.push(tCoordsObj);
+        } // for (let i = 0; i < distFrames; i++) END
 
-      if (goFrmState == 1) { //what happens on goframes; go frames will coordinate all so cursors will be on beat each goframe
+        currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS;
 
-        if (frmIx > 0) currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS; //increment beat in notation loop; don't increment first beat
 
-        // store coordinates for this beat
-        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x; //look up x coordinate for this beat
-        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
+      } // if (ix > 0) { //start on ix=1 so you can look back END
 
-        incWithinBeat_eachFrame = 0; //reset the x incrementer between beats
+    }); // goFrames_thisTempo.forEach((goFrameNumber, ix) => END
 
-      } // if (goFrmState == 1) END
-      //
-      else { // What happens between go frames
-
-        incWithinBeat_eachFrame += notationPxPerFrame_thisTempo; //increment cursor 1 frame worth of beat
-        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + incWithinBeat_eachFrame;
-        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
-
-      } // else { // What happens between go frames END
-
-      scrollingCsrCoords_thisTempo.push(tCoordsObj);
-
-    }); // thisTemposGoFrames.forEach((goFrmState, frmIx) => END
-
-    scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
+    scoreDataObject.scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
 
 
     //##endef Calculate Scrolling Cursors
 
 
-  }); // scoreDataObject.tempos.forEach((tempo) => { // CALCULATE FOR EACH TEMPO END
+  }); // scoreDataObject.tempos.forEach((tempo) => { END
+  //##endef CALCULATIONS PER TEMPO
+
+  //##ef CALCULATIONS PER PLAYER
+  for (let plrNum = 0; plrNum < NUM_PLAYERS; plrNum++) {
+
+
+    //##ef Tempo Changes
+
+
+    //###ef Calculate Which Frames to Change Tempo
+    // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
+    let tempoChgTimeCont = generatePalindromeTimeContainers({
+      numContainersOneWay: 4,
+      startCont_minMax: [90, 110],
+      pctChg_minMax: [-0.25, -0.31]
+    });
+    //START HERE: COMBINE TWO SECTIONS
+    // duration with tempo changes will be in this pattern: short - medium - long
+    // in conjunction with time containers. so 1st tc from short array, next tc from medium array etc...
+    let tempoChanges_thisPlayer = []; //{tempo:,frameNum}
+    let shortTempoChgDursSec = [9, 9, 11, 13];
+    let mediumTempoChgDursSec = [14, 14, 16, 18];
+    let longTempoChgDursSec = [21, 23, 33, 28, 37];
+    let tTempoSet = [0, 1, 2, 3, 4];
+
+    let tTimeElapsed = 0;
+    tempoChanges_thisPlayer.push({
+      frameNum: 0,
+      tempo: choose(tTempoSet)
+    }); // so there is a starting tempo
+    let chgDurSetNum = 0;
+    let timeContainerRemainder = 0;
+
+    tempoChgTimeCont.forEach((timeContDur) => { //each new time container
+
+      chgDurSetNum = (chgDurSetNum + 1) % 3; //loop change duration sets
+
+      let timeElapsed_thisTC = timeContainerRemainder; //this will be 0 or a negative number
+
+      do { //loop through each time container; add time from the appropriate set of
+
+        let tTimeInc = 99; //so while loop does not go on forever
+
+        switch (chgDurSetNum) {
+
+          case 0:
+            tTimeInc = choose(shortTempoChgDursSec);
+            break;
+
+          case 1:
+            tTimeInc = choose(mediumTempoChgDursSec);
+            break;
+
+          case 2:
+            tTimeInc = choose(longTempoChgDursSec);
+            break;
+
+        }
+
+        timeElapsed_thisTC += tTimeInc; //add time from the appropriate set until this time container is full
+        tTimeElapsed += tTimeInc //add this increment to overall time
+        let timeElapsedAsFrames = Math.round(tTimeElapsed * FRAMERATE); //convert to frames
+
+
+        let tNewTempo_frmNum_obj = {};
+
+        //decide which tempo; cycle through them all
+        if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
+        let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
+        let tNewTempo = tTempoSet[tTempoIx];
+        tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
+
+        tNewTempo_frmNum_obj['tempo'] = tNewTempo;
+        tNewTempo_frmNum_obj['frameNum'] = timeElapsedAsFrames;
+        tempoChanges_thisPlayer.push(tNewTempo_frmNum_obj);
+
+      } while (timeElapsed_thisTC <= timeContDur);
+
+      timeContainerRemainder = timeElapsed_thisTC - timeContDur; //a negative number pass on remainder so pattern of tempo change durations remains consistant
+
+    }); //tempoChgTimeCont.forEach((timeContDur) =>
+
+    scoreDataObject.tempoChanges_perPlayer.push(tempoChanges_thisPlayer);
+    //###endef Calculate Which Frames to Change Tempo
+
+    //#ef Tempo Change Flags
+
+    let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
+    for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push([]); // populate with -1 to replace later
+    let leadIn_tempoFlagLocsByFrame_thisPlr = []; //make a set of lead in frames
+    for (let i = 0; i < (RUNWAY_L_IN_NUMFRAMES - 1); i++) leadIn_tempoFlagLocsByFrame_thisPlr.push([]);
+
+    //##ef Determine Sign Z Position for each tempo change for each frame - this player
+    let tempoChg_signPos_thisPlayer = [];
+
+    tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
+
+      let tempoNum = tempoFrmNumObj.tempo;
+      let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret
+
+      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+        let tempoNum_zPos_obj = {};
+        let frameNum = goFrmNum - i; //
+
+        if (frameNum >= 0) { //so you don't go to negative array index
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoFlagLocsByFrame_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+          //pop off last frame for looping
+          if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) { //last tempo change with tempo num and frame num for this player
+            if (i == 0) { // last frame of this cycle
+
+              tempoFlagLocsByFrame_thisPlr.splice(frameNum); // truncate array to end of loop; was 100,000 long; frameNum instead of frameNum-1 will lob off last frame so it is clean loop, otherwise it goes to z=0 and the first frame of loop is also z=0
+
+            }
+          } //   if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) END
+
+        } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          leadIn_tempoFlagLocsByFrame_thisPlr[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } //else END
+
+      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+
+      //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+      if (tempChgIx < tempoChangesByFrameNum_thisPlr.length - 1) {
+        let tDurFrames = tempoChangesByFrameNum_thisPlr[tempChgIx + 1].frameNum - goFrmNum;
+        for (let i = 1; i < tDurFrames; i++) {
+
+          let tempoNum_zPos_obj = {};
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          tempoNum_zPos_obj['zLoc'] = 0;
+          let tFrameNum = goFrmNum + i;
+          tempoFlagLocsByFrame_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
+
+        } // for (let i = 1; i < tDurFrames; i++) END
+      }
+
+    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
+
+    //##endef  Determine Sign Z Position for each tempo change for each frame - this player
+
+    tempoFlagLocsByFrame_perPlr.push(tempoFlagLocsByFrame_thisPlr);
+    leadIn_tempoFlagLocsByFrame_perPlr.push(leadIn_tempoFlagLocsByFrame_thisPlr);
+
+
+    //#endef Tempo Change Flags
+
+
+
+
+
+    //##endef Tempo Changes
+
+
+  } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
+  //##endef CALCULATIONS PER PLAYER
 
 
   return scoreDataObject;
