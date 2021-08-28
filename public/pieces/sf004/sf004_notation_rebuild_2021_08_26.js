@@ -1,13 +1,22 @@
 //#ef GLOBAL VARIABLES
 
 
+//#ef SOCKET IO
+let ioConnection;
+
+if (window.location.hostname == 'localhost') {
+  ioConnection = io();
+} else {
+  ioConnection = io.connect(window.location.hostname);
+}
+const SOCKET = ioConnection;
+//#endef > END SOCKET IO
+
 let scoreData;
 let NUM_TEMPOS = 5;
 let NUM_PLAYERS = 5;
-let TOTAL_NUM_BEATS = 16
+let TOTAL_NUM_BEATS = 16;
 const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
-
-
 
 //##ef Timing
 const FRAMERATE = 60;
@@ -98,7 +107,8 @@ const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 //##endef BBs Variables
 
-// #ef rhythmicNotation Variables
+//##ef Notation Variables
+
 
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
@@ -122,22 +132,6 @@ const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 const NOTATION_CURSOR_H = 83;
 
-let motivesByBeat = [];
-let motiveDict = {
-  '-1': 'qtr_rest',
-  '0': 'quarter',
-  '1': 'dot8thR_16th',
-  '2': 'eighthR_8th',
-  '3': 'eighthR_two16ths',
-  '4': 'quadruplet',
-  '5': 'quintuplet',
-  '6': 'triplet',
-  '7': 'two16th_8thR'
-}
-for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
-  motivesByBeat.push({});
-}
-
 // #ef Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
@@ -155,6 +149,73 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 }
 // #endef Beat Coordinates
 
+//##ef motiveDictionary
+let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
+    lbl: 'qtr_rest',
+    num: -1,
+    w: 8.83,
+    h: 23.77
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quarter.svg",
+    lbl: 'quarter',
+    num: 0,
+    w: 9.74,
+    h: 62.21
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
+    lbl: 'dot8thR_16th',
+    num: 1,
+    w: 72.11,
+    h: 62.95
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
+    lbl: 'eighthR_8th',
+    num: 2,
+    w: 51.24,
+    h: 62.62
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/triplet.svg",
+    lbl: 'triplet',
+    num: 3,
+    w: 68.53,
+    h: 76.73
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
+    lbl: 'quadruplet',
+    num: 4,
+    w: 71.52,
+    h: 62.62
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
+    lbl: 'quintuplet',
+    num: 5,
+    w: 76.96,
+    h: 76.67
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
+    lbl: 'eighthR_two16ths',
+    num: 6,
+    w: 72.45,
+    h: 62.62
+  },
+  {
+    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
+    lbl: 'two16th_8thR',
+    num: 7,
+    w: 50.85,
+    h: 62.62
+  }
+
+];
+//##endef END motiveDictionary
 
 // #ef dynamicsAccents_paths_labels
 let dynamicsAccents_paths_labels = [{
@@ -163,7 +224,8 @@ let dynamicsAccents_paths_labels = [{
 }];
 // #endef END dynamicsAccents_paths_labels
 
-// #endef END rhythmicNotation Variables
+
+//##endef END Notation Variables
 
 
 //#endef GLOBAL VARIABLES
@@ -173,8 +235,10 @@ let dynamicsAccents_paths_labels = [{
 
 function init() {
 
+  processUrlArgs();
   scoreData = generateScoreData();
   console.log(scoreData);
+  makeScoreDataManager();
 
 } // function init() END
 
@@ -206,6 +270,7 @@ function generateScoreData() {
   scoreDataObject['unisonFlagLocs'] = [];
   scoreDataObject['leadIn_unisonFlagLocs'] = [];
   scoreDataObject['unisonPlayerTokenTempoNum'] = [];
+  scoreDataObject['motiveSet'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -715,7 +780,7 @@ function generateScoreData() {
   for (let i = 0; i < lastFrameInUnisonLoop; i++) {
     scoreDataObject.unisonFlagLocs.push([]);
   }
-  for (let i = 0; i < RUNWAY_LENGTH_FRAMES ; i++) scoreDataObject.leadIn_unisonFlagLocs.push([]);
+  for (let i = 0; i < RUNWAY_LENGTH_FRAMES; i++) scoreDataObject.leadIn_unisonFlagLocs.push([]);
 
   let tempoChg_signPos_thisPlayer = [];
 
@@ -746,7 +811,7 @@ function generateScoreData() {
         let zLoc = Math.round(-PX_PER_FRAME * i);
         tempoNum_zPos_obj['zLoc'] = zLoc;
         tempoNum_zPos_obj['end'] = false;
-        scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES  + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+        scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
       } //else END
 
@@ -882,7 +947,7 @@ function generateScoreData() {
   //Make a set as long as restsTimeContainers
   //cycle through all the motives - Make function
   let motiveNumberSet = numberedSetFromSize({
-    sz: (notationSvgPaths_labels.length - 1)
+    sz: (motiveDictionary.length - 1)
   });
   let orderedMotiveNumSet = chooseAndCycle({
     loopSet: motiveNumberSet,
@@ -906,11 +971,10 @@ function generateScoreData() {
 
   } // for (let i = 0; i < 100000; i++) END
 
-  //Make a frame by frame set with all the rests and motive changes state of all 8 beats each frame
+  //Make a frame by frame set with all the rests and motive changes state of all 16 beats each frame
   // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
 
   //fill all frames with all quarters then replace
-  //##ef Insert Rests
   let motiveChgByFrameSet = [];
   for (let i = 0; i < motiveSetByFrame_length; i++) {
     motiveChgByFrameSet.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
@@ -975,7 +1039,7 @@ function generateScoreData() {
 
     } // if (restType == 1) { END
 
-    if (restType == 0) { //add rest
+    if (restType == 0) { //take away rest
 
       let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
 
@@ -1025,15 +1089,235 @@ function generateScoreData() {
 
   } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
 
-  tempScoreData['motiveSet'] = motiveChgByFrameSet;
-
-  //##endef Insert Rests
+  scoreDataObject.motiveSet = motiveChgByFrameSet;
 
 
   //##endef CALCULATIONS FOR NOTATION
 
+  // console.log(scoreDataObject);
   return scoreDataObject;
+
 } // function generateScoreData() END
 
 
 //#endef GENERATE SCORE DATA
+
+//#ef SCORE DATA MANAGER
+
+
+function makeScoreDataManager() {
+
+  // #ef Score Data Manager Panel
+
+  let scoreDataManagerW = 300;
+  let scoreDataManagerH = 500;
+
+  let scoreDataManagerPanel = mkPanel({
+    w: scoreDataManagerW,
+    h: scoreDataManagerH,
+    title: 'Score Data Manager',
+    ipos: 'right-bottom',
+    offsetX: '0px',
+    offsetY: '0px',
+    autopos: 'none',
+    headerSize: 'xs',
+    onwindowresize: true,
+    contentOverflow: 'hidden',
+    clr: 'black',
+    onsmallified: function() {
+      scoreDataManagerPanel.reposition({
+        my: 'right-bottom',
+        at: 'right-bottom',
+        offsetY: this.h
+      })
+    },
+    onunsmallified: function() {
+      scoreDataManagerPanel.reposition({
+        my: 'right-bottom',
+        at: 'right-bottom',
+        offsetY: this.offsetY
+      })
+    }
+  });
+
+  // #endef END Score Data Manager Panel
+
+  // #ef Generate New Score Data Button
+
+  let generateNewScoreDataButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 15,
+    left: 15,
+    label: 'Generate New Score Data',
+    fontSize: 16,
+    action: function() {
+
+      scoreData = generateScoreData();
+      console.log(scoreData);
+
+    } // action: function() END
+  }); // let generateNewScoreDataButton = mkButton( END
+
+  // #endef END Generate New Score Data Button
+
+  // #ef Save Score Data Button
+
+  let saveScoreDataButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: scoreDataManagerH - 70,
+    left: 15,
+    label: 'Save Current Score Data',
+    fontSize: 16,
+    action: function() {
+      console.log(scoreData);
+      let scoreDataString = JSON.stringify(scoreData);
+      let scoreDataFileName = generateFileNameWdate('sf004');
+      downloadStrToHD(scoreDataString, scoreDataFileName, 'text/plain');
+    }
+  });
+
+  // #endef END Save Score Data Button
+
+  // #ef Load Score Data From File Button
+
+  let loadScoreDataFromFileButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 80,
+    left: 15,
+    label: 'Load Score Data From File',
+    fontSize: 16,
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    action: function() {
+      let inputDOM_finderDialogBox = document.createElement('input');
+      inputDOM_finderDialogBox.type = 'file';
+      inputDOM_finderDialogBox.onchange = inputEventFromFinderDialogBox => {
+        //target=input type='file'; files=FileList
+        let file = inputEventFromFinderDialogBox.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+          let fileTextContent = readerEvent.target.result;
+          scoreData = JSON.parse(fileTextContent); //turn loaded string from file into a javascript dictionary/object
+          console.log(scoreData);
+        }
+      }
+      inputDOM_finderDialogBox.click();
+    }
+  });
+
+  // #endef END Load Score Data Button
+
+  //#ef Load Score Data from Server Button
+
+  let loadScoreDataFromServerButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 145,
+    left: 15,
+    label: 'Load Score Data From Server',
+    fontSize: 16,
+    action: function() { // Step 1: send msg to server to request list of names of score data files stored on the server
+      SOCKET.emit('sf004_loadPieceFromServer', {
+        pieceId: PIECE_ID
+      });
+    }
+  });
+
+  // Step 2: Server responds with list of file names
+  SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) {
+
+    let requestingId = data.pieceId;
+
+    if (requestingId == PIECE_ID) {
+
+      let arrayOfFileNamesFromServer = data.availableScoreDataFiles; // data from SOCKET msg
+      let arrayOfMenuItems_lbl_action = [];
+
+      arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) => {
+
+        let temp_label_func_Obj = {};
+
+        if (scoreDataFileNameFromServer != '.DS_Store') { //eliminate the ever present Macintosh hidden file .DS_Store
+
+          temp_label_func_Obj['label'] = scoreDataFileNameFromServer;
+
+          // Step 3: When menu item is chosen, this func loads score data to scoreData variable
+          temp_label_func_Obj['action'] = function() {
+
+            let tRequest = new XMLHttpRequest();
+            tRequest.open('GET', '/scoreData/' + scoreDataFileNameFromServer, true);
+            tRequest.responseType = 'text';
+
+            tRequest.onload = () => {
+              scoreData = JSON.parse(tRequest.response);
+              console.log(scoreData);
+            }
+            tRequest.onerror = function() {
+              console.log("** An error occurred");
+            };
+
+            tRequest.send();
+          } //temp_label_func_Obj['action'] = function() END
+
+          arrayOfMenuItems_lbl_action.push(temp_label_func_Obj);
+
+        } //if (scoreDataFileNameFromServer != '.DS_Store') end
+
+      }); // arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) END
+
+      // Make Drop Down Menu
+      let loadScoreDataFromServerMenu = mkMenu({
+        canvas: scoreDataManagerPanel.content,
+        w: scoreDataManagerW - 48,
+        h: 220,
+        top: 207,
+        left: 25,
+        menuLbl_ActionArray: arrayOfMenuItems_lbl_action
+      });
+      loadScoreDataFromServerMenu.classList.toggle("show");
+
+    } //if (requestingId == PIECE_ID) end
+
+  }); // SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) end
+
+  //#endef END Load Score Data from Server Button
+
+  scoreDataManagerPanel.smallify();
+
+} // function makeScoreDataManager() END
+
+
+//#endef END SCORE DATA MANAGER
+
+//#ef PROCESS URL ARGS
+
+
+let PIECE_ID;
+let partsToRun = [];
+let TOTAL_NUM_PARTS_TO_RUN;
+
+function processUrlArgs() {
+
+  let urlArgs = getUrlArgs();
+
+  PIECE_ID = urlArgs.id;
+
+  // partsToRun
+  let partsToRunStrArray = urlArgs.parts.split(';');
+  partsToRunStrArray.forEach((partNumAsStr) => {
+    partsToRun.push(parseInt(partNumAsStr));
+  });
+
+  TOTAL_NUM_PARTS_TO_RUN = partsToRun.length;
+
+}
+
+
+//#endef PROCESS URL ARGS
