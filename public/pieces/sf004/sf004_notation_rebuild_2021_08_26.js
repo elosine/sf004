@@ -103,12 +103,12 @@ const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
-const BEAT_L_PX = 85;
+const BEAT_LENGTH_PX = 85;
 const TOP_STAFF_LINE_Y = 113;
 const VERT_DIST_BTWN_STAVES = 133;
 const VERT_DIST_BTWN_STAFF_LINES = 8;
 const FIRST_BEAT_L = 12;
-const LAST_BEAT_W = BEAT_L_PX - FIRST_BEAT_L;
+const LAST_BEAT_W = BEAT_LENGTH_PX - FIRST_BEAT_L;
 const NUM_BEATS_PER_STAFFLINE = 8;
 const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
 const STAFF_BTM_MARGIN = 40;
@@ -116,7 +116,7 @@ const NUM_STAFFLINES = 2;
 const NOTEHEAD_W = 10;
 const NOTEHEAD_H = 8;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
-const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_LENGTH_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
@@ -141,14 +141,14 @@ for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
 // #ef Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
-  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
+  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_LENGTH_PX));
 }
 
 let beatCoords = [];
 for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
   for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFFLINE; beatPerStaffIx++) {
     let tCoordObj = {};
-    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_L_PX);
+    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_LENGTH_PX);
     tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
     beatCoords.push(tCoordObj);
   }
@@ -199,6 +199,9 @@ function generateScoreData() {
   scoreDataObject['leadIn_bbYpos_perTempo'] = [];
   scoreDataObject['scrollingCsrCoords_perTempo'] = [];
   scoreDataObject['tempoChanges_perPlayer'] = [];
+  scoreDataObject['tempoFlagLocs_perPlayer'] = [];
+  scoreDataObject['leadIn_tempoFlagLocs_perPlayer'] = [];
+  scoreDataObject['playerTokenTempoNum_perPlayer'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -353,11 +356,11 @@ function generateScoreData() {
 
     //##ef Main Cycle
     let bbYpos_thisTempo = [];
-    let leadInDescent = [];
+    let leadInAscent = [];
 
     goFrames_thisTempo.forEach((goFrm, goFrmIx) => { //goFrames_thisTempo contains the frame number of each go frame
 
-      if (goFrmIx > 0) { //start on second so you can use previous index
+      if (goFrmIx > 0) { //start on second goFrmIx so you can compare to previous index
 
         let previousGoFrame = goFrames_thisTempo[goFrmIx - 1];
         let thisBeatDurInFrames = goFrm - previousGoFrame; //because of necessary rounding beats last various amounts of frames usually with in 1 frame difference
@@ -369,7 +372,7 @@ function generateScoreData() {
         let ascentFactor = 0.2;
         let descentFactor = 2.8;
 
-        let ascentPlot = plot(function(x) {
+        let ascentPlot = plot(function(x) { //see Function library; exponential curve
           return Math.pow(x, ascentFactor);
         }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
 
@@ -379,7 +382,7 @@ function generateScoreData() {
 
           //save first bounce for lead-in
           if (goFrmIx == 1) {
-            leadInDescent.push(tBbY);
+            leadInAscent.push(tBbY);
           }
         }); // ascentPlot.forEach((ascentPos) => END
 
@@ -402,7 +405,7 @@ function generateScoreData() {
     //##ef Lead In
     let leadIn_bbYpos_thisTempo = [];
     //make 1 ascent just before first beat
-    leadInDescent.forEach((bbYpos) => { //leadInDescent is already reversed so first index is lowest bbYpos
+    leadInAscent.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
       leadIn_bbYpos_thisTempo.push(bbYpos);
     });
     scoreDataObject.leadIn_bbYpos_perTempo.push(leadIn_bbYpos_thisTempo);
@@ -418,14 +421,14 @@ function generateScoreData() {
     let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
     let currBeatNum_InLoop = 0;
     goFrames_thisTempo.forEach((goFrameNumber, ix) => {
-      if (ix > 0) { //start on ix=1 so you can look back
+      if (ix > 0) { //start on ix=1 so you can compare to previous frame
 
         let distFrames = goFrameNumber - goFrames_thisTempo[ix - 1];
-        let incInPx = BEAT_L_PX / distFrames;
+        let incInPx = BEAT_LENGTH_PX / distFrames;
 
         for (let i = 0; i < distFrames; i++) {
           let tCoordsObj = {}; //{x:,y1:,y2:}
-          tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + (i * incInPx);
+          tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + (i * incInPx); // increment x for each frame between downbeats
           tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
           tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
           scrollingCsrCoords_thisTempo.push(tCoordsObj);
@@ -433,9 +436,7 @@ function generateScoreData() {
 
         currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS;
 
-
       } // if (ix > 0) { //start on ix=1 so you can look back END
-
     }); // goFrames_thisTempo.forEach((goFrameNumber, ix) => END
 
     scoreDataObject.scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
@@ -454,14 +455,13 @@ function generateScoreData() {
     //##ef Tempo Changes
 
 
-    //###ef Calculate Which Frames to Change Tempo
+    //##ef Calculate Which Frames to Change Tempo
     // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
     let tempoChgTimeCont = generatePalindromeTimeContainers({
       numContainersOneWay: 4,
       startCont_minMax: [90, 110],
       pctChg_minMax: [-0.25, -0.31]
     });
-    //START HERE: COMBINE TWO SECTIONS
     // duration with tempo changes will be in this pattern: short - medium - long
     // in conjunction with time containers. so 1st tc from short array, next tc from medium array etc...
     let tempoChanges_thisPlayer = []; //{tempo:,frameNum}
@@ -471,9 +471,10 @@ function generateScoreData() {
     let tTempoSet = [0, 1, 2, 3, 4];
 
     let tTimeElapsed = 0;
+    let firstLastTempoChange = choose(tTempoSet); //need first and last tempo in cycle to be the same so loop works
     tempoChanges_thisPlayer.push({
       frameNum: 0,
-      tempo: choose(tTempoSet)
+      tempo: firstLastTempoChange
     }); // so there is a starting tempo
     let chgDurSetNum = 0;
     let timeContainerRemainder = 0;
@@ -481,7 +482,6 @@ function generateScoreData() {
     tempoChgTimeCont.forEach((timeContDur) => { //each new time container
 
       chgDurSetNum = (chgDurSetNum + 1) % 3; //loop change duration sets
-
       let timeElapsed_thisTC = timeContainerRemainder; //this will be 0 or a negative number
 
       do { //loop through each time container; add time from the appropriate set of
@@ -508,7 +508,6 @@ function generateScoreData() {
         tTimeElapsed += tTimeInc //add this increment to overall time
         let timeElapsedAsFrames = Math.round(tTimeElapsed * FRAMERATE); //convert to frames
 
-
         let tNewTempo_frmNum_obj = {};
 
         //decide which tempo; cycle through them all
@@ -525,87 +524,109 @@ function generateScoreData() {
 
       timeContainerRemainder = timeElapsed_thisTC - timeContDur; //a negative number pass on remainder so pattern of tempo change durations remains consistant
 
-    }); //tempoChgTimeCont.forEach((timeContDur) =>
-
+    }); // tempoChgTimeCont.forEach((timeContDur) => { //each new time container END
+    tempoChanges_thisPlayer[tempoChanges_thisPlayer.length - 1].tempo = firstLastTempoChange; //replace last tempo change in cycle with the same as first for looping consistancy
     scoreDataObject.tempoChanges_perPlayer.push(tempoChanges_thisPlayer);
-    //###endef Calculate Which Frames to Change Tempo
+    //##endef Calculate Which Frames to Change Tempo
 
-    //#ef Tempo Change Flags
+    //##ef Tempo Change Flags
 
-    let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
-    for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push([]); // populate with -1 to replace later
-    let leadIn_tempoFlagLocsByFrame_thisPlr = []; //make a set of lead in frames
-    for (let i = 0; i < (RUNWAY_L_IN_NUMFRAMES - 1); i++) leadIn_tempoFlagLocsByFrame_thisPlr.push([]);
 
-    //##ef Determine Sign Z Position for each tempo change for each frame - this player
+    let tempoFlagLocs_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
+    for (let i = 0; i < 100000; i++) tempoFlagLocs_thisPlr.push([]); // populate with -1 to replace later
+    let leadIn_tempoFlagLocs_thisPlr = []; //make a set of lead in frames
+    for (let i = 0; i < RUNWAY_LENGTH_FRAMES; i++) leadIn_tempoFlagLocs_thisPlr.push([]);
+
     let tempoChg_signPos_thisPlayer = [];
 
-    tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
+    // For each tempo change flag, calculating where it will be for each frame between end of runway and gofret
+    tempoChanges_thisPlayer.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
 
       let tempoNum = tempoFrmNumObj.tempo;
       let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret
 
-      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+      for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
 
         let tempoNum_zPos_obj = {};
-        let frameNum = goFrmNum - i; //
+        let frameNum = goFrmNum - i; //RUNWAY_LENGTH_FRAMES to 0
 
         if (frameNum >= 0) { //so you don't go to negative array index
 
           tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          let zLoc = Math.round(-PX_PER_FRAME * i);
+          let zLoc = Math.round(-PX_PER_FRAME * i) + GO_Z;
           tempoNum_zPos_obj['zLoc'] = zLoc;
-          tempoFlagLocsByFrame_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+          tempoFlagLocs_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame; there is a set of tempo flag locations for each frame cause there could be several tempo flags on scene that frame
 
           //pop off last frame for looping
-          if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) { //last tempo change with tempo num and frame num for this player
+          if (tempChgIx == (tempoChanges_thisPlayer.length - 1)) { //last tempo change with tempo num and frame num for this player
             if (i == 0) { // last frame of this cycle
-
-              tempoFlagLocsByFrame_thisPlr.splice(frameNum); // truncate array to end of loop; was 100,000 long; frameNum instead of frameNum-1 will lob off last frame so it is clean loop, otherwise it goes to z=0 and the first frame of loop is also z=0
-
+              tempoFlagLocs_thisPlr.splice(frameNum); // truncate array to end of loop; was 100,000 long; frameNum instead of frameNum-1 will lob off last frame so it is clean loop, otherwise it goes to z=0 and the first frame of loop is also z=0
             }
-          } //   if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) END
+          } //   if (tempChgIx == (tempoChanges_thisPlayer.length - 1)) END
 
         } // if (frameNum >= 0) END
         //
         else { //for lead-in
 
           tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          let zLoc = Math.round(-PX_PER_FRAME * i);
+          let zLoc = Math.round(-PX_PER_FRAME * i) + GO_Z;
           tempoNum_zPos_obj['zLoc'] = zLoc;
-          leadIn_tempoFlagLocsByFrame_thisPlr[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+          leadIn_tempoFlagLocs_thisPlr[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in lead in array for this frame; frameNum will be negative
 
         } //else END
 
-      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+      } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
 
       //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
-      if (tempChgIx < tempoChangesByFrameNum_thisPlr.length - 1) {
-        let tDurFrames = tempoChangesByFrameNum_thisPlr[tempChgIx + 1].frameNum - goFrmNum;
-        for (let i = 1; i < tDurFrames; i++) {
+      if (tempChgIx < tempoChanges_thisPlayer.length - 1) { //because we are referencing the next frame
+        let tDurFrames = tempoChanges_thisPlayer[tempChgIx + 1].frameNum - goFrmNum; //until the next tempo change flag reaches the go fret
+        for (let i = 1; i < tDurFrames; i++) { //i=1 because flag is already there for 1 frame at gofret
 
           let tempoNum_zPos_obj = {};
 
           tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          tempoNum_zPos_obj['zLoc'] = 0;
+          tempoNum_zPos_obj['zLoc'] = GO_Z;
           let tFrameNum = goFrmNum + i;
-          tempoFlagLocsByFrame_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
+          tempoFlagLocs_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
 
         } // for (let i = 1; i < tDurFrames; i++) END
       }
 
-    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
+    }); // tempoChanges_thisPlayer.forEach((tempoFrmNumObj) => END
 
-    //##endef  Determine Sign Z Position for each tempo change for each frame - this player
-
-    tempoFlagLocsByFrame_perPlr.push(tempoFlagLocsByFrame_thisPlr);
-    leadIn_tempoFlagLocsByFrame_perPlr.push(leadIn_tempoFlagLocsByFrame_thisPlr);
+    scoreDataObject.tempoFlagLocs_perPlayer.push(tempoFlagLocs_thisPlr);
+    scoreDataObject.leadIn_tempoFlagLocs_perPlayer.push(leadIn_tempoFlagLocs_thisPlr);
 
 
-    //#endef Tempo Change Flags
+    //##endef Tempo Change Flags
+
+    //##ef Player Tokens
 
 
+    //An Array length = to tempoFlagLocs_thisPlr, that contains the current tempo for this player for this frame
+    //In Update look up that frame's scrolling cursor location for the right tempo listed here; incorporate toplevel var so player token can see all scrolling cursor locations for that frame
+    let playerTokenTempoNum_thisPlr = new Array(tempoFlagLocs_thisPlr.length).fill(-1);
 
+    tempoChanges_thisPlayer.forEach((tempoChgObj, tchgIx) => {
+      if (tchgIx > 0) { //so we can use previous index
+
+        let thisTempo = tempoChgObj.tempo;
+        let thisFrameNum = tempoChgObj.frameNum;
+        let lastTempo = tempoChanges_thisPlayer[tchgIx - 1].tempo;
+        let lastFrameNum = tempoChanges_thisPlayer[tchgIx - 1].frameNum;
+        let tNumToFill = thisFrameNum - lastFrameNum;
+
+        for (let i = 0; i < tNumToFill; i++) {
+          playerTokenTempoNum_thisPlr[lastFrameNum + i] = lastTempo;
+        }
+
+      } // if (tchgIx > 0) END
+    }); // tempoChanges_thisPlayer.forEach((tempoChgObj, tchgIx) => END
+
+    scoreDataObject.playerTokenTempoNum_perPlayer.push(playerTokenTempoNum_thisPlr);
+
+
+    //##endef Player Tokens
 
 
     //##endef Tempo Changes
@@ -613,6 +634,12 @@ function generateScoreData() {
 
   } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
   //##endef CALCULATIONS PER PLAYER
+
+  //##ef CALCULATIONS FOR UNISONS
+
+
+
+  //##endef CALCULATIONS FOR UNISONS
 
 
   return scoreDataObject;
