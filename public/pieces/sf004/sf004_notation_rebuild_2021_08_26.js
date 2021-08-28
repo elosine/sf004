@@ -202,6 +202,10 @@ function generateScoreData() {
   scoreDataObject['tempoFlagLocs_perPlayer'] = [];
   scoreDataObject['leadIn_tempoFlagLocs_perPlayer'] = [];
   scoreDataObject['playerTokenTempoNum_perPlayer'] = [];
+  scoreDataObject['unisons'] = [];
+  scoreDataObject['unisonFlagLocs'] = [];
+  scoreDataObject['leadIn_unisonFlagLocs'] = [];
+  scoreDataObject['unisonPlayerTokenTempoNum'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -638,9 +642,395 @@ function generateScoreData() {
   //##ef CALCULATIONS FOR UNISONS
 
 
+  //##ef Calculate frame number and duration of unisons
+
+  let unisonTempoChangeObjs = [];
+  let unisonDurSet = [8, 8, 5, 5, 12, 15];
+  let unisonTime = 0;
+  // Choose a unison duration then a gap from obj below; Repeat gap ranges using numIter below
+  let unison_gapRange_numIterations = [{
+      gapRange: [38, 41],
+      numIter: 2
+    },
+    {
+      gapRange: [34, 36],
+      numIter: 1
+    },
+    {
+      gapRange: [60, 65],
+      numIter: 3
+    },
+    {
+      gapRange: [34, 36],
+      numIter: 1
+    },
+    {
+      gapRange: [38, 41],
+      numIter: 2
+    }
+  ];
+
+  let firstLastUnisonTempo; // so first and last tempo are the same for the loop
+
+  unison_gapRange_numIterations.forEach((gapIterDict, gapIx) => {
+
+    let numIter = gapIterDict.numIter;
+    let tTempoSet = [0, 1, 2, 3, 4];
+
+    for (let iterIx = 0; iterIx < numIter; iterIx++) {
+
+      let tChgObj = {};
+
+      let unisonFrame = Math.round(unisonTime * FRAMERATE); //convert to frames
+      tChgObj['frame'] = unisonFrame;
+      let tDur = choose(unisonDurSet);
+      let tDurFrames = Math.round(tDur * FRAMERATE); //convert to frames
+      tChgObj['durFrames'] = tDurFrames;
+      //choose tempo
+      if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
+      let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
+      let tNewTempo = tTempoSet[tTempoIx];
+      tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
+      tChgObj['tempo'] = tNewTempo;
+      if (gapIx == 0 && iterIx == 0) firstLastUnisonTempo = tNewTempo;
+
+      let timeToNextUnison = rrand(gapIterDict.gapRange[0], gapIterDict.gapRange[1]);
+      unisonTime += timeToNextUnison;
+
+      scoreDataObject.unisons.push(tChgObj);
+
+    } // for (let iterIx = 0; iterIx < numIter; iterIx++) END
+
+  }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
+
+  scoreDataObject.unisons[scoreDataObject.unisons.length - 1].tempo = firstLastUnisonTempo;
+
+  //##endef Calculate frame number and duration of unisons
+
+  //##ef Unison Flags
+
+  //Make loop size array to store unison state for each frame in loop
+  //For Each Unison Flag, find all frames that it is on scene and store in scoreDataObject.unisonFlagLocs
+  let lastFrameInUnisonLoop = scoreDataObject.unisons[scoreDataObject.unisons.length - 1].frame + scoreDataObject.unisons[scoreDataObject.unisons.length - 1].durFrames;
+  for (let i = 0; i < lastFrameInUnisonLoop; i++) {
+    scoreDataObject.unisonFlagLocs.push([]);
+  }
+  for (let i = 0; i < RUNWAY_LENGTH_FRAMES ; i++) scoreDataObject.leadIn_unisonFlagLocs.push([]);
+
+  let tempoChg_signPos_thisPlayer = [];
+
+  scoreDataObject.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
+
+    let tempoNum = tempoFrmNumObj.tempo;
+    let goFrmNum = tempoFrmNumObj.frame; //this is the frame num where the sign is at the go fret
+    let tDurFrames = tempoFrmNumObj.durFrames;
+
+    for (let i = (RUNWAY_LENGTH_FRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+      let tempoNum_zPos_obj = {};
+      let frameNum = goFrmNum - i; //
+
+      if (frameNum >= 0) { //so you don't go to negative array index
+
+        tempoNum_zPos_obj['tempoNum'] = tempoNum;
+        let zLoc = Math.round(-PX_PER_FRAME * i);
+        tempoNum_zPos_obj['zLoc'] = zLoc;
+        tempoNum_zPos_obj['end'] = false;
+        scoreDataObject.unisonFlagLocs[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+      } // if (frameNum >= 0) END
+      //
+      else { //for lead-in  if frameNum < 0
+
+        tempoNum_zPos_obj['tempoNum'] = tempoNum;
+        let zLoc = Math.round(-PX_PER_FRAME * i);
+        tempoNum_zPos_obj['zLoc'] = zLoc;
+        tempoNum_zPos_obj['end'] = false;
+        scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES  + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+      } //else END
+
+    } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
+
+    //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+    for (let i = 1; i < tDurFrames; i++) {
+
+      let tempoNum_zPos_obj = {};
+
+      tempoNum_zPos_obj['tempoNum'] = tempoNum;
+      tempoNum_zPos_obj['zLoc'] = 0;
+      tempoNum_zPos_obj['end'] = false;
+      let tFrameNum = goFrmNum + i;
+      scoreDataObject.unisonFlagLocs[tFrameNum].push(tempoNum_zPos_obj);
+
+    } // for (let i = 1; i < tDurFrames; i++) END
+
+  }); // scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => END
+
+
+  // FOR SET OF UNISON OFF FLAGS
+  scoreDataObject.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
+
+    if (tempChgIx < scoreDataObject.unisons.length - 1) {
+
+      let tempoNum = tempoFrmNumObj.tempo;
+      let goFrmNum = tempoFrmNumObj.frame + tempoFrmNumObj.durFrames; //this is the frame num where the sign is at the go fret
+      let tDurFrames = tempoFrmNumObj.durFrames;
+
+      for (let i = (RUNWAY_LENGTH_FRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+        let tempoNum_zPos_obj = {};
+        let frameNum = goFrmNum - i; //
+
+        if (frameNum >= 0) { //so you don't go to negative array index
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoNum_zPos_obj['end'] = true;
+          scoreDataObject.unisonFlagLocs[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i);
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoNum_zPos_obj['end'] = true;
+          scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+
+        } //else END
+
+      } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
+    }
+
+  }); // scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => END
+
+  //##endef Unison Flags
+
+  //##ef Unison Player Tokens
+
+  scoreDataObject.unisonPlayerTokenTempoNum = new Array(scoreDataObject.unisonFlagLocs.length).fill(-1);
+
+  scoreDataObject.unisons.forEach((tempoChgObj, tchgIx) => {
+
+    let thisTempo = tempoChgObj.tempo;
+    let thisFrameNum = tempoChgObj.frame;
+    let tNumToFill = tempoChgObj.durFrames;
+
+    for (let i = 0; i < tNumToFill; i++) {
+      scoreDataObject.unisonPlayerTokenTempoNum[thisFrameNum + i] = thisTempo;
+    }
+
+  }); // tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => END
+
+
+  //##endef Unison Player Tokens
+
 
   //##endef CALCULATIONS FOR UNISONS
 
+  //##ef CALCULATIONS FOR NOTATION
+
+
+  //Time Containers & amount of rests
+  // 11 containers in a palindrome short-longer-longer ... longest-mirror
+  let restsTimeContainers = generatePalindromeTimeContainers({
+    numContainersOneWay: 6,
+    startCont_minMax: [5, 7],
+    pctChg_minMax: [0.27, 0.36]
+  });
+  //find out total time
+  let restsLoopTotalTime = 0;
+  restsTimeContainers.forEach((tTime) => {
+    restsLoopTotalTime += tTime;
+  });
+  // Overall loop length will be x times restsLoopTotalTime
+  let numRestsLoop = 7;
+  let maxNumRests = 13;
+  let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
+  for (let i = 0; i < 100000; i++) {
+    if ((restsByFrameSetLength % maxNumRests) == 0) {
+      break;
+    } else {
+      restsByFrameSetLength++;
+    }
+  }
+
+  // Figure out which frames will add/subtract rest
+  let restsByFrame = [];
+  let tCumFrmCt_rests = 0;
+  let addMinusRestsCt = 0;
+  let restType = 0;
+  let restSetInc = 0;
+  for (let i = 0; i < restsByFrameSetLength; i++) {
+    let tOb = {};
+    let sec = restsTimeContainers[restSetInc];
+    let incInFrms = Math.round(sec * FRAMERATE);
+    tCumFrmCt_rests += incInFrms;
+    tOb['frame'] = tCumFrmCt_rests;
+    if (addMinusRestsCt == 0) restType = (restType + 1) % 2
+    tOb['restType'] = restType;
+    restSetInc = (restSetInc + 1) % restsTimeContainers.length;
+    addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
+    restsByFrame.push(tOb);
+  }
+  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame + 1; //plus 1 because restsByFrame.frame will be index num and length needs to be one more as ix starts at 0
+
+  //For motives, do a choose for dur between changes
+  //Make a set as long as restsTimeContainers
+  //cycle through all the motives - Make function
+  let motiveNumberSet = numberedSetFromSize({
+    sz: (notationSvgPaths_labels.length - 1)
+  });
+  let orderedMotiveNumSet = chooseAndCycle({
+    loopSet: motiveNumberSet,
+    num: 5000
+  });
+  let dursBtwnMotiveChgSet = [5, 7, 3, 6, 11, 13, 8, 9, 17];
+  //Make big set of motive change objects: {motiveNum:, time:}
+  let motiveChangeTimesObjSet = [];
+  let cumMotiveChgTime = 0;
+
+  for (let i = 0; i < 100000; i++) {
+
+    let tObj = {};
+    cumMotiveChgTime += choose(dursBtwnMotiveChgSet);
+    let chgFrmNum = Math.round(cumMotiveChgTime * FRAMERATE);
+    tObj['motiveNum'] = orderedMotiveNumSet[i];
+    tObj['frame'] = chgFrmNum;
+    motiveChangeTimesObjSet.push(tObj);
+
+    if (cumMotiveChgTime > (restsLoopTotalTime * numRestsLoop)) break;
+
+  } // for (let i = 0; i < 100000; i++) END
+
+  //Make a frame by frame set with all the rests and motive changes state of all 8 beats each frame
+  // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
+
+  //fill all frames with all quarters then replace
+  //##ef Insert Rests
+  let motiveChgByFrameSet = [];
+  for (let i = 0; i < motiveSetByFrame_length; i++) {
+    motiveChgByFrameSet.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  }
+  let motiveChgByFrameSet_currSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+
+  for (var restIx = 1; restIx < restsByFrame.length; restIx++) {
+
+    let restObj = restsByFrame[restIx - 1];
+    let restFrame = restObj.frame;
+    let restType = restObj.restType;
+    let next_restObj = restsByFrame[restIx];
+    let next_restFrame = next_restObj.frame;
+    let next_restType = next_restObj.restType;
+
+    if (restType == 1) { //add rest
+
+      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
+
+      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
+
+        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
+
+        if (tNotesSet[tChoice] != -1) {
+
+          tNotesSet[tChoice] = -1; //add a rest
+
+          //copy new array over range
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
+
+            motiveChangeTimesObjSet.forEach((mObj) => {
+              let tchgFrmNum = mObj.frame;
+              let tmNum = mObj.motiveNum;
+              if (tchgFrmNum == frmIx) {
+
+                for (let j = 0; j < 100; j++) {
+                  let tix = chooseIndex(tNotesSet);
+                  if (tNotesSet[tix] != -1) {
+                    tNotesSet[tix] = tmNum;
+                    break;
+                  }
+                }
+
+              }
+
+            });
+
+            //Work in motiveChangeTimesObjSet
+            let tSet = deepCopy(tNotesSet);
+            motiveChgByFrameSet[frmIx] = tSet;
+          }
+
+          // Update curr set
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
+
+          break;
+
+        } //   if (tNotesSet[noteIx] != -1) END
+
+      } //   for (var i = 0; i < 1000; i++) END
+
+    } // if (restType == 1) { END
+
+    if (restType == 0) { //add rest
+
+      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
+
+      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
+
+        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
+
+        if (tNotesSet[tChoice] == -1) {
+
+          tNotesSet[tChoice] = 0; //use motiveChangeTimesObjSet here
+
+          //copy new array over range
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
+
+            motiveChangeTimesObjSet.forEach((mObj) => {
+              let tchgFrmNum = mObj.frame;
+              let tmNum = mObj.motiveNum;
+              if (tchgFrmNum == frmIx) {
+
+                for (let j = 0; j < 100; j++) {
+                  let tix = chooseIndex(tNotesSet);
+                  if (tNotesSet[tix] != -1) {
+                    tNotesSet[tix] = tmNum;
+                    break;
+                  }
+                }
+
+
+              }
+
+            });
+
+            let tSet = deepCopy(tNotesSet);
+            motiveChgByFrameSet[frmIx] = tSet;
+          }
+
+          // Update curr set
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
+
+          break;
+
+        } //   if (tNotesSet[noteIx] != -1) END
+
+      } //   for (var i = 0; i < 1000; i++) END
+
+    } // if (restType == 1) { END
+
+  } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
+
+  tempScoreData['motiveSet'] = motiveChgByFrameSet;
+
+  //##endef Insert Rests
+
+
+  //##endef CALCULATIONS FOR NOTATION
 
   return scoreDataObject;
 } // function generateScoreData() END
