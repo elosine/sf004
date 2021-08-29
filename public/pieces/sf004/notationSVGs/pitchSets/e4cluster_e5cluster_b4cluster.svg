@@ -6,11 +6,35 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   id="svg743"
-   viewBox="0 0 16.514723 8.9175001"
-   height="15.670671mm"
-   width="29.021227mm"
-   version="1.2">
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="e4cluster_e5cluster_b4cluster.svg"
+   version="1.2"
+   width="21.765921mm"
+   height="11.753003mm"
+   viewBox="0 0 12.386043 6.6881248"
+   id="svg743">
+  <sodipodi:namedview
+     inkscape:current-layer="svg743"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="614"
+     inkscape:cy="29.613867"
+     inkscape:cx="54.843263"
+     inkscape:zoom="5.7661439"
+     showgrid="false"
+     id="namedview792"
+     inkscape:window-height="1006"
+     inkscape:window-width="1228"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
   <metadata
      id="metadata749">
     <rdf:RDF>
@@ -19,189 +43,193 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs747" />
   <style
-     id="style685"
-     text="style/css"><![CDATA[
+     text="style/css"
+     id="style685"><![CDATA[
 tspan { white-space: pre; }
 ]]></style>
   <!-- Page: 1/1 -->
-  <text
-     y="0.0012000001"
-     x="-4.9889051e-05"
-     id="text689"
-     fill="currentColor"
-     text-anchor="start"
-     font-size="2.2001px"
-     font-family="serif"><tspan
-       id="tspan687" /></text>
-  <line
-     id="line691"
-     y2="6.7477045"
-     x2="16.461378"
-     y1="6.7477045"
-     x1="0.053346001"
-     stroke="currentColor"
-     stroke-width="0.106692"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line693"
-     y2="5.2451024"
-     x2="16.461378"
-     y1="5.2451024"
-     x1="0.053346001"
-     stroke="currentColor"
-     stroke-width="0.106692"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line695"
-     y2="3.7425001"
-     x2="16.461378"
-     y1="3.7425001"
-     x1="0.053346001"
-     stroke="currentColor"
-     stroke-width="0.106692"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line697"
-     y2="2.239898"
-     x2="16.461378"
-     y1="2.239898"
-     x1="0.053346001"
-     stroke="currentColor"
-     stroke-width="0.106692"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line699"
-     y2="0.73729593"
-     x2="16.461378"
-     y1="0.73729593"
-     x1="0.053346001"
-     stroke="currentColor"
-     stroke-width="0.106692"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a703"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:28:29"
-     style="color:inherit">
-    <path
-       id="path701"
+  <g
+     transform="scale(0.75)"
+     id="g822">
+    <text
+       y="0.0012000001"
+       x="-4.9889051e-05"
+       id="text689"
        fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,9.5833,4.4913)" />
-  </a>
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a707"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:33:34"
-     style="color:inherit">
+       text-anchor="start"
+       font-size="2.2001px"
+       font-family="serif"><tspan
+         id="tspan687" /></text>
+    <line
+       id="line691"
+       y2="6.7477045"
+       x2="16.461378"
+       y1="6.7477045"
+       x1="0.053346001"
+       stroke="currentColor"
+       stroke-width="0.106692"
+       stroke-linecap="round"
+       stroke-linejoin="round" />
+    <line
+       id="line693"
+       y2="5.2451024"
+       x2="16.461378"
+       y1="5.2451024"
+       x1="0.053346001"
+       stroke="currentColor"
+       stroke-width="0.106692"
+       stroke-linecap="round"
+       stroke-linejoin="round" />
+    <line
+       id="line695"
+       y2="3.7425001"
+       x2="16.461378"
+       y1="3.7425001"
+       x1="0.053346001"
+       stroke="currentColor"
+       stroke-width="0.106692"
+       stroke-linecap="round"
+       stroke-linejoin="round" />
+    <line
+       id="line697"
+       y2="2.239898"
+       x2="16.461378"
+       y1="2.239898"
+       x1="0.053346001"
+       stroke="currentColor"
+       stroke-width="0.106692"
+       stroke-linecap="round"
+       stroke-linejoin="round" />
+    <line
+       id="line699"
+       y2="0.73729593"
+       x2="16.461378"
+       y1="0.73729593"
+       x1="0.053346001"
+       stroke="currentColor"
+       stroke-width="0.106692"
+       stroke-linecap="round"
+       stroke-linejoin="round" />
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a703"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:28:29"
+       style="color:inherit">
+      <path
+         id="path701"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,9.5833,4.4913)" />
+    </a>
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a707"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:33:34"
+       style="color:inherit">
+      <path
+         id="path705"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,7.8633,3.7413)" />
+    </a>
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a711"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:36:37"
+       style="color:inherit">
+      <path
+         id="path709"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,9.5833,2.9913)" />
+    </a>
     <path
-       id="path705"
+       style="stroke-width:0.0038"
+       id="path713"
        fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,7.8633,3.7413)" />
-  </a>
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a711"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:36:37"
-     style="color:inherit">
+       d="m 6.4244243,5.6781 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 v -0.551 l -0.3154,0.1178 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 3.3069 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 l 0.3154,-0.1178 V 3.1397 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z m -0.456,-1.4326 v 0.608 l 0.3154,-0.114 v -0.608 z" />
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a717"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:45:46"
+       style="color:inherit">
+      <path
+         id="path715"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,15.0347,2.2413)" />
+    </a>
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a721"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:51:52"
+       style="color:inherit">
+      <path
+         id="path719"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,13.3146,1.4913)" />
+    </a>
+    <a
+       transform="translate(-0.87027571,0.0012)"
+       id="a725"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:55:56"
+       style="color:inherit">
+      <path
+         id="path723"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,15.0347,0.7413)" />
+    </a>
     <path
-       id="path709"
+       style="stroke-width:0.0038"
+       id="path727"
        fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,9.5833,2.9913)" />
-  </a>
-  <path
-     style="stroke-width:0.0038"
-     id="path713"
-     fill="currentColor"
-     d="m 6.4244243,5.6781 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 v -0.551 l -0.3154,0.1178 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 3.3069 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 l 0.3154,-0.1178 V 3.1397 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z m -0.456,-1.4326 v 0.608 l 0.3154,-0.114 v -0.608 z" />
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a717"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:45:46"
-     style="color:inherit">
+       d="m 11.875724,3.4281 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 v -0.551 l -0.3154,0.1178 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 1.0569 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 l 0.3154,-0.1178 V 0.8897 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z m -0.456,-1.4326 v 0.608 l 0.3154,-0.114 v -0.608 z" />
+    <a
+       transform="translate(-0.56914989,0.0012)"
+       id="a731"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:10:11"
+       style="color:inherit">
+      <path
+         id="path729"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,2.5691,7.4913)" />
+    </a>
+    <a
+       transform="translate(-0.56914989,0.0012)"
+       id="a735"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:16:17"
+       style="color:inherit">
+      <path
+         id="path733"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,4.2891,6.7413)" />
+    </a>
+    <a
+       transform="translate(-0.56914989,0.0012)"
+       id="a739"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:19:20"
+       style="color:inherit">
+      <path
+         id="path737"
+         fill="currentColor"
+         d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+         transform="matrix(0.0055,0,0,-0.0055,2.5691,5.9913)" />
+    </a>
     <path
-       id="path715"
+       style="stroke-width:0.0038"
+       id="path741"
        fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,15.0347,2.2413)" />
-  </a>
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a721"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:51:52"
-     style="color:inherit">
-    <path
-       id="path719"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,13.3146,1.4913)" />
-  </a>
-  <a
-     transform="translate(-0.87027571,0.0012)"
-     id="a725"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:55:56"
-     style="color:inherit">
-    <path
-       id="path723"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,15.0347,0.7413)" />
-  </a>
-  <path
-     style="stroke-width:0.0038"
-     id="path727"
-     fill="currentColor"
-     d="m 11.875724,3.4281 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 v -0.551 l -0.3154,0.1178 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 1.0569 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 l 0.3154,-0.1178 V 0.8897 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z m -0.456,-1.4326 v 0.608 l 0.3154,-0.114 v -0.608 z" />
-  <a
-     transform="translate(-0.56914989,0.0012)"
-     id="a731"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:10:11"
-     style="color:inherit">
-    <path
-       id="path729"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,2.5691,7.4913)" />
-  </a>
-  <a
-     transform="translate(-0.56914989,0.0012)"
-     id="a735"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:16:17"
-     style="color:inherit">
-    <path
-       id="path733"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,4.2891,6.7413)" />
-  </a>
-  <a
-     transform="translate(-0.56914989,0.0012)"
-     id="a739"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4cluster_e5cluster_b4cluster.ly:95:19:20"
-     style="color:inherit">
-    <path
-       id="path737"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,2.5691,5.9913)" />
-  </a>
-  <path
-     style="stroke-width:0.0038"
-     id="path741"
-     fill="currentColor"
-     d="m 1.4312501,8.6781 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 V 8.1271 L 0.97525011,8.2449 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 6.3069 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 L 1.2906501,6.7401 V 6.1397 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z M 0.97525011,7.2455 v 0.608 L 1.2906501,7.7395 v -0.608 z" />
+       d="m 1.4312501,8.6781 c 0,0.038 -0.0304,0.0722 -0.0684,0.0722 -0.038,0 -0.0722,-0.0342 -0.0722,-0.0722 V 8.1271 L 0.97525011,8.2449 v 0.6004 c 0,0.038 -0.0342,0.0722 -0.0722,0.0722 -0.038,0 -0.0684,-0.0342 -0.0684,-0.0722 v -0.551 l -0.1216,0.0456 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.0608 0.0494,-0.0722 l 0.1748,-0.0608 v -0.608 l -0.1216,0.0418 c -0.0076,0.0038 -0.019,0.0038 -0.0266,0.0038 -0.0418,0 -0.076,-0.0342 -0.076,-0.076 v -0.228 c 0,-0.0304 0.019,-0.057 0.0494,-0.0684 l 0.1748,-0.0646 V 6.3069 c 0,-0.038 0.0304,-0.0722 0.0684,-0.0722 0.038,0 0.0722,0.0342 0.0722,0.0722 v 0.551 L 1.2906501,6.7401 V 6.1397 c 0,-0.038 0.0342,-0.0722 0.0722,-0.0722 0.038,0 0.0684,0.0342 0.0684,0.0722 v 0.551 l 0.1216,-0.0456 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.0608 -0.0494,0.0722 l -0.1748,0.0608 v 0.608 l 0.1216,-0.0418 c 0.0076,-0.0038 0.019,-0.0038 0.0266,-0.0038 0.0418,0 0.076,0.0342 0.076,0.076 v 0.228 c 0,0.0304 -0.019,0.057 -0.0494,0.0684 l -0.1748,0.0646 z M 0.97525011,7.2455 v 0.608 L 1.2906501,7.7395 v -0.608 z" />
+  </g>
 </svg>

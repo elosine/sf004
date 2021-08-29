@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.2"
+   width="1.7572988mm"
+   height="1.9330287mm"
+   viewBox="0 0 1.0000004 1.0999996"
+   id="svg399">
+  <metadata
+     id="metadata405">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs403" />
+  <style
+     text="style/css"
+     id="style21"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <text
+     y="-8.7833004"
+     x="-9.0537996"
+     font-family="serif"
+     font-size="2.2001px"
+     text-anchor="start"
+     fill="currentColor"
+     id="text25"><tspan
+       id="tspan23" /></text>
+  <g
+     id="g1396">
+    <a
+       id="a123"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:17:18"
+       style="color:inherit"
+       transform="translate(-9.6229,-8.7833)">
+      <path
+         id="path121"
+         fill="currentColor"
+         d="m 112,0 c 7,0 13,-5 13,-12 0,-2 0,-4 -1,-6 L 11,-268 c -2,-4 -6,-7 -11,-7 -5,0 -9,3 -11,7 l -113,250 c -1,2 -1,4 -1,6 0,7 6,12 13,12 h 66 c 5,0 10,-3 12,-7 l 68,-150 67,150 c 2,4 6,7 11,7 z"
+         transform="matrix(0.004,0,0,-0.004,10.1229,8.7833)" />
+    </a>
+  </g>
+</svg>

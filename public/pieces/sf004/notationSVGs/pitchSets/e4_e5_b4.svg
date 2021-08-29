@@ -6,11 +6,35 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   id="svg552"
-   viewBox="0 0 6.2594686 6.8010498"
-   height="11.951446mm"
-   width="10.999784mm"
-   version="1.2">
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="e4_e5_b4.svg"
+   version="1.2"
+   width="8.2498379mm"
+   height="8.9635849mm"
+   viewBox="0 0 4.6946012 5.1007878"
+   id="svg552">
+  <sodipodi:namedview
+     inkscape:current-layer="svg552"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="614"
+     inkscape:cy="22.585409"
+     inkscape:cx="20.786993"
+     inkscape:zoom="11.457645"
+     showgrid="false"
+     id="namedview683"
+     inkscape:window-height="1006"
+     inkscape:window-width="1228"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
   <metadata
      id="metadata558">
     <rdf:RDF>
@@ -19,108 +43,115 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs556" />
   <style
-     id="style524"
-     text="style/css"><![CDATA[
+     text="style/css"
+     id="style524"><![CDATA[
 tspan { white-space: pre; }
 ]]></style>
   <!-- Page: 1/1 -->
-  <text
-     y="-4.999981e-05"
-     x="-6.5873777e-05"
-     id="text528"
-     fill="currentColor"
-     text-anchor="start"
-     font-size="2.2001px"
-     font-family="serif"><tspan
-       id="tspan526" /></text>
-  <line
-     id="line530"
-     y2="6.0585499"
-     x2="6.2009344"
-     y1="6.0585499"
-     x1="0.058534127"
-     stroke="currentColor"
-     stroke-width="0.1171"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line532"
-     y2="4.5585499"
-     x2="6.2009344"
-     y1="4.5585499"
-     x1="0.058534127"
-     stroke="currentColor"
-     stroke-width="0.1171"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line534"
-     y2="3.0585499"
-     x2="6.2009344"
-     y1="3.0585499"
-     x1="0.058534127"
-     stroke="currentColor"
-     stroke-width="0.1171"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line536"
-     y2="1.55855"
-     x2="6.2009344"
-     y1="1.55855"
-     x1="0.058534127"
-     stroke="currentColor"
-     stroke-width="0.1171"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <line
-     id="line538"
-     y2="0.05855"
-     x2="6.2009344"
-     y1="0.05855"
-     x1="0.058534127"
-     stroke="currentColor"
-     stroke-width="0.1171"
-     stroke-linecap="round"
-     stroke-linejoin="round" />
-  <a
-     transform="translate(-0.56916588,-4.9999809e-5)"
-     id="a542"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:18:19"
-     style="color:inherit">
-    <path
-       id="path540"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,2.5691,0.8086)" />
-  </a>
-  <a
-     transform="translate(-0.56916588,-4.9999809e-5)"
-     id="a546"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:10:11"
-     style="color:inherit">
-    <path
-       id="path544"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,2.5691,6.0586)" />
-  </a>
-  <a
-     transform="translate(-0.56916588,-4.9999809e-5)"
-     id="a550"
-     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:15:16"
-     style="color:inherit">
-    <path
-       id="path548"
-       fill="currentColor"
-       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-       transform="matrix(0.0055,0,0,-0.0055,2.5691,3.0586)" />
-  </a>
+  <g
+     id="g714">
+    <g
+       id="g698"
+       transform="matrix(0.75,0,0,0.75,-3.9683655e-6,0)">
+      <text
+         font-family="serif"
+         font-size="2.2001px"
+         text-anchor="start"
+         fill="currentColor"
+         id="text528"
+         x="-6.5873777e-05"
+         y="-4.999981e-05"><tspan
+           id="tspan526" /></text>
+      <line
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.1171"
+         stroke="currentColor"
+         x1="0.058534127"
+         y1="6.0585499"
+         x2="6.2009344"
+         y2="6.0585499"
+         id="line530" />
+      <line
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.1171"
+         stroke="currentColor"
+         x1="0.058534127"
+         y1="4.5585499"
+         x2="6.2009344"
+         y2="4.5585499"
+         id="line532" />
+      <line
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.1171"
+         stroke="currentColor"
+         x1="0.058534127"
+         y1="3.0585499"
+         x2="6.2009344"
+         y2="3.0585499"
+         id="line534" />
+      <line
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.1171"
+         stroke="currentColor"
+         x1="0.058534127"
+         y1="1.55855"
+         x2="6.2009344"
+         y2="1.55855"
+         id="line536" />
+      <line
+         stroke-linejoin="round"
+         stroke-linecap="round"
+         stroke-width="0.1171"
+         stroke="currentColor"
+         x1="0.058534127"
+         y1="0.05855"
+         x2="6.2009344"
+         y2="0.05855"
+         id="line538" />
+      <a
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:18:19"
+         id="a542"
+         transform="translate(-0.56916588,-4.9999809e-5)">
+        <path
+           transform="matrix(0.0055,0,0,-0.0055,2.5691,0.8086)"
+           d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+           fill="currentColor"
+           id="path540" />
+      </a>
+      <a
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:10:11"
+         id="a546"
+         transform="translate(-0.56916588,-4.9999809e-5)">
+        <path
+           transform="matrix(0.0055,0,0,-0.0055,2.5691,6.0586)"
+           d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+           fill="currentColor"
+           id="path544" />
+      </a>
+      <a
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4.ly:90:15:16"
+         id="a550"
+         transform="translate(-0.56916588,-4.9999809e-5)">
+        <path
+           transform="matrix(0.0055,0,0,-0.0055,2.5691,3.0586)"
+           d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+           fill="currentColor"
+           id="path548" />
+      </a>
+    </g>
+  </g>
 </svg>

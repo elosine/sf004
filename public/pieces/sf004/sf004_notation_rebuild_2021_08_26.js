@@ -16,11 +16,10 @@ const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
 
 //##ef World Canvas Variables
 let worldPanel;
-const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
-const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
-const CANVAS_H = 578;
-const CANVAS_CENTER = CANVAS_W / 2;
+let CANVAS_W = 590;
+let CANVAS_H = 515;
+let CANVAS_CENTER = CANVAS_W / 2;
 //##endef END World Canvas Variables
 
 //##ef ThreeJS Scene Variables
@@ -112,25 +111,22 @@ const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
-const BEAT_LENGTH_PX = 85;
-const TOP_STAFF_LINE_Y = 113;
-const VERT_DIST_BTWN_STAVES = 133;
-const VERT_DIST_BTWN_STAFF_LINES = 8;
-const FIRST_BEAT_L = 12;
-const LAST_BEAT_W = BEAT_LENGTH_PX - FIRST_BEAT_L;
+const NOTES_PADDING = 6;
+const BEAT_LENGTH_PX = 46;
+const TOP_STAFF_LINE_Y = 54 + unisonTokenSize + NOTES_PADDING; //unisonTokenSize from functionLibrary.js
+const VERT_DIST_BTWN_STAVES = 73 + unisonTokenSize + 4;
+const FIRST_BEAT_L = NOTES_PADDING;
 const NUM_BEATS_PER_STAFFLINE = 8;
 const NUM_STAFFLINES = 2;
 const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
-const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
-const STAFF_BTM_MARGIN = 40;
-const NOTEHEAD_W = 10;
-const NOTEHEAD_H = 8;
+const STAFF_BTM_MARGIN = 26 + NOTES_PADDING;
+const NOTEHEAD_H = 6;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
-const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_LENGTH_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_W = NOTES_PADDING + (BEAT_LENGTH_PX * NUM_BEATS_PER_STAFFLINE) + NOTES_PADDING; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
-const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
-const NOTATION_CURSOR_H = 83;
+const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W / 2);
+const NOTATION_CURSOR_H = 50;
 
 //###ef Beat Coordinates
 let beatXLocations = [];
@@ -151,67 +147,60 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 
 //###ef Motive Dictionary
 let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
-    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
+    path: "/pieces/sf004/notationSVGs/motives/qtr_rest.svg",
     lbl: 'qtr_rest',
     num: -1,
-    w: 8.83,
-    h: 23.77
+    w: 7,
+    h: 19
   },
   {
-    path: "/pieces/sf004/notationSVGs/quarter.svg",
+    path: "/pieces/sf004/notationSVGs/motives/quarter.svg",
     lbl: 'quarter',
     num: 0,
-    w: 9.74,
-    h: 62.21
+    w: 7,
+    h: 39.4
   },
   {
-    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
+    path: "/pieces/sf004/notationSVGs/motives/dot8thR_16th.svg",
     lbl: 'dot8thR_16th',
     num: 1,
-    w: 72.11,
-    h: 62.95
+    w: 42.6,
+    h: 39
   },
   {
-    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
+    path: "/pieces/sf004/notationSVGs/motives/eighthR_8th.svg",
     lbl: 'eighthR_8th',
     num: 2,
-    w: 51.24,
-    h: 62.62
+    w: 30,
+    h: 39
   },
   {
-    path: "/pieces/sf004/notationSVGs/triplet.svg",
+    path: "/pieces/sf004/notationSVGs/motives/triplet.svg",
     lbl: 'triplet',
     num: 3,
-    w: 68.53,
-    h: 76.73
+    w: 39,
+    h: 50.3
   },
   {
-    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
+    path: "/pieces/sf004/notationSVGs/motives/quadruplet.svg",
     lbl: 'quadruplet',
     num: 4,
-    w: 71.52,
-    h: 62.62
+    w: 40.5,
+    h: 39
   },
   {
-    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
-    lbl: 'quintuplet',
-    num: 5,
-    w: 76.96,
-    h: 76.67
-  },
-  {
-    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
+    path: "/pieces/sf004/notationSVGs/motives/eighthR_two16ths.svg",
     lbl: 'eighthR_two16ths',
     num: 6,
-    w: 72.45,
-    h: 62.62
+    w: 41.5,
+    h: 39
   },
   {
-    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
+    path: "/pieces/sf004/notationSVGs/motives/two16th_8thR.svg",
     lbl: 'two16th_8thR',
     num: 7,
-    w: 50.85,
-    h: 62.62
+    w: 23,
+    h: 39
   }
 
 ];
@@ -219,7 +208,7 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
 
 //###ef Dynamics & Accents
 let dynamicsAccents_paths_labels = [{
-  path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
+  path: "/pieces/sf004/notationSVGs/articulations/sf.svg",
   lbl: 'sf'
 }];
 //###endef Dynamics & Accents
@@ -256,13 +245,6 @@ let unisonToken;
 
 //##ef Pitch Sets Variables
 
-pitchSetsObj = {};
-let PITCH_SETS_W = 120;
-let PITCH_SETS_H = 80;
-let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
-let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
-let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
-let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
 //###ef Pitch Sets Dictionary
 let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
@@ -271,35 +253,57 @@ let pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
     path: pitchSetsPath + 'e4_e5.svg',
     lbl: 'e4_e5',
     num: 0,
-    w: 41.57,
-    h: 45.17
+    w: 31,
+    h: 34
   },
   {
     path: pitchSetsPath + 'e4_e5_b4.svg',
     lbl: 'e4_e5_b4',
     num: 1,
-    w: 41.57,
-    h: 45.17
+    w: 31,
+    h: 34
   },
   {
     path: pitchSetsPath + 'e4_e5_b4cluster.svg',
     lbl: 'e4_e5_b4cluster',
     num: 2,
-    w: 41.57,
-    h: 44.8
+    w: 31,
+    h: 34
   },
   {
     path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
     lbl: 'e4cluster_e5cluster_b4cluster',
     num: 3,
-    w: 109.68,
-    h: 59.22
+    w: 82,
+    h: 44
   }
 ];
 //###endef Pitch Sets Dictionary
 
+pitchSetsObj = {};
 const NUM_PITCHSETS = Object.keys(pitchSetsDictionary).length;
 pitchSetsObj['svgs'] = new Array(NUM_PITCHSETS);
+
+let findPsContWidthHeight = function() {
+  let whObj = {};
+  let tw = 0;
+  let th = 0;
+  pitchSetsDictionary.forEach((psObj, i) => {
+    if (psObj.w > tw) tw = psObj.w;
+    if (psObj.h > th) th = psObj.h;
+  });
+  whObj['w'] = tw;
+  whObj['h'] = th;
+  return whObj;
+}
+
+let PITCH_SETS_W = findPsContWidthHeight().w + 8;
+let PITCH_SETS_H = findPsContWidthHeight().h + 8;
+let PITCH_SETS_TOP = RHYTHMIC_NOTATION_CANVAS_TOP;
+let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L - PITCH_SETS_W - CANVAS_MARGIN;
+let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
+let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
+
 
 //##endef Pitch Sets Variables
 
@@ -323,6 +327,11 @@ let articulationsObj = {
   }
 };
 //##endef END Articulations Variables
+
+//##ef Readjust Canvas Size
+CANVAS_W = CANVAS_MARGIN + PITCH_SETS_W + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_W + CANVAS_MARGIN + 2;
+CANVAS_H = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_H + CANVAS_MARGIN;
+//##endef Readjust Canvas Size
 
 
 //#ef SOCKET IO
@@ -362,7 +371,10 @@ function init() {
   makeUnisonSigns();
   makeUnisonToken();
   makePitchSets();
-  makeArticulations();
+  // makeArticulations();
+
+
+
 
   RENDERER.render(SCENE, CAMERA);
 
@@ -1067,7 +1079,7 @@ function generateScoreData() {
   let numRestsLoop = 7;
   let maxNumRests = 13;
   let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
-  for (let i = 0; i < 100000; i++) {
+  for (let i = 0; i < 100000; i++) { //make sure restsByFrameSetLength is divisible by maxNumRests so that when looped you remove the same number of rests as you add
     if ((restsByFrameSetLength % maxNumRests) == 0) {
       break;
     } else {
@@ -1083,11 +1095,12 @@ function generateScoreData() {
   let restSetInc = 0;
   for (let i = 0; i < restsByFrameSetLength; i++) {
     let tOb = {};
+    //advance the amount of frames in restsTimeContainers
     let sec = restsTimeContainers[restSetInc];
     let incInFrms = Math.round(sec * FRAMERATE);
     tCumFrmCt_rests += incInFrms;
     tOb['frame'] = tCumFrmCt_rests;
-    if (addMinusRestsCt == 0) restType = (restType + 1) % 2
+    if (addMinusRestsCt == 0) restType = (restType + 1) % 2 //toggle rest type if we have moved from removing rests or adding rests or visa versa
     tOb['restType'] = restType;
     restSetInc = (restSetInc + 1) % restsTimeContainers.length;
     addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
@@ -1097,7 +1110,7 @@ function generateScoreData() {
 
   //For motives, do a choose for dur between changes
   //Make a set as long as restsTimeContainers
-  //cycle through all the motives - Make function
+  //cycle through all the motives
   let motiveNumberSet = numberedSetFromSize({
     sz: (motiveDictionary.length - 1)
   });
@@ -1133,8 +1146,7 @@ function generateScoreData() {
   }
   let motiveChgByFrameSet_currSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-
-  for (var restIx = 1; restIx < restsByFrame.length; restIx++) {
+  for (var restIx = 1; restIx < restsByFrame.length; restIx++) { //determine what the motive set is for this change then fill in til next change
 
     let restObj = restsByFrame[restIx - 1];
     let restFrame = restObj.frame;
@@ -1147,43 +1159,45 @@ function generateScoreData() {
 
       let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
 
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
+      for (var i = 0; i < 1000; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
 
         let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
 
-        if (tNotesSet[tChoice] != -1) {
+        if (tNotesSet[tChoice] != -1) { //you got a non-rest
 
-          tNotesSet[tChoice] = -1; //add a rest
+          tNotesSet[tChoice] = -1; //add a rest //turn this non-rest into a rest
 
           //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
 
+            //Need to look at the motiveChangeTimesObjSet to see if any of the motives will change during this rest change
+            //A bit of a fudge cause we'll change this motive for all of the frames before the next rest change, not just from the frame stated in motiveChangeTimesObjSet
             motiveChangeTimesObjSet.forEach((mObj) => {
               let tchgFrmNum = mObj.frame;
               let tmNum = mObj.motiveNum;
               if (tchgFrmNum == frmIx) {
 
-                for (let j = 0; j < 100; j++) {
+                for (let j = 0; j < 100; j++) { //keep choosing until you get a non-rest/motive to change
                   let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix] != -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
+                  if (tNotesSet[tix] != -1) { //you got a motive!
+                    tNotesSet[tix] = tmNum; //update this motive to the one listed in motiveChangeTimesObjSet
+                    break; //break the <100 loop
+                  } // if (tNotesSet[tix] != -1) END
+                } // for (let j = 0; j < 100; j++)  END
 
-              }
+              } // if (tchgFrmNum == frmIx) END
 
-            });
+            }); //   motiveChangeTimesObjSet.forEach((mObj) => END  //done replacing any motives that need to be replaced
 
             //Work in motiveChangeTimesObjSet
             let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
+            motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
           }
 
           // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet); //this is the new set for the next time to compare to
 
-          break;
+          break; //break the < 1000 loop
 
         } //   if (tNotesSet[noteIx] != -1) END
 
@@ -1199,12 +1213,13 @@ function generateScoreData() {
 
         let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
 
-        if (tNotesSet[tChoice] == -1) {
+        if (tNotesSet[tChoice] == -1) { //if it is a rest, replace it
 
           tNotesSet[tChoice] = 0; //use motiveChangeTimesObjSet here
 
           //copy new array over range
           for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
+
 
             motiveChangeTimesObjSet.forEach((mObj) => {
               let tchgFrmNum = mObj.frame;
@@ -1219,14 +1234,27 @@ function generateScoreData() {
                   }
                 }
 
+              } // if (tchgFrmNum == frmIx) END
 
-              }
+            }); // motiveChangeTimesObjSet.forEach((mObj) => END
 
-            });
+
+
+
+            //START HERE
+            //DO ANOTHER LOOP HERE SIMILAR TO ABOVE motiveChangeTimesObjSet.forEach((mObj) => { FOR ARTICULATIONS
+            // GO THROUGH AND ADD AN OBJECT IN THE PLACE OF THE MOTIVE NUMBER WITH MOTIVE NUMBER AND ARTICULATION TYPE AND ARTICULATION POS
+            // THE ARTICULATION DATABASE SHOULD SAY HOW MANY ARTICULATIONS ARE ON AT WHICH FRAME
+            //SCAN THROUGH AND FIND OUT HOW MANY ART ARE HERE, ADD, SUBTRACT OR KEEP THE SAME
+            //IF ADDING, NEED TO FIND OUT WHICH MOTIVE, RANDOMLY CHOOSE WHICH PARTIAL, THEN LOOK UP POSITION AND ADD TO OBJECT
+
+
 
             let tSet = deepCopy(tNotesSet);
             motiveChgByFrameSet[frmIx] = tSet;
-          }
+
+
+          } // for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) END
 
           // Update curr set
           motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
@@ -1246,7 +1274,7 @@ function generateScoreData() {
 
   //##endef CALCULATIONS FOR NOTATION
 
-  // console.log(scoreDataObject);
+
   return scoreDataObject;
 
 } // function generateScoreData() END
@@ -1763,11 +1791,12 @@ function makeStaffNotation() {
 
       let tLabel = motiveObj.lbl;
       let motiveNum = motiveObj.num;
-      let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
+      // let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
+      let tDisp = tLabel == 'triplet' ? 'yes' : 'none'; //initial notation displayed
 
       // Create HTML SVG image
       let tSvgImage = document.createElementNS(SVG_NS, "image");
-      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
+      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/motives/' + tLabel + '.svg');
       tSvgImage.setAttributeNS(null, "y", ty - motiveObj.h);
       tSvgImage.setAttributeNS(null, "x", tx);
       tSvgImage.setAttributeNS(null, "visibility", 'visible');
@@ -1804,7 +1833,7 @@ function makeScrollingTempoCursors() {
     });
     tLine.setAttributeNS(null, 'stroke-linecap', 'round');
     tLine.setAttributeNS(null, 'display', 'none');
-    // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[9].x.toString() + "," + beatCoords[9].y.toString() + ")");
+    // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[4].x.toString() + "," + beatCoords[4].y.toString() + ")");
     tempoCursors.push(tLine);
 
   } //for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
@@ -1836,7 +1865,9 @@ function makePlayerTokens() {
     playerTokens.push(tPlrSet);
 
   } //for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
-
+  // playerTokens[0][4].svg.setAttributeNS(null, "display", 'yes');
+  // playerTokens[0][4].txt.setAttributeNS(null, "display", 'yes');
+  // playerTokens[0][4].move(beatCoords[4].x, beatCoords[4].y)
 } //function makePlayerTokens() end
 
 
@@ -1966,6 +1997,10 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 
 function makeUnisonToken() {
   unisonToken = mkPlrTkns(rhythmicNotationObj.svgCont, 5);
+
+  // unisonToken.svg.setAttributeNS(null, "display", 'yes');
+  // unisonToken.txt.setAttributeNS(null, "display", 'yes');
+  // unisonToken.move(beatCoords[11].x, beatCoords[11].y)
 }
 
 
@@ -1997,13 +2032,12 @@ function makePitchSets() {
   //###ef Make Pitch Set SVGs
   pitchSetsDictionary.forEach((psObj) => { //each motive loop // pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
 
-    let tLbl = psObj.lbl;
     let tPsNum = psObj.num;
     let tx = PITCH_SETS_CENTER_W - (psObj.w / 2);
     let ty = PITCH_SETS_MIDDLE_H - (psObj.h / 2);
 
-    let tDisplay = tLbl == 'e4_e5' ? 'yes' : 'none';
-    // let tDisplay = tLbl == 'e4cluster_e5cluster_b4cluster' ? 'yes' : 'none';
+    // let tDisplay = tPsNum == 0 ? 'yes' : 'none';
+    let tDisplay = tPsNum == 3 ? 'yes' : 'none';
 
     // Create HTML SVG image
     let tSvgImage = document.createElementNS(SVG_NS, "image");
@@ -2084,7 +2118,7 @@ function makeArticulations() {
       let tArt = document.createElementNS(SVG_NS, "image");
       tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
       tArt.setAttributeNS(null, "x", 0);
-      tArt.setAttributeNS(null, "y",  2);
+      tArt.setAttributeNS(null, "y", 2);
       tArt.setAttributeNS(null, "visibility", 'visible');
       tArt.setAttributeNS(null, "display", 'none');
       rhythmicNotationObj.svgCont.appendChild(tArt);

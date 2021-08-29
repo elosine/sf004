@@ -1088,6 +1088,7 @@ const deepCopy = (arr) => {
 
 // #ef playerTokens
 
+let unisonTokenSize = 27;
 let mkPlrTkns = function(svgCanvas, type) {
 
   let playerTokenObj = {};
@@ -1098,8 +1099,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 0:
 
-      yAdjSvg = 10;
-      yAdjTxt = 10;
+      yAdjSvg = 63;
+      yAdjTxt = 63;
 
       let tCirc = mkSvgCircle({
         svgContainer: svgCanvas,
@@ -1129,8 +1130,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 1:
 
-      yAdjSvg = 12;
-      yAdjTxt = 8;
+      yAdjSvg = 65;
+      yAdjTxt = 61;
 
       let tTri = mkSvgTriangle({
         svgContainer: svgCanvas,
@@ -1161,8 +1162,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 2:
 
-      yAdjSvg = 14;
-      yAdjTxt = 14;
+      yAdjSvg = 65;
+      yAdjTxt = 65;
 
       let tDia = mkSvgDiamond({
         svgContainer: svgCanvas,
@@ -1193,8 +1194,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 3:
 
-      yAdjSvg = 16;
-      yAdjTxt = 8;
+      yAdjSvg = 69;
+      yAdjTxt = 62;
 
       let tArc = mkSvgArc({
         svgContainer: svgCanvas,
@@ -1227,8 +1228,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 4:
 
-      yAdjSvg = 19;
-      yAdjTxt = 10;
+      yAdjSvg = 72;
+      yAdjTxt = 62;
 
       let tSqr = mkSvgRect({
         svgContainer: svgCanvas,
@@ -1259,16 +1260,16 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 5:
 
-      yAdjSvg = 15;
-      yAdjTxt = 21;
+      yAdjSvg = 70;
+      yAdjTxt = 75;
 
       let tTri2 = mkSvgTriangle2({
         svgContainer: svgCanvas,
         cx: 0,
         cy: -yAdjSvg,
-        h: 40,
-        w: 40,
-        fill: 'none',
+        h: unisonTokenSize,
+        w: unisonTokenSize,
+        fill: clr_neonMagenta,
         stroke: clr_neonMagenta,
         strokeW: 3
       });
@@ -1281,7 +1282,7 @@ let mkPlrTkns = function(svgCanvas, type) {
         y: -yAdjTxt,
         justifyH: 'middle',
         justifyV: 'central',
-        fontSz: 28,
+        fontSz: 23,
         txt: 'U'
       });
 
