@@ -1,22 +1,12 @@
 //#ef GLOBAL VARIABLES
 
 
-//#ef SOCKET IO
-let ioConnection;
-
-if (window.location.hostname == 'localhost') {
-  ioConnection = io();
-} else {
-  ioConnection = io.connect(window.location.hostname);
-}
-const SOCKET = ioConnection;
-//#endef > END SOCKET IO
-
+//##ef General Variables
 let scoreData;
 let NUM_TEMPOS = 5;
 let NUM_PLAYERS = 5;
-let TOTAL_NUM_BEATS = 16;
 const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
+//##endef General Variables
 
 //##ef Timing
 const FRAMERATE = 60;
@@ -24,16 +14,16 @@ const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
 //##endef Timing
 
-// #ef World Panel Variables
+//##ef World Canvas Variables
 let worldPanel;
 const CANVAS_L_R_MARGINS = 35;
 const CANVAS_MARGIN = 7;
 const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
 const CANVAS_H = 578;
 const CANVAS_CENTER = CANVAS_W / 2;
-// #endef END World Panel Variables
+//##endef END World Canvas Variables
 
-// #ef ThreeJS Scene Variables
+//##ef ThreeJS Scene Variables
 const RENDERER_W = 340;
 const RENDERER_H = 180;
 const RENDERER_TOP = CANVAS_MARGIN;
@@ -55,15 +45,15 @@ const CAM_Y = 150;
 const CAM_Z = 21;
 // const CAM_ROTATION_X = -68; // -90 directly above looking down
 const CAM_ROTATION_X = -45; // -90 directly above looking down
-// #endef END ThreeJS Scene Variables
+//##endef END ThreeJS Scene Variables
 
 //##ef Runway Variables
 const RUNWAY_W = RENDERER_W;
 const RUNWAY_H = RENDERER_H;
-const RUNWAY_LENGTH = 1000;
+const RUNWAY_L = 1000;
 const HALF_RUNWAY_W = RUNWAY_W / 2;
-const HALF_RUNWAY_LENGTH = RUNWAY_LENGTH / 2;
-const RUNWAY_LENGTH_FRAMES = Math.round(RUNWAY_LENGTH / PX_PER_FRAME);
+const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
+const RUNWAY_LENGTH_FRAMES = Math.round(RUNWAY_L / PX_PER_FRAME);
 //##endef END Runway Variables
 
 //##ef Tracks Variables
@@ -90,6 +80,15 @@ const GO_Z = -HALF_GO_FRET_L;
 const GO_FRET_Y = HALF_TRACK_DIAMETER;
 //##endef END Go Frets Variables
 
+//#ef Tempo Frets Variables
+let tempoFretsPerTrack = [];
+const TEMPO_FRET_W = GO_FRET_W - 2;
+const TEMPO_FRET_H = GO_FRET_H - 2;
+const TEMPO_FRET_L = GO_FRET_L - 5;
+const TEMPO_FRET_Y = HALF_TRACK_DIAMETER;
+const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L; //Initially make enough tempo frets, which end to end would fill track length
+//#endef Tempo Frets Variables
+
 //##ef BBs Variables
 let bbSet = [];
 for (let trIx = 0; trIx < NUM_TRACKS; trIx++) bbSet.push({});
@@ -107,7 +106,7 @@ const BB_BOUNCE_WEIGHT = 6;
 const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 //##endef BBs Variables
 
-//##ef Notation Variables
+//##ef Staff Notation Variables
 
 
 let rhythmicNotationObj = {};
@@ -120,9 +119,10 @@ const VERT_DIST_BTWN_STAFF_LINES = 8;
 const FIRST_BEAT_L = 12;
 const LAST_BEAT_W = BEAT_LENGTH_PX - FIRST_BEAT_L;
 const NUM_BEATS_PER_STAFFLINE = 8;
+const NUM_STAFFLINES = 2;
+const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
 const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
 const STAFF_BTM_MARGIN = 40;
-const NUM_STAFFLINES = 2;
 const NOTEHEAD_W = 10;
 const NOTEHEAD_H = 8;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
@@ -132,7 +132,7 @@ const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
 const NOTATION_CURSOR_H = 83;
 
-// #ef Beat Coordinates
+//###ef Beat Coordinates
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
   beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_LENGTH_PX));
@@ -147,9 +147,9 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
     beatCoords.push(tCoordObj);
   }
 }
-// #endef Beat Coordinates
+//###endef Beat Coordinates
 
-//##ef motiveDictionary
+//###ef Motive Dictionary
 let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
     path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
     lbl: 'qtr_rest',
@@ -215,17 +215,126 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
   }
 
 ];
-//##endef END motiveDictionary
+//###endef Motive Dictionary
 
-// #ef dynamicsAccents_paths_labels
+//###ef Dynamics & Accents
 let dynamicsAccents_paths_labels = [{
   path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
   lbl: 'sf'
 }];
-// #endef END dynamicsAccents_paths_labels
+//###endef Dynamics & Accents
+
+let motivesByBeat = [];
+for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
+
+//##endef END Staff Notation Variables
+
+//##ef Scrolling Tempo Cursors
+let tempoCursors = [];
+//##endef Scrolling Tempo Cursors
+
+//##ef Player Tokens
+let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
+//##endef Player Tokens
+
+//##ef Signs Variables
+const SIGN_W = TEMPO_FRET_W - 10;
+const SIGN_H = 150;
+const HALF_SIGN_H = SIGN_H / 2;
+let signsByPlrByTrack = [];
+const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = Math.round(NUM_TEMPO_FRETS_TO_FILL / 10);
+//##endef Signs Variables
+
+//##ef Unison Signs Variables
+let unisonSignsByTrack = [];
+let unisonOffSignsByTrack = [];
+//##endef Unison Signs Variables
+
+//##ef Unison Token Variables
+let unisonToken;
+//##endef Unison Token Variables
+
+//##ef Pitch Sets Variables
+
+pitchSetsObj = {};
+let PITCH_SETS_W = 120;
+let PITCH_SETS_H = 80;
+let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
+let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
+let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
+let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
+
+//###ef Pitch Sets Dictionary
+let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
+
+let pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
+    path: pitchSetsPath + 'e4_e5.svg',
+    lbl: 'e4_e5',
+    num: 0,
+    w: 41.57,
+    h: 45.17
+  },
+  {
+    path: pitchSetsPath + 'e4_e5_b4.svg',
+    lbl: 'e4_e5_b4',
+    num: 1,
+    w: 41.57,
+    h: 45.17
+  },
+  {
+    path: pitchSetsPath + 'e4_e5_b4cluster.svg',
+    lbl: 'e4_e5_b4cluster',
+    num: 2,
+    w: 41.57,
+    h: 44.8
+  },
+  {
+    path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
+    lbl: 'e4cluster_e5cluster_b4cluster',
+    num: 3,
+    w: 109.68,
+    h: 59.22
+  }
+];
+//###endef Pitch Sets Dictionary
+
+const NUM_PITCHSETS = Object.keys(pitchSetsDictionary).length;
+pitchSetsObj['svgs'] = new Array(NUM_PITCHSETS);
+
+//##endef Pitch Sets Variables
+
+//##ef Articulations Variables
+let articulationsPath = "/pieces/sf004/notationSVGs/dynamics_accents/";
+
+let articulationsObj = {
+  sf: {
+    path: articulationsPath + 'sf.svg',
+    amt: TOTAL_NUM_BEATS,
+    num: 0,
+    w: 16.46,
+    h: 17.18
+  },
+  marcato: {
+    path: articulationsPath + 'marcato.svg',
+    amt: (TOTAL_NUM_BEATS * 5),
+    num: 1,
+    w: 8.3,
+    h: 9.13
+  }
+};
+//##endef END Articulations Variables
 
 
-//##endef END Notation Variables
+//#ef SOCKET IO
+let ioConnection;
+
+if (window.location.hostname == 'localhost') {
+  ioConnection = io();
+} else {
+  ioConnection = io.connect(window.location.hostname);
+}
+const SOCKET = ioConnection;
+//#endef > END SOCKET IO
 
 
 //#endef GLOBAL VARIABLES
@@ -239,11 +348,54 @@ function init() {
   scoreData = generateScoreData();
   console.log(scoreData);
   makeScoreDataManager();
+  makeWorldPanel();
+  makeThreeJsScene();
+  makeRunway();
+  makeTracks();
+  makeGoFrets();
+  makeTempoFrets();
+  makeBouncingBalls();
+  makeStaffNotation();
+  makeScrollingTempoCursors();
+  makePlayerTokens();
+  makeSigns();
+  makeUnisonSigns();
+  makeUnisonToken();
+  makePitchSets();
+  makeArticulations();
+
+  RENDERER.render(SCENE, CAMERA);
 
 } // function init() END
 
 
 //#endef INIT
+
+//#ef PROCESS URL ARGS
+
+
+let PIECE_ID;
+let partsToRun = [];
+let TOTAL_NUM_PARTS_TO_RUN;
+
+function processUrlArgs() {
+
+  let urlArgs = getUrlArgs();
+
+  PIECE_ID = urlArgs.id;
+
+  // partsToRun
+  let partsToRunStrArray = urlArgs.parts.split(';');
+  partsToRunStrArray.forEach((partNumAsStr) => {
+    partsToRun.push(parseInt(partNumAsStr));
+  });
+
+  TOTAL_NUM_PARTS_TO_RUN = partsToRun.length;
+
+}
+
+
+//#endef PROCESS URL ARGS
 
 //#ef GENERATE SCORE DATA
 
@@ -1296,28 +1448,669 @@ function makeScoreDataManager() {
 
 //#endef END SCORE DATA MANAGER
 
-//#ef PROCESS URL ARGS
+//#ef BUILD WORLD
 
 
-let PIECE_ID;
-let partsToRun = [];
-let TOTAL_NUM_PARTS_TO_RUN;
+//##ef Make World Panel
 
-function processUrlArgs() {
+function makeWorldPanel() {
 
-  let urlArgs = getUrlArgs();
-
-  PIECE_ID = urlArgs.id;
-
-  // partsToRun
-  let partsToRunStrArray = urlArgs.parts.split(';');
-  partsToRunStrArray.forEach((partNumAsStr) => {
-    partsToRun.push(parseInt(partNumAsStr));
+  worldPanel = mkPanel({
+    w: CANVAS_W,
+    h: CANVAS_H,
+    title: 'SoundFlow #4',
+    onwindowresize: true,
+    clr: clr_blueGrey
   });
 
-  TOTAL_NUM_PARTS_TO_RUN = partsToRun.length;
+} // function makeWorldPanel() END
 
+//##endef Make World Panel
+
+//##ef Make ThreeJS Scene
+
+
+function makeThreeJsScene() {
+
+  SCENE = new THREE.Scene();
+
+  //###ef Camera
+  CAMERA = new THREE.PerspectiveCamera(75, RENDERER_W / RENDERER_H, 1, 3000);
+  CAMERA.position.set(0, CAM_Y, CAM_Z);
+  CAMERA.rotation.x = rads(CAM_ROTATION_X);
+  //###endef END Camera
+
+  //###ef Lights
+  SUN = new THREE.DirectionalLight(0xFFFFFF, 1.2);
+  SUN.position.set(100, 600, 175);
+  SCENE.add(SUN);
+  SUN2 = new THREE.DirectionalLight(0x40A040, 0.6);
+  SUN2.position.set(-100, 350, 200);
+  SCENE.add(SUN2);
+  //###endef END Lights
+
+  //###ef Renderer
+  RENDERER_DIV = mkDivCanvas({
+    w: RENDERER_W,
+    h: RENDERER_H,
+    top: RENDERER_TOP,
+    clr: 'black'
+  })
+  RENDERER_DIV.style.left = RENDERER_DIV_LEFT.toString() + 'px';
+  worldPanel.content.appendChild(RENDERER_DIV);
+
+  RENDERER = new THREE.WebGLRenderer();
+  RENDERER.setSize(RENDERER_W, RENDERER_H);
+  RENDERER_DIV.appendChild(RENDERER.domElement);
+  //###endef Renderer
+
+} // function makeThreeJsScene() end
+
+
+//##endef Make ThreeJS Scene
+
+//##ef Make Runway
+
+
+function makeRunway() {
+
+  let runwayMaterial =
+    new THREE.MeshLambertMaterial({
+      color: 0x0040C0,
+      side: THREE.DoubleSide
+    });
+
+  let runwayGeometry = new THREE.PlaneBufferGeometry(RUNWAY_W, RUNWAY_L, 32);
+
+  let runway = new THREE.Mesh(runwayGeometry, runwayMaterial);
+
+  runway.position.z = -HALF_RUNWAY_LENGTH;
+  runway.rotation.x = rads(-90); // at 0 degrees, plane is straight up and down
+
+  SCENE.add(runway);
+
+} //makeRunway() end
+
+
+//##endef Make Runway
+
+//##ef Make Tracks
+
+
+function makeTracks() {
+
+  let trackGeometry = new THREE.CylinderBufferGeometry(TRACK_DIAMETER, TRACK_DIAMETER, RUNWAY_L, 32);
+
+  let trackMaterial = new THREE.MeshLambertMaterial({
+    color: 0x708090
+  });
+
+  xPosOfTracks.forEach((trXpos) => {
+
+    let newTrack = new THREE.Mesh(trackGeometry, trackMaterial);
+
+    newTrack.rotation.x = rads(-90);
+    newTrack.position.z = -HALF_RUNWAY_LENGTH;
+    newTrack.position.y = -HALF_TRACK_DIAMETER;
+    newTrack.position.x = trXpos;
+
+    SCENE.add(newTrack);
+
+  }); // xPosOfTracks.forEach((trXpos) => END
+
+} // makeTracks() END
+
+
+//##endef Make Tracks
+
+//##ef Make Go Frets
+
+
+function makeGoFrets() {
+
+  //Make set of go frets: goFrets[]; Make set of GO indicators: goFretsGo[]
+  let goFretGeometry = new THREE.BoxBufferGeometry(GO_FRET_W, GO_FRET_H, GO_FRET_L);
+  let goFretGoGeometry = new THREE.BoxBufferGeometry(GO_FRET_W + 2, GO_FRET_H + 2, GO_FRET_L + 2);
+
+  xPosOfTracks.forEach((trXpos, trIx) => {
+
+    newGoFret = new THREE.Mesh(goFretGeometry, materialColors[trIx]);
+
+    newGoFret.position.z = GO_Z;
+    newGoFret.position.y = GO_FRET_Y;
+    newGoFret.position.x = trXpos;
+    newGoFret.rotation.x = rads(-14);
+
+    SCENE.add(newGoFret);
+    goFrets.push(newGoFret);
+
+    newGoFretGo = new THREE.Mesh(goFretGoGeometry, matl_yellow);
+
+    newGoFretGo.position.z = GO_Z;
+    newGoFretGo.position.y = GO_FRET_Y;
+    newGoFretGo.position.x = trXpos;
+    newGoFretGo.rotation.x = rads(-14);
+    newGoFretGo.visible = false;
+
+    SCENE.add(newGoFretGo);
+    goFretsGo.push(newGoFretGo);
+
+  }); //xPosOfTracks.forEach((trXpos) END
+
+} //makeGoFrets() end
+
+
+//##endef Make Go Frets
+
+//##ef Make Tempo Frets
+
+
+function makeTempoFrets() {
+
+  let tempoFretGeometry = new THREE.BoxBufferGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
+
+  xPosOfTracks.forEach((trXpos, trIx) => {
+
+    let thisTracksTempoFrets = [];
+
+    for (let tFretIx = 0; tFretIx < NUM_TEMPO_FRETS_TO_FILL; tFretIx++) {
+
+      newTempoFret = new THREE.Mesh(tempoFretGeometry, materialColors[trIx]);
+
+      newTempoFret.position.z = GO_Z - TEMPO_FRET_L - (TEMPO_FRET_L * tFretIx);
+      newTempoFret.position.y = TEMPO_FRET_Y;
+      newTempoFret.position.x = trXpos;
+      newTempoFret.rotation.x = rads(-14);
+
+      SCENE.add(newTempoFret);
+      newTempoFret.visible = false;
+      thisTracksTempoFrets.push(newTempoFret);
+
+    } //for (let i = 0; i < NUM_TEMPO_FRETS_TO_FILL; i++) End
+
+    tempoFretsPerTrack.push(thisTracksTempoFrets);
+
+  }); //xPosOfTracks.forEach((trXpos) END
+
+} //makeTempoFrets() end
+
+
+//##endef Make Tempo Frets
+
+//##ef Make BBs
+
+
+function makeBouncingBalls() {
+
+  for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) {
+
+    bbSet[bbIx]['div'] = mkDiv({
+      canvas: worldPanel.content,
+      w: BB_W,
+      h: BB_H,
+      top: BB_TOP,
+      left: RENDERER_DIV_LEFT + BB_PAD_LEFT + ((BB_W + BB_GAP) * bbIx),
+      bgClr: 'white'
+    });
+
+    bbSet[bbIx]['svgCont'] = mkSVGcontainer({
+      canvas: bbSet[bbIx].div,
+      w: BB_W,
+      h: BB_H,
+      x: 0,
+      y: 0
+    });
+
+    bbSet[bbIx]['bbCirc'] = mkSvgCircle({
+      svgContainer: bbSet[bbIx].svgCont,
+      cx: BB_CENTER,
+      cy: BBCIRC_TOP_CY,
+      r: BBCIRC_R,
+      fill: TEMPO_COLORS[bbIx],
+      stroke: 'white',
+      strokeW: 0
+    });
+
+    bbSet[bbIx]['bbBouncePadOff'] = mkSvgLine({
+      svgContainer: bbSet[bbIx].svgCont,
+      x1: 0,
+      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      x2: BB_W,
+      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      stroke: 'black',
+      strokeW: BB_BOUNCE_WEIGHT
+    });
+
+    bbSet[bbIx]['bbBouncePadOn'] = mkSvgLine({
+      svgContainer: bbSet[bbIx].svgCont,
+      x1: 0,
+      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      x2: BB_W,
+      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      stroke: 'yellow',
+      strokeW: BB_BOUNCE_WEIGHT + 2
+    });
+    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+
+    bbSet[bbIx]['offIndicator'] = mkSvgRect({
+      svgContainer: bbSet[bbIx].svgCont,
+      x: 0,
+      y: 0,
+      w: BB_W,
+      h: BB_H,
+      fill: 'rgba(173, 173, 183, 0.9)',
+    });
+    bbSet[bbIx].offIndicator.setAttributeNS(null, 'display', 'none');
+
+  } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
+
+} //makeBouncingBalls() end
+
+
+//##endef Make BBs
+
+//##ef Make Staff Notation
+
+
+function makeStaffNotation() {
+
+  //##ef DIV & SVG Containers
+  rhythmicNotationObj['div'] = mkDiv({
+    canvas: worldPanel.content,
+    w: RHYTHMIC_NOTATION_CANVAS_W,
+    h: RHYTHMIC_NOTATION_CANVAS_H,
+    top: RHYTHMIC_NOTATION_CANVAS_TOP,
+    left: RHYTHMIC_NOTATION_CANVAS_L,
+    bgClr: 'white'
+  });
+  rhythmicNotationObj['svgCont'] = mkSVGcontainer({
+    canvas: rhythmicNotationObj.div,
+    w: RHYTHMIC_NOTATION_CANVAS_W,
+    h: RHYTHMIC_NOTATION_CANVAS_H,
+    x: 0,
+    y: 0
+  });
+  //##endef DIV & SVG Containers
+
+  //##ef Staff Lines
+  let rhythmicNotationStaffLines = [];
+  for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
+    let tStaffY = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES);
+    let tLine = mkSvgLine({
+      svgContainer: rhythmicNotationObj.svgCont,
+      x1: 0,
+      y1: tStaffY,
+      x2: RHYTHMIC_NOTATION_CANVAS_W,
+      y2: tStaffY,
+      stroke: "black",
+      strokeW: 1
+    });
+    rhythmicNotationStaffLines.push(tLine);
+  }
+  rhythmicNotationObj['staffLines'] = rhythmicNotationStaffLines;
+  //##endef Staff Lines
+
+  //##ef Draw Initial Notation
+  // Make all motives and make display:none; Display All Quarters
+  //make an SVG for each motive at each beat
+  beatCoords.forEach((beatCoordsObj, beatIx) => { //each beat loop
+
+    let tx = beatCoordsObj.x;
+    let ty = beatCoordsObj.y;
+
+    // motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+    motiveDictionary.forEach((motiveObj) => { //each motive loop
+
+      let tLabel = motiveObj.lbl;
+      let motiveNum = motiveObj.num;
+      let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
+
+      // Create HTML SVG image
+      let tSvgImage = document.createElementNS(SVG_NS, "image");
+      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
+      tSvgImage.setAttributeNS(null, "y", ty - motiveObj.h);
+      tSvgImage.setAttributeNS(null, "x", tx);
+      tSvgImage.setAttributeNS(null, "visibility", 'visible');
+      tSvgImage.setAttributeNS(null, "display", tDisp);
+      rhythmicNotationObj.svgCont.appendChild(tSvgImage);
+
+      motivesByBeat[beatIx][motiveNum] = tSvgImage;
+
+    }); //notationSvgPaths_labels.forEach((motiveObj)  END
+
+  }); //beatCoords.forEach((beatCoordsObj) END
+  //##endef END Draw Initial Notation
+
+} // makeStaffNotation() END
+
+
+//##endef Make Staff Notation
+
+//##ef Make Scrolling Tempo Cursors
+
+
+function makeScrollingTempoCursors() {
+
+  for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) {
+
+    let tLine = mkSvgLine({
+      svgContainer: rhythmicNotationObj.svgCont,
+      x1: 0,
+      y1: HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
+      x2: 0,
+      y2: HALF_NOTEHEAD_H,
+      stroke: TEMPO_COLORS[tempoCsrIx],
+      strokeW: 3
+    });
+    tLine.setAttributeNS(null, 'stroke-linecap', 'round');
+    tLine.setAttributeNS(null, 'display', 'none');
+    // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[9].x.toString() + "," + beatCoords[9].y.toString() + ")");
+    tempoCursors.push(tLine);
+
+  } //for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
+
+} // function makeScrollingTempoCursors() END
+
+
+//##endef Make Scrolling Tempo Cursors
+
+//##ef Make Player Tokens
+
+
+//Make number-of-players worth of tokens for each tempo
+function makePlayerTokens() {
+
+  //circle, triangle, diamond, watermellon, square,
+  for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
+
+    let tPlrSet = [];
+
+    for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) {
+
+      let thisPlrTokenObj = mkPlrTkns(rhythmicNotationObj.svgCont, playerIx);
+
+      tPlrSet.push(thisPlrTokenObj);
+
+    } //for (let playerIx = 0; playerIx < NUM_PLAYERS; playerIx++) END
+
+    playerTokens.push(tPlrSet);
+
+  } //for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
+
+} //function makePlayerTokens() end
+
+
+//##endef Make Player Tokens
+
+//##ef Make Signs
+
+
+function makeSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
+
+  let signGeometry = new THREE.PlaneBufferGeometry(SIGN_W, SIGN_H, 32);
+
+  for (let plrIx = 0; plrIx < NUM_PLAYERS; plrIx++) {
+    let thisPlrsSigns = [];
+    xPosOfTracks.forEach((trXpos, trIx) => {
+
+      let thisTracksSigns = [];
+
+      for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+        let signMaterial =
+          new THREE.MeshLambertMaterial({
+            color: TEMPO_COLORS[trIx],
+            side: THREE.DoubleSide,
+            opacity: 0.7,
+            transparent: true,
+          });
+
+        let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+        sign.position.z = GO_Z;
+        sign.position.x = trXpos;
+        sign.position.y = 0;
+        sign.rotation.x = rads(CAM_ROTATION_X);
+
+        SCENE.add(sign);
+        sign.visible = false;
+        thisTracksSigns.push(sign);
+
+      } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+      thisPlrsSigns.push(thisTracksSigns);
+
+    }); // xPosOfTracks.forEach((trXpos, trIx) end
+
+    signsByPlrByTrack.push(thisPlrsSigns);
+
+  } // for(let plrIx=0;plrIx<NUM_PLAYERS;plrIx++) END
+
+} //makeSigns() end
+
+
+//##endef Make Signs
+
+//##ef Make Unison Signs
+
+
+function makeUnisonSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
+
+  let signGeometry = new THREE.PlaneBufferGeometry(SIGN_W, SIGN_H, 32);
+
+  xPosOfTracks.forEach((trXpos, trIx) => {
+
+    let thisTracksSigns = [];
+    let thisTracksOffSigns = [];
+
+    for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+      let signMaterial =
+        new THREE.MeshLambertMaterial({
+          color: clr_yellow,
+          side: THREE.DoubleSide,
+          opacity: 0.7,
+          transparent: true,
+        });
+
+      let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+      sign.position.z = GO_Z;
+      sign.position.x = trXpos;
+      sign.position.y = 0;
+      sign.rotation.x = rads(CAM_ROTATION_X);
+
+      SCENE.add(sign);
+      sign.visible = false;
+      thisTracksSigns.push(sign);
+
+    } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+    unisonSignsByTrack.push(thisTracksSigns);
+
+    // UNISON OFF SIGNS
+    for (let tSignIx = 0; tSignIx < NUM_AVAILABLE_SIGN_MESHES_PER_TRACK; tSignIx++) {
+
+      let signMaterial =
+        new THREE.MeshLambertMaterial({
+          color: "black",
+          side: THREE.DoubleSide,
+          opacity: 0.7,
+          transparent: true,
+        });
+
+      let sign = new THREE.Mesh(signGeometry, signMaterial);
+
+      sign.position.z = GO_Z;
+      sign.position.x = trXpos;
+      sign.position.y = 0;
+      sign.rotation.x = rads(CAM_ROTATION_X);
+
+      SCENE.add(sign);
+      sign.visible = false;
+      thisTracksOffSigns.push(sign);
+
+    } //for (let tSignIx = 0; tSignIx < NUM_TEMPO_FRETS_TO_FILL; tSignIx++) end
+
+    unisonOffSignsByTrack.push(thisTracksOffSigns);
+
+  }); // xPosOfTracks.forEach((trXpos, trIx) end
+
+} //makeUnisonSigns() end
+
+
+//##endef Make Unison Signs
+
+//##ef Make Unison Tokens
+
+
+function makeUnisonToken() {
+  unisonToken = mkPlrTkns(rhythmicNotationObj.svgCont, 5);
 }
 
 
-//#endef PROCESS URL ARGS
+//##endef Make Unison Tokens
+
+//##ef Make Pitch Sets
+
+
+function makePitchSets() {
+
+  //###ef DIV & SVG Containers
+  pitchSetsObj['div'] = mkDiv({
+    canvas: worldPanel.content,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    top: PITCH_SETS_TOP,
+    left: PITCH_SETS_LEFT,
+    bgClr: 'white'
+  });
+  pitchSetsObj['svgCont'] = mkSVGcontainer({
+    canvas: pitchSetsObj.div,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    x: 0,
+    y: 0
+  });
+  //###endef DIV & SVG Containers
+
+  //###ef Make Pitch Set SVGs
+  pitchSetsDictionary.forEach((psObj) => { //each motive loop // pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
+
+    let tLbl = psObj.lbl;
+    let tPsNum = psObj.num;
+    let tx = PITCH_SETS_CENTER_W - (psObj.w / 2);
+    let ty = PITCH_SETS_MIDDLE_H - (psObj.h / 2);
+
+    let tDisplay = tLbl == 'e4_e5' ? 'yes' : 'none';
+    // let tDisplay = tLbl == 'e4cluster_e5cluster_b4cluster' ? 'yes' : 'none';
+
+    // Create HTML SVG image
+    let tSvgImage = document.createElementNS(SVG_NS, "image");
+    tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', psObj.path);
+    tSvgImage.setAttributeNS(null, "x", tx);
+    tSvgImage.setAttributeNS(null, "y", ty);
+    tSvgImage.setAttributeNS(null, "visibility", 'visible');
+    tSvgImage.setAttributeNS(null, "display", tDisplay);
+    pitchSetsObj.svgCont.appendChild(tSvgImage);
+
+    pitchSetsObj.svgs[tPsNum] = tSvgImage;
+
+  }); // pitchSetsDictionary.forEach((psObj) =>  END
+  //###endef END Make Pitch Set SVGs
+
+  //###ef Pitch Set Change Indicator
+  pitchSetsObj['chgIndicator'] = mkSvgRect({
+    svgContainer: pitchSetsObj.svgCont,
+    x: 0,
+    y: 0,
+    w: PITCH_SETS_W,
+    h: PITCH_SETS_H,
+    fill: 'none',
+    stroke: clr_neonMagenta,
+    strokeW: 8
+  });
+
+  pitchSetsObj['chgIndicator'].setAttributeNS(null, 'display', 'none');
+  //###endef END Pitch Set Change Indicator
+
+} // function makePitchSets() END
+
+
+//##endef Make Pitch Sets
+
+//##ef Make Articulations
+
+
+//###ef function positionMarcato
+function positionMarcato(beatNum, subdivision, partial) {
+
+  let tCoords = {};
+
+  switch (subdivision) {
+
+    case 3:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX) / 3) * (partial - 1));
+      break;
+
+    case 4:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
+      break;
+
+    case 5:
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
+      break;
+
+  } // end switch
+
+  return tCoords;
+
+} // function positionMarcato(beatNum, subdivision, partial) end
+//###endef END function positionMarcato
+
+function makeArticulations() {
+
+  for (let key in articulationsObj) {
+
+    let artObj = articulationsObj[key];
+
+    let tPath = artObj.path;
+    let tLbl = key;
+    let tAmt = artObj.amt;
+    let tArtSet = [];
+
+    for (let artIx = 0; artIx < tAmt; artIx++) { // create tAmt number of the same SVG
+
+      let tArt = document.createElementNS(SVG_NS, "image");
+      tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
+      tArt.setAttributeNS(null, "x", 0);
+      tArt.setAttributeNS(null, "y",  2);
+      tArt.setAttributeNS(null, "visibility", 'visible');
+      tArt.setAttributeNS(null, "display", 'none');
+      rhythmicNotationObj.svgCont.appendChild(tArt);
+
+      tArtSet.push(tArt);
+
+    } // for (let artIx = 0; artIx < tAmt; artIx++) END
+
+    articulationsObj[key]['imgSet'] = tArtSet;
+
+  } // for (let key in articulationsObj) END
+
+} // makeArticulations() END
+
+
+//##endef Make Articulations
+
+
+//#endef BUILD WORLD
+
+
+
+
+
+
+
+
+
+//
