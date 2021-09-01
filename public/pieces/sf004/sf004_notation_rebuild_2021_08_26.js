@@ -151,56 +151,64 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
     lbl: 'qtr_rest',
     num: -1,
     w: 7,
-    h: 19
+    h: 19,
+    numPartials: 0
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/quarter.svg",
     lbl: 'quarter',
     num: 0,
     w: 7,
-    h: 39.4
+    h: 39.4,
+    numPartials: 1
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/dot8thR_16th.svg",
     lbl: 'dot8thR_16th',
     num: 1,
     w: 42.6,
-    h: 39
+    h: 39,
+    numPartials: 1
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/eighthR_8th.svg",
     lbl: 'eighthR_8th',
     num: 2,
     w: 30,
-    h: 39
+    h: 39,
+    numPartials: 1
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/triplet.svg",
     lbl: 'triplet',
     num: 3,
     w: 39,
-    h: 50.3
+    h: 50.3,
+    numPartials: 3
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/quadruplet.svg",
     lbl: 'quadruplet',
     num: 4,
     w: 40.5,
-    h: 39
+    h: 39,
+    numPartials: 4
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/eighthR_two16ths.svg",
     lbl: 'eighthR_two16ths',
     num: 6,
     w: 41.5,
-    h: 39
+    h: 39,
+    numPartials: 2
   },
   {
     path: "/pieces/sf004/notationSVGs/motives/two16th_8thR.svg",
     lbl: 'two16th_8thR',
     num: 7,
     w: 23,
-    h: 39
+    h: 39,
+    numPartials: 2
   }
 
 ];
@@ -308,16 +316,9 @@ let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 //##endef Pitch Sets Variables
 
 //##ef Articulations Variables
-let articulationsPath = "/pieces/sf004/notationSVGs/dynamics_accents/";
+let articulationsPath = "/pieces/sf004/notationSVGs/articulations/";
 
 let articulationsObj = {
-  sf: {
-    path: articulationsPath + 'sf.svg',
-    amt: TOTAL_NUM_BEATS,
-    num: 0,
-    w: 16.46,
-    h: 17.18
-  },
   marcato: {
     path: articulationsPath + 'marcato.svg',
     amt: (TOTAL_NUM_BEATS * 5),
@@ -325,6 +326,13 @@ let articulationsObj = {
     w: 8.3,
     h: 9.13
   }
+  // sf: { //Only use Marcato
+  //   path: articulationsPath + 'sf.svg',
+  //   amt: TOTAL_NUM_BEATS,
+  //   num: 0,
+  //   w: 16.46,
+  //   h: 17.18
+  // }
 };
 //##endef END Articulations Variables
 
@@ -1063,6 +1071,7 @@ function generateScoreData() {
   //##ef CALCULATIONS FOR NOTATION
 
 
+  //###ef CALCULATE WHEN(FRAME) TO ADD/SUBTRACT RESTS
   //Time Containers & amount of rests
   // 11 containers in a palindrome short-longer-longer ... longest-mirror
   let restsTimeContainers = generatePalindromeTimeContainers({
@@ -1070,16 +1079,20 @@ function generateScoreData() {
     startCont_minMax: [5, 7],
     pctChg_minMax: [0.27, 0.36]
   });
-  //find out total time
+
+  //Find out total time
   let restsLoopTotalTime = 0;
   restsTimeContainers.forEach((tTime) => {
     restsLoopTotalTime += tTime;
   });
+
+  // Going to loop this set of time containers a few times to get an overall motive loop length
   // Overall loop length will be x times restsLoopTotalTime
   let numRestsLoop = 7;
   let maxNumRests = 13;
   let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
-  for (let i = 0; i < 100000; i++) { //make sure restsByFrameSetLength is divisible by maxNumRests so that when looped you remove the same number of rests as you add
+  //Probably overly complex way to make sure restsByFrameSetLength is divisible by maxNumRests so that when looped you remove the same number of rests as you add
+  for (let i = 0; i < 100000; i++) {
     if ((restsByFrameSetLength % maxNumRests) == 0) {
       break;
     } else {
@@ -1087,7 +1100,7 @@ function generateScoreData() {
     }
   }
 
-  // Figure out which frames will add/subtract rest
+  // Figure out which frames will add or subtract a rest
   let restsByFrame = [];
   let tCumFrmCt_rests = 0;
   let addMinusRestsCt = 0;
@@ -1106,168 +1119,256 @@ function generateScoreData() {
     addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
     restsByFrame.push(tOb);
   }
-  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame + 1; //plus 1 because restsByFrame.frame will be index num and length needs to be one more as ix starts at 0
 
+  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame + 1; //plus 1 because restsByFrame.frame will be index num and length needs to be one more as ix starts at 0
+  //###endef CALCULATE WHEN TO ADD/SUBTRACT RESTS
+  //RESULTS:
+  //<<restsByFrame{frame:,restType}>> A set of objects that tell you the frame to change the rest and the restType-add or subtract rest
+  // <<motiveSetByFrame_length>> Calculate the overall length of the looping set that will contain rests, motives and articulations
+
+  //###ef CALCULATE WHEN(FRAME) TO CHANGE MOTIVES
   //For motives, do a choose for dur between changes
-  //Make a set as long as restsTimeContainers
+  //Make a set as long as motiveSetByFrame_length
   //cycle through all the motives
+
+  //Make an array of counting numbers that each represent a different motive from motiveDictionary
   let motiveNumberSet = numberedSetFromSize({
     sz: (motiveDictionary.length - 1)
   });
+  //Make a large set <<orderedMotiveNumSet>> of scrambled motives; This adds one of each motive then scrambles then adds again, looping
   let orderedMotiveNumSet = chooseAndCycle({
     loopSet: motiveNumberSet,
     num: 5000
   });
+
+  //Duration between motive changes
   let dursBtwnMotiveChgSet = [5, 7, 3, 6, 11, 13, 8, 9, 17];
+
   //Make big set of motive change objects: {motiveNum:, time:}
   let motiveChangeTimesObjSet = [];
-  let cumMotiveChgTime = 0;
-
-  for (let i = 0; i < 100000; i++) {
-
+  let chgFrmNum = 0;
+  for (let i = 0; i < 200000; i++) { //Avoid while infinite loops see break at end of this loop
     let tObj = {};
-    cumMotiveChgTime += choose(dursBtwnMotiveChgSet);
-    let chgFrmNum = Math.round(cumMotiveChgTime * FRAMERATE);
+    let timeToNextMotiveChg = choose(dursBtwnMotiveChgSet);
+    chgFrmNum = chgFrmNum + Math.round(timeToNextMotiveChg * FRAMERATE);
     tObj['motiveNum'] = orderedMotiveNumSet[i];
     tObj['frame'] = chgFrmNum;
     motiveChangeTimesObjSet.push(tObj);
 
-    if (cumMotiveChgTime > (restsLoopTotalTime * numRestsLoop)) break;
-
+    if (chgFrmNum > motiveSetByFrame_length) break;
   } // for (let i = 0; i < 100000; i++) END
+  //###endef CALCULATE WHEN(FRAME) TO CHANGE MOTIVES
+  //RESULTS:
+  //<<motiveChangeTimesObjSet{motiveNum:,frame:}>> A set of objects that tell you what frame to change motive and which motive to change into
 
-  //Make a frame by frame set with all the rests and motive changes state of all 16 beats each frame
-  // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
+  //###ef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
+  // For motiveSetByFrame_length frames long, decide what frame to add or subtract an articulation
+  // later, when adding rests, you will look at this set and see if an articulation was added/subtracted
+  // and see how many motives are on, compare to a maximum density or 0 for min density then add or subtract an articulation or do nothing
+  let articulationChgByFrame = [];
+  let maxArticulationDensityPerBeat = 2;
+  let articulationGap = Math.round(rrand(27, 41));
+  let articulationGapFrames = articulationGap * FRAMERATE;
+  // next 3 var for knowing whether to add or subtract an articulation
+  let articulationCounter = 0;
+  let numArtToAddSub = 7; //add for numArtToAddSub then subtract for numArtToAddSub
+  let addSubtractArtType = 1;
+  //////////
 
-  //fill all frames with all quarters then replace
-  let motiveChgByFrameSet = [];
-  for (let i = 0; i < motiveSetByFrame_length; i++) {
-    motiveChgByFrameSet.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  do { //Build set of articulation changes and which frame articulationChgByFrame[{frame:,type:}]
+
+    let artObj = {};
+
+    artObj['frame'] = articulationGapFrames;
+    articulationGapFrames = articulationGapFrames + (Math.round(rrand(27, 41)) * FRAMERATE);
+    artObj['type'] = addSubtractArtType;
+    articulationChgByFrame.push(artObj); //add to main array
+    articulationCounter = (articulationCounter + 1) % numArtToAddSub; //update counter
+    if (articulationCounter == 0) addSubtractArtType = (addSubtractArtType + 1) % 2; //when counter reaches reset/0 then toggle addSubtractArtType
+
+  } while (articulationGapFrames < motiveSetByFrame_length);
+  //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
+  //RESULTS:
+  //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
+
+  //###ef POPULATE MASTER SET TO REPLACE LATER
+  //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
+  let motiveChgByFrameSet = []; //{motiveNum:,articulations:[{articulationType:,x:,y:}]}
+  let tMotiveObj = { //empty set
+    motiveNum: 99, //99 is place holder for motive to be replaced later
+    articulations: []
   }
-  let motiveChgByFrameSet_currSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < motiveSetByFrame_length; i++) {
+    motiveChgByFrameSet.push([tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj]);
+  }
+  //This set will be altered then copied over each frame between rest changes
+  let motiveChgByFrameSet_currSet = [tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj];
+  //###endef POPULATE MASTER SET TO REPLACE LATER
+  //RESULTS:
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+  //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
 
+  //###ef MAKE ALL RESTS CHANGES
   for (var restIx = 1; restIx < restsByFrame.length; restIx++) { //determine what the motive set is for this change then fill in til next change
 
-    let restObj = restsByFrame[restIx - 1];
+    let restObj = restsByFrame[restIx - 1]; //{frame:,restType}
     let restFrame = restObj.frame;
     let restType = restObj.restType;
     let next_restObj = restsByFrame[restIx];
     let next_restFrame = next_restObj.frame;
     let next_restType = next_restObj.restType;
 
-    if (restType == 1) { //add rest
+    let tNotesSet = deepCopy(motiveChgByFrameSet_currSet); //tNotesSet becomes the set to update
+    //<<tNotesSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
 
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
+    // Add Rest
+    if (restType == 1) { // if restType == 1, add rest
+      for (var i = 0; i < 99; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
 
         let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
 
-        if (tNotesSet[tChoice] != -1) { //you got a non-rest
+        if (tNotesSet[tChoice].motiveNum != -1) { //you got a non-rest
 
-          tNotesSet[tChoice] = -1; //add a rest //turn this non-rest into a rest
+          tNotesSet[tChoice].motiveNum = -1; //add a rest //turn this non-rest into a rest
 
-          //copy new array over range
+          //Copy tNotesSet over range from the frame of this rest change to the next rest change
           for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
 
-            //Need to look at the motiveChangeTimesObjSet to see if any of the motives will change during this rest change
-            //A bit of a fudge cause we'll change this motive for all of the frames before the next rest change, not just from the frame stated in motiveChangeTimesObjSet
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if (tchgFrmNum == frmIx) {
-
-                for (let j = 0; j < 100; j++) { //keep choosing until you get a non-rest/motive to change
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix] != -1) { //you got a motive!
-                    tNotesSet[tix] = tmNum; //update this motive to the one listed in motiveChangeTimesObjSet
-                    break; //break the <100 loop
-                  } // if (tNotesSet[tix] != -1) END
-                } // for (let j = 0; j < 100; j++)  END
-
-              } // if (tchgFrmNum == frmIx) END
-
-            }); //   motiveChangeTimesObjSet.forEach((mObj) => END  //done replacing any motives that need to be replaced
-
-            //Work in motiveChangeTimesObjSet
+            //UPDATE MASTER SET
+            //Copy this altered set of motives and articulations for this frame to the master set
             let tSet = deepCopy(tNotesSet);
             motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
-          }
 
-          // Update curr set
+          } //for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change END
+
+          // Update the current set of motives for next round to alter
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet); //this is the new set for the next time to compare to
+
+          break; //break the < 99 loop
+
+        } // if (tNotesSet[tChoice.motiveNum] != -1) { //you got a non-rest END
+
+      } //   for (var i = 0; i < 99; i++) END
+    } // if (restType == 1) { END
+    //
+    //Remove Rest, add motive
+    else if (restType == 0) { //Remove Rest, add motive
+      for (var i = 0; i < 99; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
+
+        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
+
+        if (tNotesSet[tChoice].motiveNum == -1) { //you got a rest
+
+          tNotesSet[tChoice].motiveNum = 99; //placeholder for motive; replaced below
+
+          //Copy tNotesSet over range from the frame of this rest change to the next rest change
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
+
+            //UPDATE MASTER SET
+            //Copy this altered set of motives and articulations for this frame to the master set
+            let tSet = deepCopy(tNotesSet);
+            motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
+
+          } //for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change END
+
+          // Update the current set of motives for next round to alter
           motiveChgByFrameSet_currSet = deepCopy(tNotesSet); //this is the new set for the next time to compare to
 
           break; //break the < 1000 loop
 
-        } //   if (tNotesSet[noteIx] != -1) END
+        } // if (tNotesSet[tChoice.motiveNum] != -1) { //you got a non-rest END
 
       } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
-
-    if (restType == 0) { //take away rest
-
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
-
-        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
-
-        if (tNotesSet[tChoice] == -1) { //if it is a rest, replace it
-
-          tNotesSet[tChoice] = 0; //use motiveChangeTimesObjSet here
-
-          //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
-
-
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if (tchgFrmNum == frmIx) {
-
-                for (let j = 0; j < 100; j++) {
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix] != -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
-
-              } // if (tchgFrmNum == frmIx) END
-
-            }); // motiveChangeTimesObjSet.forEach((mObj) => END
-
-
-
-
-            //START HERE
-            //DO ANOTHER LOOP HERE SIMILAR TO ABOVE motiveChangeTimesObjSet.forEach((mObj) => { FOR ARTICULATIONS
-            // GO THROUGH AND ADD AN OBJECT IN THE PLACE OF THE MOTIVE NUMBER WITH MOTIVE NUMBER AND ARTICULATION TYPE AND ARTICULATION POS
-            // THE ARTICULATION DATABASE SHOULD SAY HOW MANY ARTICULATIONS ARE ON AT WHICH FRAME
-            //SCAN THROUGH AND FIND OUT HOW MANY ART ARE HERE, ADD, SUBTRACT OR KEEP THE SAME
-            //IF ADDING, NEED TO FIND OUT WHICH MOTIVE, RANDOMLY CHOOSE WHICH PARTIAL, THEN LOOK UP POSITION AND ADD TO OBJECT
-
-
-
-            let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
-
-
-          } // for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) END
-
-          // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
-
-          break;
-
-        } //   if (tNotesSet[noteIx] != -1) END
-
-      } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
+    } // else if (restType == 0) { //Remove Rest, add motive END
 
   } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
+
+  //###endef MAKE ALL RESTS CHANGES
+  //RESULTS:
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>> //With rests only
+
+  //###ef MAKE ALL MOTIVE CHANGES
+  let previousSetMotiveByBeatNum = []; //{beatNum:,motiveNum:}
+  for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { //determine what the motive set is for this change then fill in til next change
+
+    let motiveObj = motiveChangeTimesObjSet[motiveIx - 1]; //{motiveNum:,frame:}
+    let motiveFrame = motiveObj.frame;
+    let motiveType = motiveObj.motiveNum;
+    let next_motiveObj = motiveChangeTimesObjSet[motiveIx];
+    let next_motiveFrame = next_motiveObj.frame;
+    let next_motiveType = next_motiveObj.motiveNum;
+
+    let tempRestMotiveSet = deepCopy(motiveChgByFrameSet[motiveFrame]); //tempRestMotiveSet has where rests are, change one of the non-rests(motives)
+    //<<tempRestMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+    //figure out which beats from the rests array are non-rests; these will all be motiveNum=99
+    let nonRestIxSet = [];
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      if (mObj.motiveNum == 99) nonRestIxSet.push(mIx);
+    });
+    //Compare nonRestIxSet with previousSetMotiveByBeatNum
+    //Replace any matches with the beatNum from previousSetMotiveByBeatNum with its motiveNum
+    nonRestIxSet.forEach((nonRestIx) => {
+      previousSetMotiveByBeatNum.forEach((psObj) => { //{beatNum:,motiveNum:}
+        if (nonRestIx == psObj.beatNum) tempRestMotiveSet[nonRestIx].motiveNum = psObj.motiveNum;
+      });
+    });
+    //make set of indexes of 99s, if no 99s then add indexes of other motives
+    let setOfIxToChange = [];
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      if (mObj.motiveNum == 99) setOfIxToChange.push(mIx);
+    });
+    if (setOfIxToChange.length == 0) {
+      tempRestMotiveSet.forEach((mObj, mIx) => {
+        if (mObj.motiveNum != -1) setOfIxToChange.push(mIx);
+      });
+    }
+    let ixToChange = choose(setOfIxToChange);
+
+    tempRestMotiveSet[ixToChange].motiveNum = motiveType;
+
+    //Update previousSetMotiveByBeatNum
+    previousSetMotiveByBeatNum = [];
+    let tMotiveByBeatNumObj = {}; //{beatNum:,motiveNum:}
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      let tMotiveByBeatNumObj = {}; //{beatNum:,motiveNum:}
+      if (mObj.motiveNum != -1 && mObj.motiveNum != 99) {
+        tMotiveByBeatNumObj['beatNum'] = mIx;
+        tMotiveByBeatNumObj['motiveNum'] = mObj.motiveNum;
+        previousSetMotiveByBeatNum.push(tMotiveByBeatNumObj);
+      }
+    });
+
+    //Copy this updated set from this motive Change to the next motive change
+    for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change
+
+      //UPDATE MASTER SET
+      //Copy this altered set of motives and articulations for this frame to the master set
+      motiveChgByFrameSet[frmIx] = deepCopy(tempRestMotiveSet); //replace each set in master set with this new set until next rest change
+
+    } // for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change END
+
+    motiveChgCurrSet = deepCopy(tempRestMotiveSet);
+
+  } // for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { END
+
+  //Change all the 99s to 0 or Quarters
+  motiveChgByFrameSet.forEach((setOfMotiveObj) => {
+    setOfMotiveObj.forEach((mObj) => {
+      if (mObj.motiveNum == 99) mObj.motiveNum = 0;
+    });
+  });
+  //###endef MAKE ALL MOTIVE CHANGES
+  //RESULTS:
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>> //With rests & motives
+
+  //###ef ADD ARTICULATIONS
+
+
+
+  //###endef ADD ARTICULATIONS
+
+  console.log(motiveChgByFrameSet);
+
 
   scoreDataObject.motiveSet = motiveChgByFrameSet;
 
