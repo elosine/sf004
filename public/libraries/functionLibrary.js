@@ -481,10 +481,13 @@ let rrandInt = function(min, max) {
 // #ef choose
 
 let choose = function(choicesArr) {
+  let t_theThingToReturn;
+  if (choicesArr.length != 0) {
+    let randpick = rrandInt(0, choicesArr.length - 1);
+    t_theThingToReturn = choicesArr[randpick];
+  }
 
-  let randpick = rrandInt(0, choicesArr.length - 1);
-
-  return choicesArr[randpick];
+  return t_theThingToReturn;
 
 }
 
@@ -1355,8 +1358,9 @@ let numberedSetFromSize = function({
 
 //#ef shuffle
 
-let shuffle = function (array) {
-  var currentIndex = array.length,  randomIndex;
+let shuffle = function(array) {
+  var currentIndex = array.length,
+    randomIndex;
 
   // While there remain elements to shuffle...
   while (currentIndex != 0) {
@@ -1367,7 +1371,8 @@ let shuffle = function (array) {
 
     // And swap it with the current element.
     [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
+      array[randomIndex], array[currentIndex]
+    ];
   }
 
   return array;

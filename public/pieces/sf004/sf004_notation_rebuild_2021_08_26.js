@@ -147,7 +147,7 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 //###endef Beat Coordinates
 
 //###ef Motive Dictionary
-let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be notationSvgPaths_labels
     path: "/pieces/sf004/notationSVGs/motives/qtr_rest.svg",
     lbl: 'qtr_rest',
     num: -1,
@@ -368,7 +368,7 @@ articulationPosByMotive.forEach((partialSet, mNum) => {
 
     case 5:
       for (let ix = 0; ix < partialSet.length; ix++) {
-        partialSet[ix] = (BEAT_LENGTH_PX / 4) * (ix+2);
+        partialSet[ix] = (BEAT_LENGTH_PX / 4) * (ix + 2);
       }
       break;
 
@@ -1236,10 +1236,11 @@ function generateScoreData() {
   //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
   //RESULTS:
   //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
+  // console.log(articulationChgByFrame);
 
   //###ef POPULATE MASTER SET TO REPLACE LATER
   //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
-  let motiveChgByFrameSet = []; //{motiveNum:,articulations:[{articulationType:,x:,y:}]}
+  let motiveChgByFrameSet = []; //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
   let tMotiveObj = { //empty set
     motiveNum: 99, //99 is place holder for motive to be replaced later
     articulations: []
@@ -1251,8 +1252,8 @@ function generateScoreData() {
   let motiveChgByFrameSet_currSet = [tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj];
   //###endef POPULATE MASTER SET TO REPLACE LATER
   //RESULTS:
-  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
-  //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+  //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
 
   //###ef MAKE ALL RESTS CHANGES
   for (var restIx = 1; restIx < restsByFrame.length; restIx++) { //determine what the motive set is for this change then fill in til next change
@@ -1265,7 +1266,7 @@ function generateScoreData() {
     let next_restType = next_restObj.restType;
 
     let tNotesSet = deepCopy(motiveChgByFrameSet_currSet); //tNotesSet becomes the set to update
-    //<<tNotesSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+    //<<tNotesSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
 
     // Add Rest
     if (restType == 1) { // if restType == 1, add rest
@@ -1331,7 +1332,7 @@ function generateScoreData() {
 
   //###endef MAKE ALL RESTS CHANGES
   //RESULTS:
-  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>> //With rests only
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests only
 
   //###ef MAKE ALL MOTIVE CHANGES
   let previousSetMotiveByBeatNum = []; //{beatNum:,motiveNum:}
@@ -1345,7 +1346,7 @@ function generateScoreData() {
     let next_motiveType = next_motiveObj.motiveNum;
 
     let tempRestMotiveSet = deepCopy(motiveChgByFrameSet[motiveFrame]); //tempRestMotiveSet has where rests are, change one of the non-rests(motives)
-    //<<tempRestMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+    //<<tempRestMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
     //figure out which beats from the rests array are non-rests; these will all be motiveNum=99
     let nonRestIxSet = [];
     tempRestMotiveSet.forEach((mObj, mIx) => {
@@ -1405,12 +1406,12 @@ function generateScoreData() {
   });
   //###endef MAKE ALL MOTIVE CHANGES
   //RESULTS:
-  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>> //With rests & motives
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests & motives
 
   //###ef ADD ARTICULATIONS
 
   //<<articulationChgByFrame{type:,frame:}>>
-  let previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:}], beatNum}
+  let previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:,partialNum:}], beatNum}
   for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
 
     let this_artObj = articulationChgByFrame[artIx - 1]; //{type:,frame:}
@@ -1420,8 +1421,11 @@ function generateScoreData() {
     let next_artFrame = next_artObj.frame;
     let next_artType = next_artObj.artNum;
 
+    // console.log(this_artFrame);
+
     let tempMotiveSet = deepCopy(motiveChgByFrameSet[this_artFrame]); //tempMotiveSet has where rests and motuves are
-    //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+    //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+    // console.log(tempMotiveSet);
 
     // fill in previous sets articulations
     previousSetArticulationsByBeatNum.forEach((aObj) => {
@@ -1433,8 +1437,7 @@ function generateScoreData() {
         if (tBeatNum == motIx) tMotiveObj.articulations = tArtSetThisBeat;
       });
 
-
-    }); //   previousSetArticulationsByBeatNum.forEach((aObj) =>
+    }); // previousSetArticulationsByBeatNum.forEach((aObj) =>
 
     //Find out how many articulations per motive and which beats
     let thisSetMotivesAndArts = []; //{beatNum:, motiveNum:, articulationsSet:}
@@ -1447,12 +1450,16 @@ function generateScoreData() {
         tObj['beatNum'] = bNum1;
         tObj['motiveNum'] = tMotNum;
         tObj['articulationsSet'] = tmObj.articulations;
+        thisSetMotivesAndArts.push(tObj);
       }
 
     });
+    // console.log(thisSetMotivesAndArts);
 
     //If subtracting, randomly choose beat with articulation and Remove
-    if (this_artType == 0) {
+    if (this_artType == 0) { //type:0 means subtracting articulation
+      // console.log('sub');
+
       let tSetToRmv = [];
       thisSetMotivesAndArts.forEach((mSet) => {
         if (mSet.articulationsSet.length > 0) tSetToRmv.push(mSet.beatNum);
@@ -1463,7 +1470,8 @@ function generateScoreData() {
         tempMotiveSet[beatNumToRmv].articulations[artToRmv] = {
           articulationType: -1,
           x: 0,
-          y: 0
+          y: 0,
+          partialNum: -1
         };
       }
     }
@@ -1472,30 +1480,113 @@ function generateScoreData() {
     // find ones with less than 2
     //  randomly choose between these and add
     //  calculate x ad y pos
-    else if (this_artType == 1) {
+    else if (this_artType == 1) { //adding an articulation
+      // console.log('adding');
 
-      let tSetBeatsToAddArt = [];
-      thisSetMotivesAndArts.forEach((mSet) => {
-        if (mSet.articulationsSet.length < 2) tSetBeatsToAddArt.push(mSet.beatNum);
-      });
-      if (tSetBeatsToAddArt.length != 0) {
-        let beatNumToAdd = choose(tSetBeatsToAddArt);
+      let tSetBeatsToAddArt = []; // {beatNum:,partialNumsTaken:} //which beats have motives that do not have more than max num articulations & have available partials to add articulation
+
+      thisSetMotivesAndArts.forEach((mSet) => { //{  beatNum:, motiveNum:, articulationsSet: [ {articulationType:, x:, y:, partialNum:} ]  }
+
+        //For each beat with a motive
+        //Figure out if there are available partials to add articulations
+        let thereIsAnAvailablePartial = false;
+        let partialNumsTaken = []; //track which partial numbers for this motive have been taken
+        if (mSet.articulationsSet.length > 0) { // is not the initialized articulations:[]
+          mSet.articulationsSet.forEach((t_artObj, i) => { //scan through set of articulations for this beat/motive
+            if (t_artObj.partialNum != -1) { //-1 for partialNum is no articulation at this partial
+              partialNumsTaken.push(t_artObj.partialNum); //track here which partial numbers are taken
+            } else thereIsAnAvailablePartial = true; // if partialNum == -1 than it is available
+          }); // mSet.articulationsSet.forEach((t_artObj, i) => { //scan through set of articulations for this beat/motive
+        } else thereIsAnAvailablePartial = true; //if the articulationsSet is in the initialized state mSet.articulationsSet = [] ie length 0 then there are partials available
+
+        //If there are available partials, figure out if max density has been exceeded
+        if (thereIsAnAvailablePartial) {
+          if (mSet.articulationsSet.length < maxArticulationDensityPerBeat) { //max density for this beat/motive has not been exceeded
+            tSetBeatsToAddArt.push({
+              beatNum: mSet.beatNum,
+              partialNumsTaken: partialNumsTaken
+            }); //populate tSetBeatsToAddArt = []; //which beats have motives that do not have more than max num articulations & have available partials to add articulation
+          } // if (mSet.articulationsSet.length < maxArticulationDensityPerBeat)
+        } // if (thereIsAnAvailablePartial)
+
+
+      }); // thisSetMotivesAndArts.forEach((mSet) => { //{  beatNum:, motiveNum:, articulationsSet: [ {articulationType:, x:, y:, partialNum:} ]  }
+      // console.log(tSetBeatsToAddArt);
+
+      //Choose a beat from tSetBeatsToAddArt if available and add an
+      if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
+
+        let beatObjToAdd = choose(tSetBeatsToAddArt);
+        let t_beatNum = beatObjToAdd.beatNum;
+        let t_partialsTaken = beatObjToAdd.partialNumsTaken;
+        let t_motiveToUse = tempMotiveSet[t_beatNum].motiveNum; //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+        let t_setOfPartialsToUse = [];
+
+        // console.log(t_motiveToUse);
+
+        //find correct motive to find num partials available in this motive
+        let t_numPartialsThisMotive = 0;
+        motiveInfoSet.forEach((t_motiveInfoObj) => {
+          if (t_motiveInfoObj.num == t_motiveToUse) {
+            t_numPartialsThisMotive = t_motiveInfoObj.numPartials;
+          }
+        });
+        // console.log('numPartThisMotive: ' + t_numPartialsThisMotive);
+
+        //Go through num of partials in this motive find which partials can add an articulation
+        for (let pNum = 0; pNum < t_numPartialsThisMotive; pNum++) {
+          let t_partAvailable = true;
+          //Compare each partial available in this motive to the partials taken set
+          t_partialsTaken.forEach((t_partial) => {
+            if (pNum == t_partial) t_partAvailable = false; //if in set then not available
+          });
+          if (t_partAvailable) t_setOfPartialsToUse.push(pNum); //if not in taken set, available
+        } //for(let pNum=0;pNum<motiveInfoSet[t_motiveToUse].numPartials;pNum++)
+        // console.log(t_setOfPartialsToUse);
+
+        let t_partialToUse = choose(t_setOfPartialsToUse);
+        // console.log(t_partialToUse);
+
         //Calc X/y pos
+        //articulationPosByMotive[motiveNum][partialNum]
         //beatCoords[bnum].x, look at motive type, have dict of partial x locations
         //Make dict of partial x locations for each motive
-        let tXpos = 0;
-        let tYpos = 0;
-        tempMotiveSet[beatNumToAdd].articulations.push({
+        let tXpos = beatCoords[t_beatNum].x + articulationPosByMotive[t_motiveToUse][t_partialToUse];
+        let tYpos = beatCoords[t_beatNum].y;
+        tempMotiveSet[t_beatNum].articulations.push({
           articulationType: 0,
           x: tXpos,
-          y: tYpos
+          y: tYpos,
+          partialNum: t_partialToUse
         })
-      }
 
-    }
+      } //   if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
+      // console.log(tempMotiveSet); //updated
 
 
-    //Update motive set for each frame from this art change to next art change
+    } // else if (this_artType == 1) { //adding an articulation
+
+    //At this point, tempMotiveSet is updated, copy for number of frames
+    //Copy this updated set from this art Change to the next art change
+    for (let frmIx = this_artFrame; frmIx < next_artFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change
+
+      //UPDATE MASTER SET
+      //Copy this altered set of motives and articulations for this frame to the master set
+      motiveChgByFrameSet[frmIx] = deepCopy(tempMotiveSet); //replace each set in master set with this new set until next rest change
+
+    } // for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change END
+
+    previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:,partialNum:}], beatNum} //reset this set
+    //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+
+    //update previousSetArticulationsByBeatNum for next change
+    tempMotiveSet.forEach((t_motObj, t_beatNum) => {
+      previousSetArticulationsByBeatNum.push({
+        articulations: t_motObj.articulations,
+        beatNum: t_beatNum
+      });
+    });
+
 
   } //   for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
 
@@ -2022,7 +2113,7 @@ function makeStaffNotation() {
     let tx = beatCoordsObj.x;
     let ty = beatCoordsObj.y;
 
-    // motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+    // motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be notationSvgPaths_labels
     motiveInfoSet.forEach((motiveObj) => { //each motive loop
 
       let tLabel = motiveObj.lbl;
@@ -2313,7 +2404,6 @@ function makePitchSets() {
 
 
 function makeArticulations() {
-
   for (let key in articulationsObj) {
 
     let artObj = articulationsObj[key];
@@ -2341,6 +2431,7 @@ function makeArticulations() {
     articulationsSet[tNum] = tArtSet;
 
   } // for (let key in articulationsObj) END
+} //function makeArticulations()
 
 
 //##endef Make Articulations
