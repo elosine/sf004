@@ -129,6 +129,7 @@ const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W /
 const NOTATION_CURSOR_H = 50;
 
 //###ef Beat Coordinates
+
 let beatXLocations = [];
 for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
   beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_LENGTH_PX));
@@ -317,12 +318,11 @@ let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
 //##ef Articulations Variables
 let articulationsPath = "/pieces/sf004/notationSVGs/articulations/";
-
 let articulationsObj = {
   marcato: {
     path: articulationsPath + 'marcato.svg',
     amt: (TOTAL_NUM_BEATS * 5),
-    num: 1,
+    num: 0,
     w: 8.3,
     h: 9.13
   }
@@ -334,6 +334,7 @@ let articulationsObj = {
   //   h: 17.18
   // }
 };
+let articulationsSet = new Array (Object.keys(articulationsObj).length);
 //##endef END Articulations Variables
 
 //##ef Readjust Canvas Size
@@ -379,7 +380,7 @@ function init() {
   makeUnisonSigns();
   makeUnisonToken();
   makePitchSets();
-  // makeArticulations();
+  makeArticulations();
 
 
 
@@ -1363,6 +1364,95 @@ function generateScoreData() {
 
   //###ef ADD ARTICULATIONS
 
+  //<<articulationChgByFrame{type:,frame:}>>
+  let previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:}], beatNum}
+  for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
+
+    let this_artObj = articulationChgByFrame[artIx - 1]; //{type:,frame:}
+    let this_artFrame = this_artObj.frame;
+    let this_artType = this_artObj.type;
+    let next_artObj = articulationChgByFrame[artIx];
+    let next_artFrame = next_artObj.frame;
+    let next_artType = next_artObj.artNum;
+
+    let tempMotiveSet = deepCopy(motiveChgByFrameSet[this_artFrame]); //tempMotiveSet has where rests and motuves are
+    //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:}]}>>
+
+    // fill in previous sets articulations
+    previousSetArticulationsByBeatNum.forEach((aObj) => {
+
+      let tArtSetThisBeat = aObj.articulations;
+      let tBeatNum = aObj.beatNum;
+
+      tempMotiveSet.forEach((tMotiveObj, motIx) => {
+        if (tBeatNum == motIx) tMotiveObj.articulations = tArtSetThisBeat;
+      });
+
+
+    }); //   previousSetArticulationsByBeatNum.forEach((aObj) =>
+
+    //Find out how many articulations per motive and which beats
+    let thisSetMotivesAndArts = []; //{beatNum:, motiveNum:, articulationsSet:}
+    tempMotiveSet.forEach((tmObj, bNum1) => {
+
+      let tMotNum = tmObj.motiveNum;
+
+      if (tMotNum != -1) {
+        let tObj = {};
+        tObj['beatNum'] = bNum1;
+        tObj['motiveNum'] = tMotNum;
+        tObj['articulationsSet'] = tmObj.articulations;
+      }
+
+    });
+
+    //If subtracting, randomly choose beat with articulation and Remove
+    if (this_artType == 0) {
+      let tSetToRmv = [];
+      thisSetMotivesAndArts.forEach((mSet) => {
+        if (mSet.articulationsSet.length > 0) tSetToRmv.push(mSet.beatNum);
+      });
+      if (tSetToRmv.length > 0) {
+        let beatNumToRmv = choose(tSetToRmv);
+        let artToRmv = rrandInt(0, tempMotiveSet[beatNumToRmv].articulations.length);
+        tempMotiveSet[beatNumToRmv].articulations[artToRmv] = {
+          articulationType: -1,
+          x: 0,
+          y: 0
+        };
+      }
+    }
+
+    //If adding :
+    // find ones with less than 2
+    //  randomly choose between these and add
+    //  calculate x ad y pos
+    else if (this_artType == 1) {
+
+      let tSetBeatsToAddArt = [];
+      thisSetMotivesAndArts.forEach((mSet) => {
+        if (mSet.articulationsSet.length < 2) tSetBeatsToAddArt.push(mSet.beatNum);
+      });
+      if (tSetBeatsToAddArt.length != 0) {
+        let beatNumToAdd = choose(tSetBeatsToAddArt);
+        //Calc X/y pos
+        //beatCoords[bnum].x, look at motive type, have dict of partial x locations
+        //Make dict of partial x locations for each motive
+        let tXpos = 0;
+        let tYpos = 0;
+        tempMotiveSet[beatNumToAdd].articulations.push({
+          articulationType: 0,
+          x: tXpos,
+          y: tYpos
+        })
+      }
+
+    }
+
+
+    //Update motive set for each frame from this art change to next art change
+
+  } //   for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
 
 
   //###endef ADD ARTICULATIONS
@@ -2178,6 +2268,7 @@ function makePitchSets() {
 
 
 //###ef function positionMarcato
+//START HERE - REDO THIS MAKE DICTIONARY INSTEAD
 function positionMarcato(beatNum, subdivision, partial) {
 
   let tCoords = {};
@@ -2185,15 +2276,15 @@ function positionMarcato(beatNum, subdivision, partial) {
   switch (subdivision) {
 
     case 3:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX) / 3) * (partial - 1));
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX) / 3) * (partial - 1));
       break;
 
     case 4:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX - 3) / 4) * (partial - 1));
       break;
 
     case 5:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
+      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX - 3) / 5) * (partial - 1));
       break;
 
   } // end switch
@@ -2203,6 +2294,8 @@ function positionMarcato(beatNum, subdivision, partial) {
 } // function positionMarcato(beatNum, subdivision, partial) end
 //###endef END function positionMarcato
 
+
+//articulationsSet
 function makeArticulations() {
 
   for (let key in articulationsObj) {
@@ -2212,6 +2305,7 @@ function makeArticulations() {
     let tPath = artObj.path;
     let tLbl = key;
     let tAmt = artObj.amt;
+    let tNum = artObj.num;
     let tArtSet = [];
 
     for (let artIx = 0; artIx < tAmt; artIx++) { // create tAmt number of the same SVG
@@ -2219,7 +2313,7 @@ function makeArticulations() {
       let tArt = document.createElementNS(SVG_NS, "image");
       tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
       tArt.setAttributeNS(null, "x", 0);
-      tArt.setAttributeNS(null, "y", 2);
+      tArt.setAttributeNS(null, "y", + 2);
       tArt.setAttributeNS(null, "visibility", 'visible');
       tArt.setAttributeNS(null, "display", 'none');
       rhythmicNotationObj.svgCont.appendChild(tArt);
@@ -2228,9 +2322,18 @@ function makeArticulations() {
 
     } // for (let artIx = 0; artIx < tAmt; artIx++) END
 
-    articulationsObj[key]['imgSet'] = tArtSet;
+    articulationsSet[tNum] = tArtSet;
 
   } // for (let key in articulationsObj) END
+
+
+  let coordObj = positionMarcato(3, 3, 2);
+  articulationsSet[0][0].setAttributeNS(null, "display", 'yes');
+  articulationsSet[0][0].setAttributeNS(null, "x", coordObj.x);
+  articulationsSet[0][0].setAttributeNS(null, 'transform', "translate(" + beatCoords[2].y.toString() + "," + beatCoords[2].y.toString() + ")");
+  // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[4].x.toString() + "," + beatCoords[4].y.toString() + ")");
+
+
 
 } // makeArticulations() END
 
