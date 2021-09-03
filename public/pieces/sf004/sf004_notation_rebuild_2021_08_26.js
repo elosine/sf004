@@ -147,7 +147,7 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 //###endef Beat Coordinates
 
 //###ef Motive Dictionary
-let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
     path: "/pieces/sf004/notationSVGs/motives/qtr_rest.svg",
     lbl: 'qtr_rest',
     num: -1,
@@ -198,7 +198,7 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
   {
     path: "/pieces/sf004/notationSVGs/motives/eighthR_two16ths.svg",
     lbl: 'eighthR_two16ths',
-    num: 6,
+    num: 5,
     w: 41.5,
     h: 39,
     numPartials: 2
@@ -206,7 +206,7 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
   {
     path: "/pieces/sf004/notationSVGs/motives/two16th_8thR.svg",
     lbl: 'two16th_8thR',
-    num: 7,
+    num: 6,
     w: 23,
     h: 39,
     numPartials: 2
@@ -215,15 +215,9 @@ let motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvg
 ];
 //###endef Motive Dictionary
 
-//###ef Dynamics & Accents
-let dynamicsAccents_paths_labels = [{
-  path: "/pieces/sf004/notationSVGs/articulations/sf.svg",
-  lbl: 'sf'
-}];
-//###endef Dynamics & Accents
-
 let motivesByBeat = [];
 for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
+
 
 //##endef END Staff Notation Variables
 
@@ -334,7 +328,58 @@ let articulationsObj = {
   //   h: 17.18
   // }
 };
-let articulationsSet = new Array (Object.keys(articulationsObj).length);
+let articulationsSet = new Array(Object.keys(articulationsObj).length);
+//Make Articulation Positioning Dictionary
+// Make a set per motive, that has numPartials length; numPartials from motiveInfoSet
+let articulationPosByMotive = [];
+motiveInfoSet.forEach((motiveObj, motiveIx) => {
+  let t_mNum = motiveObj.num;
+  if (t_mNum > -1) { //do not include rest which has num -1
+    articulationPosByMotive.push(new Array(motiveObj.numPartials)); //populate with array len = numPartials
+  } //  if (t_mNum > -1) { //do not include rest which has num -1
+});
+articulationPosByMotive.forEach((partialSet, mNum) => {
+
+  switch (mNum) {
+
+    case 0:
+      partialSet[0] = 0;
+      break;
+
+    case 1:
+      partialSet[0] = (BEAT_LENGTH_PX / 3.85) * 3;
+      break;
+
+    case 2:
+      partialSet[0] = BEAT_LENGTH_PX / 2;
+      break;
+
+    case 3:
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 3) * ix;
+      }
+      break;
+
+    case 4:
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4.15) * ix;
+      }
+      break;
+
+    case 5:
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4) * (ix+2);
+      }
+      break;
+
+    case 6:
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4) * ix;
+      }
+      break;
+
+  } // switch t_mNum
+});
 //##endef END Articulations Variables
 
 //##ef Readjust Canvas Size
@@ -1132,9 +1177,9 @@ function generateScoreData() {
   //Make a set as long as motiveSetByFrame_length
   //cycle through all the motives
 
-  //Make an array of counting numbers that each represent a different motive from motiveDictionary
+  //Make an array of counting numbers that each represent a different motive from motiveInfoSet
   let motiveNumberSet = numberedSetFromSize({
-    sz: (motiveDictionary.length - 1)
+    sz: (motiveInfoSet.length - 1)
   });
   //Make a large set <<orderedMotiveNumSet>> of scrambled motives; This adds one of each motive then scrambles then adds again, looping
   let orderedMotiveNumSet = chooseAndCycle({
@@ -1977,13 +2022,13 @@ function makeStaffNotation() {
     let tx = beatCoordsObj.x;
     let ty = beatCoordsObj.y;
 
-    // motiveDictionary = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
-    motiveDictionary.forEach((motiveObj) => { //each motive loop
+    // motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:}//used to be notationSvgPaths_labels
+    motiveInfoSet.forEach((motiveObj) => { //each motive loop
 
       let tLabel = motiveObj.lbl;
       let motiveNum = motiveObj.num;
       // let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
-      let tDisp = tLabel == 'triplet' ? 'yes' : 'none'; //initial notation displayed
+      let tDisp = motiveObj.num == 0 ? 'yes' : 'none'; //initial notation displayed
 
       // Create HTML SVG image
       let tSvgImage = document.createElementNS(SVG_NS, "image");
@@ -2267,35 +2312,6 @@ function makePitchSets() {
 //##ef Make Articulations
 
 
-//###ef function positionMarcato
-//START HERE - REDO THIS MAKE DICTIONARY INSTEAD
-function positionMarcato(beatNum, subdivision, partial) {
-
-  let tCoords = {};
-
-  switch (subdivision) {
-
-    case 3:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX) / 3) * (partial - 1));
-      break;
-
-    case 4:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX - 3) / 4) * (partial - 1));
-      break;
-
-    case 5:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_LENGTH_PX - 3) / 5) * (partial - 1));
-      break;
-
-  } // end switch
-
-  return tCoords;
-
-} // function positionMarcato(beatNum, subdivision, partial) end
-//###endef END function positionMarcato
-
-
-//articulationsSet
 function makeArticulations() {
 
   for (let key in articulationsObj) {
@@ -2313,7 +2329,7 @@ function makeArticulations() {
       let tArt = document.createElementNS(SVG_NS, "image");
       tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
       tArt.setAttributeNS(null, "x", 0);
-      tArt.setAttributeNS(null, "y", + 2);
+      tArt.setAttributeNS(null, "y", 2);
       tArt.setAttributeNS(null, "visibility", 'visible');
       tArt.setAttributeNS(null, "display", 'none');
       rhythmicNotationObj.svgCont.appendChild(tArt);
@@ -2325,17 +2341,6 @@ function makeArticulations() {
     articulationsSet[tNum] = tArtSet;
 
   } // for (let key in articulationsObj) END
-
-
-  let coordObj = positionMarcato(3, 3, 2);
-  articulationsSet[0][0].setAttributeNS(null, "display", 'yes');
-  articulationsSet[0][0].setAttributeNS(null, "x", coordObj.x);
-  articulationsSet[0][0].setAttributeNS(null, 'transform', "translate(" + beatCoords[2].y.toString() + "," + beatCoords[2].y.toString() + ")");
-  // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[4].x.toString() + "," + beatCoords[4].y.toString() + ")");
-
-
-
-} // makeArticulations() END
 
 
 //##endef Make Articulations
