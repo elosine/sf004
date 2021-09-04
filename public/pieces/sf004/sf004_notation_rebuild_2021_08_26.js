@@ -228,17 +228,17 @@ let tempoCursors = [];
 //##ef Scrolling Cursor BBs Variables
 let scrollingCsrBbsObjSet = [];
 for (let trIx = 0; trIx < NUM_TEMPOS; trIx++) scrollingCsrBbsObjSet.push({});
-const SCRBB_W = 11;
-const SCRBB_H = NOTATION_CURSOR_H;
-const SCRBB_TOP = HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const SCRBB_CENTER = SCRBB_W / 2;
-// const SCRBB_PAD_LEFT = 10;
-// const SCRBB_GAP = 16;
-const SCRBBCIRC_R = 9;
-const SCRBBCIRC_TOP_CY = SCRBBCIRC_R + 3;
-const SCRBBCIRC_BOTTOM_CY = SCRBB_H - SCRBBCIRC_R;
+const SCRBB_GAP = 3;
+const SCRBB_W = 9;
+const SCRBB_H = NOTATION_CURSOR_H + 2;
+const SCRBB_TOP = HALF_NOTEHEAD_H - NOTATION_CURSOR_H - 1;
+const SCRBB_CENTER = (-SCRBB_W / 2) - SCRBB_GAP;
+const SCRBB_LEFT = -SCRBB_W - SCRBB_GAP;
+const SCRBBCIRC_R = SCRBB_W - 4;
+const SCRBBCIRC_TOP_CY = SCRBB_TOP + 5;
+const SCRBBCIRC_BOTTOM_CY = - SCRBBCIRC_R;
 const SCRBB_TRAVEL_DIST = SCRBBCIRC_BOTTOM_CY - SCRBBCIRC_TOP_CY;
-const SCRBB_BOUNCE_WEIGHT = 6;
+const SCRBB_BOUNCE_WEIGHT = 3;
 const SCRBB_BOUNCE_WEIGHT_HALF = SCRBB_BOUNCE_WEIGHT / 2;
 //##endef Scrolling Cursor BBs Variables
 
@@ -445,7 +445,7 @@ function init() {
   makePitchSets();
   makeArticulations();
 
-
+  console.log(scrollingCsrBbsObjSet);
 
 
   RENDERER.render(SCENE, CAMERA);
@@ -2204,7 +2204,8 @@ function makeScrollingTempoCursors() {
     tempoCursors.push(tLine);
 
   } //for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
-
+  // tempoCursors[0].setAttributeNS(null, 'display', 'yes');
+  // tempoCursors[0].setAttributeNS(null, 'transform', 'translate(' + beatCoords[3].x.toString() + ',' + beatCoords[3].y.toString() + ')');
 } // function makeScrollingTempoCursors() END
 
 
@@ -2217,63 +2218,51 @@ function makeScrollingCursorBbs() {
   // scrollingCsrBbsObjSet
   for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) {
 
-    bbSet[bbIx]['div'] = mkDiv({
-      canvas: worldPanel.content,
-      w: BB_W,
-      h: BB_H,
-      top: BB_TOP,
-      left: RENDERER_DIV_LEFT + BB_PAD_LEFT + ((BB_W + BB_GAP) * bbIx),
-      bgClr: 'white'
+    scrollingCsrBbsObjSet[csrBbIx]['rect'] = mkSvgRect({
+      svgContainer: rhythmicNotationObj.svgCont,
+      w: SCRBB_W,
+      h: SCRBB_H,
+      x: SCRBB_LEFT,
+      y: SCRBB_TOP,
+      fill: 'white',
+      stroke: 'black',
+      strokeW: 0,
     });
 
-    bbSet[bbIx]['svgCont'] = mkSVGcontainer({
-      canvas: bbSet[bbIx].div,
-      w: BB_W,
-      h: BB_H,
-      x: 0,
-      y: 0
-    });
-
-    bbSet[bbIx]['bbCirc'] = mkSvgCircle({
-      svgContainer: bbSet[bbIx].svgCont,
-      cx: BB_CENTER,
-      cy: BBCIRC_TOP_CY,
-      r: BBCIRC_R,
-      fill: TEMPO_COLORS[bbIx],
+    scrollingCsrBbsObjSet[csrBbIx]['ball'] = mkSvgCircle({
+      svgContainer: rhythmicNotationObj.svgCont,
+      cx: SCRBB_CENTER,
+      cy: SCRBBCIRC_TOP_CY,
+      r: SCRBBCIRC_R,
+      fill: TEMPO_COLORS[csrBbIx],
       stroke: 'white',
       strokeW: 0
     });
 
-    bbSet[bbIx]['bbBouncePadOff'] = mkSvgLine({
-      svgContainer: bbSet[bbIx].svgCont,
-      x1: 0,
-      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
-      x2: BB_W,
-      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOff'] = mkSvgLine({
+      svgContainer: rhythmicNotationObj.svgCont,
+      x1: SCRBB_LEFT,
+      y1: SCRBB_BOUNCE_WEIGHT_HALF,
+      x2: -SCRBB_GAP,
+      y2:   SCRBB_BOUNCE_WEIGHT_HALF,
       stroke: 'black',
-      strokeW: BB_BOUNCE_WEIGHT
+      strokeW: SCRBB_BOUNCE_WEIGHT
     });
 
-    bbSet[bbIx]['bbBouncePadOn'] = mkSvgLine({
-      svgContainer: bbSet[bbIx].svgCont,
-      x1: 0,
-      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
-      x2: BB_W,
-      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOn'] = mkSvgLine({
+      svgContainer: rhythmicNotationObj.svgCont,
+      x1: SCRBB_LEFT,
+      y1: SCRBB_BOUNCE_WEIGHT_HALF,
+      x2: -SCRBB_GAP,
+      y2:   SCRBB_BOUNCE_WEIGHT_HALF,
       stroke: 'yellow',
-      strokeW: BB_BOUNCE_WEIGHT + 2
+      strokeW: SCRBB_BOUNCE_WEIGHT
     });
-    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
 
-    bbSet[bbIx]['offIndicator'] = mkSvgRect({
-      svgContainer: bbSet[bbIx].svgCont,
-      x: 0,
-      y: 0,
-      w: BB_W,
-      h: BB_H,
-      fill: 'rgba(173, 173, 183, 0.9)',
-    });
-    bbSet[bbIx].offIndicator.setAttributeNS(null, 'display', 'none');
+    scrollingCsrBbsObjSet[csrBbIx].rect.setAttributeNS(null, 'display', 'none');
+    scrollingCsrBbsObjSet[csrBbIx].ball.setAttributeNS(null, 'display', 'none');
+    scrollingCsrBbsObjSet[csrBbIx].bouncePadOn.setAttributeNS(null, 'display', 'none');
+    scrollingCsrBbsObjSet[csrBbIx].bouncePadOff.setAttributeNS(null, 'display', 'none');
 
   } //for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) END
 
