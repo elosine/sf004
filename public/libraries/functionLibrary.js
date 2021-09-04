@@ -1380,6 +1380,81 @@ let shuffle = function(array) {
 
 //#endef shuffle
 
+//#ef Cycle Through Set Functions
+
+let cycleThroughSet_inOrder = function(ogSet, numCycles) {
+
+  let setToReturn = [];
+  let numIterations = ogSet.length * numCycles;
+  for (let i = 0; i < numIterations; i++) {
+    setToReturn.push(ogSet[i % ogSet.length]);
+  }
+
+  return setToReturn;
+
+}
+
+
+let cycleThroughSet_random = function(ogSet, numCycles) {
+
+  let ogSetClone = deepCopy(ogSet);
+  let setToReturn = [];
+  let numIterations = ogSet.length * numCycles;
+
+  for (let i = 0; i < numIterations; i++) {
+    if (ogSetClone.length == 0) ogSetClone = deepCopy(ogSet); //when all used up replenish
+    let thisChoice = chooseIndex(ogSetClone); //select the index number from the remaining set
+    setToReturn.push(ogSetClone[thisChoice]);
+    ogSetClone.splice(thisChoice, 1); //remove this choice from the set
+  }
+
+  return setToReturn;
+
+}
+
+
+let cycleThroughSet_mirror = function(ogSet, numCycles) {
+
+  let setToReturn = [];
+  let numIterations = ogSet.length * (numCycles * 2);
+  for (let i = 0; i < numCycles; i++) {
+    for (let j = 0; j < ogSet.length; j++) {
+      setToReturn.push(ogSet[j]);
+    }
+    for (let k = ogSet.length - 1; k >= 0; k--) {
+      setToReturn.push(ogSet[k]);
+    }
+  }
+
+  return setToReturn;
+
+}
+
+let cycleThroughSet_palindrome = function(ogSet, numCycles) {
+
+  let setToReturn = [];
+  let numIterations = ogSet.length * (numCycles * 2);
+
+  for (let i = 0; i < numCycles; i++) {
+
+    for (let j = 0; j < ogSet.length; j++) {
+      setToReturn.push(ogSet[j]);
+    }
+    for (let k = ogSet.length - 2; k >= 1; k--) {
+      setToReturn.push(ogSet[k]);
+    }
+
+  } // for (let i = 0; i < numCycles; i++)
+
+  return setToReturn;
+
+}
+
+
+//#endef Cycle Through Set Functions
+
+
+
 
 
 

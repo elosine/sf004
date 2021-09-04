@@ -225,6 +225,23 @@ for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
 let tempoCursors = [];
 //##endef Scrolling Tempo Cursors
 
+//##ef Scrolling Cursor BBs Variables
+let scrollingCsrBbsObjSet = [];
+for (let trIx = 0; trIx < NUM_TEMPOS; trIx++) scrollingCsrBbsObjSet.push({});
+const SCRBB_W = 11;
+const SCRBB_H = NOTATION_CURSOR_H;
+const SCRBB_TOP = HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+const SCRBB_CENTER = SCRBB_W / 2;
+// const SCRBB_PAD_LEFT = 10;
+// const SCRBB_GAP = 16;
+const SCRBBCIRC_R = 9;
+const SCRBBCIRC_TOP_CY = SCRBBCIRC_R + 3;
+const SCRBBCIRC_BOTTOM_CY = SCRBB_H - SCRBBCIRC_R;
+const SCRBB_TRAVEL_DIST = SCRBBCIRC_BOTTOM_CY - SCRBBCIRC_TOP_CY;
+const SCRBB_BOUNCE_WEIGHT = 6;
+const SCRBB_BOUNCE_WEIGHT_HALF = SCRBB_BOUNCE_WEIGHT / 2;
+//##endef Scrolling Cursor BBs Variables
+
 //##ef Player Tokens
 let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
 //##endef Player Tokens
@@ -420,6 +437,7 @@ function init() {
   makeBouncingBalls();
   makeStaffNotation();
   makeScrollingTempoCursors();
+  makeScrollingCursorBbs();
   makePlayerTokens();
   makeSigns();
   makeUnisonSigns();
@@ -489,6 +507,7 @@ function generateScoreData() {
   scoreDataObject['leadIn_unisonFlagLocs'] = [];
   scoreDataObject['unisonPlayerTokenTempoNum'] = [];
   scoreDataObject['motiveSet'] = [];
+  scoreDataObject['pitchSets'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -1593,14 +1612,35 @@ function generateScoreData() {
 
   //###endef ADD ARTICULATIONS
 
-  console.log(motiveChgByFrameSet);
-
 
   scoreDataObject.motiveSet = motiveChgByFrameSet;
 
 
   //##endef CALCULATIONS FOR NOTATION
 
+  //##ef CALCULATIONS FOR PITCH SETS
+
+  let availablePitchSetNumbers = []; //make a numbered Set of all available pitch sets
+  for (let i = 0; i < pitchSetsDictionary.length; i++) availablePitchSetNumbers.push(i);
+  let setOfPitchSetNumbers = cycleThroughSet_palindrome(availablePitchSetNumbers, 99); //create a long list of pitch set numbers in a palindrome
+  // Decide which frames to change pitch sets, add to main array
+  let pitchSetChangesByFrame = [];
+  let nextFrameToChangePs = 0;
+  let currPsIx = 0;
+  let currPs = 0;
+  for (let fIx = 0; fIx < motiveChgByFrameSet.length; fIx++) {
+    if (fIx == nextFrameToChangePs) { //if this is a change frame, update the currPs and update all the iterators
+      currPs = setOfPitchSetNumbers[currPsIx];
+      //UPDATE
+      currPsIx++;
+      nextFrameToChangePs = nextFrameToChangePs + (rrandInt(24, 37) * FRAMERATE); //change pitch sets every 24-37 seconds
+    }
+    pitchSetChangesByFrame.push(currPs);
+  }
+  scoreDataObject.pitchSets = pitchSetChangesByFrame;
+
+
+  //##endef CALCULATIONS FOR PITCH SETS
 
   return scoreDataObject;
 
@@ -2169,6 +2209,78 @@ function makeScrollingTempoCursors() {
 
 
 //##endef Make Scrolling Tempo Cursors
+
+//##ef Make Scrolling Cursor BBs
+
+
+function makeScrollingCursorBbs() {
+  // scrollingCsrBbsObjSet
+  for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) {
+
+    bbSet[bbIx]['div'] = mkDiv({
+      canvas: worldPanel.content,
+      w: BB_W,
+      h: BB_H,
+      top: BB_TOP,
+      left: RENDERER_DIV_LEFT + BB_PAD_LEFT + ((BB_W + BB_GAP) * bbIx),
+      bgClr: 'white'
+    });
+
+    bbSet[bbIx]['svgCont'] = mkSVGcontainer({
+      canvas: bbSet[bbIx].div,
+      w: BB_W,
+      h: BB_H,
+      x: 0,
+      y: 0
+    });
+
+    bbSet[bbIx]['bbCirc'] = mkSvgCircle({
+      svgContainer: bbSet[bbIx].svgCont,
+      cx: BB_CENTER,
+      cy: BBCIRC_TOP_CY,
+      r: BBCIRC_R,
+      fill: TEMPO_COLORS[bbIx],
+      stroke: 'white',
+      strokeW: 0
+    });
+
+    bbSet[bbIx]['bbBouncePadOff'] = mkSvgLine({
+      svgContainer: bbSet[bbIx].svgCont,
+      x1: 0,
+      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      x2: BB_W,
+      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      stroke: 'black',
+      strokeW: BB_BOUNCE_WEIGHT
+    });
+
+    bbSet[bbIx]['bbBouncePadOn'] = mkSvgLine({
+      svgContainer: bbSet[bbIx].svgCont,
+      x1: 0,
+      y1: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      x2: BB_W,
+      y2: BB_H - HALF_BB_BOUNCE_WEIGHT,
+      stroke: 'yellow',
+      strokeW: BB_BOUNCE_WEIGHT + 2
+    });
+    bbSet[bbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+
+    bbSet[bbIx]['offIndicator'] = mkSvgRect({
+      svgContainer: bbSet[bbIx].svgCont,
+      x: 0,
+      y: 0,
+      w: BB_W,
+      h: BB_H,
+      fill: 'rgba(173, 173, 183, 0.9)',
+    });
+    bbSet[bbIx].offIndicator.setAttributeNS(null, 'display', 'none');
+
+  } //for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) END
+
+} //function makeScrollingCursorBbs() END
+
+
+//##endef Make Scrolling Cursor BBs
 
 //##ef Make Player Tokens
 
