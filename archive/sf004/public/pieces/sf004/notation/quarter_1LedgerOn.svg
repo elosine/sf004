@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg2234"
+   version="1.1"
+   viewBox="0 0 3.0594583 13.167796"
+   height="13.167796mm"
+   width="3.0594583mm">
+  <defs
+     id="defs2228" />
+  <metadata
+     id="metadata2231">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-156.62958,-108.15913)"
+     id="layer1">
+    <g
+       transform="matrix(1.7572994,0,0,1.7572994,108.00141,80.042335)"
+       id="g921">
+      <rect
+         id="rect618"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="27.103001"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect676"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.8401999"
+         width="0.13"
+         y="-4"
+         x="-0.064999998"
+         transform="translate(29.0579,20)" />
+      <a
+         id="a680"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes01.ly:81:10:11"
+         style="color:inherit">
+        <path
+           id="path678"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,27.9622,23)" />
+      </a>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg3227"
+   version="1.1"
+   viewBox="0 0 18.049046 14.480147"
+   height="14.480147mm"
+   width="18.049046mm">
+  <defs
+     id="defs3221" />
+  <metadata
+     id="metadata3224">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-174.71938,-109.82882)"
+     id="layer1">
+    <g
+       id="g5963"
+       transform="matrix(1.7572994,0,0,1.7572994,145.36404,78.619184)">
+      <rect
+         id="rect5237"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="24.6656"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect5239"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="24.6656"
+         transform="translate(0.5691,24)" />
+      <rect
+         id="rect5241"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="22.2089"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect5243"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="22.2089"
+         transform="translate(0.5691,24)" />
+      <rect
+         id="rect5245"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="19.752199"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect5247"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="19.752199"
+         transform="translate(0.5691,24)" />
+      <rect
+         id="rect5249"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="17.2955"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect5251"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.6258"
+         y="-0.1"
+         x="17.4107"
+         transform="translate(0.5691,24)" />
+      <polygon
+         id="polygon5399"
+         points="7.46,-0.2 7.46,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(19.1854,18)" />
+      <polygon
+         id="polygon5401"
+         points="7.46,-0.2 7.46,0.2 0.04,0.2 0.04,-0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(19.1854,18.81)" />
+      <a
+         id="a5495"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes04.ly:143:10:11"
+         style="color:inherit">
+        <path
+           id="path5493"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,18.1548,24.5)" />
+      </a>
+      <rect
+         id="rect5497"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.3401999"
+         width="0.13"
+         y="-2"
+         x="-0.064999998"
+         transform="translate(21.7071,20)" />
+      <a
+         id="a5501"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes04.ly:143:16:17"
+         style="color:inherit">
+        <path
+           id="path5499"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,20.6114,24.5)" />
+      </a>
+      <path
+         id="path5503"
+         fill="currentColor"
+         d="m 216,-312 c 0,-10 -8,-19 -18,-19 -10,0 -19,9 -19,19 v 145 l -83,-31 v -158 c 0,-10 -9,-19 -19,-19 -10,0 -18,9 -18,19 v 145 l -32,-12 c -2,-1 -5,-1 -7,-1 -11,0 -20,9 -20,20 v 60 c 0,8 5,16 13,19 l 46,16 V 51 L 27,40 C 25,39 22,39 20,39 9,39 0,48 0,59 v 60 c 0,8 5,15 13,18 l 46,17 v 158 c 0,10 8,19 18,19 10,0 19,-9 19,-19 V 167 l 83,31 v 158 c 0,10 9,19 19,19 10,0 18,-9 18,-19 V 211 l 32,12 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-16 -13,-19 L 216,109 V -51 l 32,11 c 2,1 5,1 7,1 11,0 20,-9 20,-20 v -60 c 0,-8 -5,-15 -13,-18 l -46,-17 z M 96,65 V -95 l 83,30 V 95 Z"
+         transform="matrix(0.004,0,0,-0.004,16.7048,24.5)" />
+      <rect
+         id="rect5505"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.3401999"
+         width="0.13"
+         y="-2"
+         x="-0.064999998"
+         transform="translate(19.2504,20)" />
+      <rect
+         id="rect5519"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.3401999"
+         width="0.13"
+         y="-2"
+         x="-0.064999998"
+         transform="translate(26.6205,20)" />
+      <a
+         id="a5523"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes04.ly:143:24:25"
+         style="color:inherit">
+        <path
+           id="path5521"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,25.5248,24.5)" />
+      </a>
+      <rect
+         id="rect5525"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.3401999"
+         width="0.13"
+         y="-2"
+         x="-0.064999998"
+         transform="translate(24.1638,20)" />
+      <a
+         id="a5529"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes04.ly:143:20:21"
+         style="color:inherit">
+        <path
+           id="path5527"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,23.0681,24.5)" />
+      </a>
+    </g>
+  </g>
+</svg>

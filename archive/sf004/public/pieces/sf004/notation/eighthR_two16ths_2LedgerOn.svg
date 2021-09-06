@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg1343"
+   version="1.1"
+   viewBox="0 0 15.86718 13.25566"
+   height="13.25566mm"
+   width="15.86718mm">
+  <defs
+     id="defs1337" />
+  <metadata
+     id="metadata1340">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-84.604274,-123.7212)"
+     id="layer1">
+    <g
+       transform="matrix(1.7572993,0,0,1.7572993,17.565063,93.93498)"
+       id="g5055">
+      <rect
+         id="rect4442"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="44.868198"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect4444"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="44.868198"
+         transform="translate(0.5691,24)" />
+      <rect
+         id="rect4446"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="42.305599"
+         transform="translate(0.5691,23)" />
+      <rect
+         id="rect4448"
+         fill="currentColor"
+         ry="0.1"
+         height="0.2"
+         width="1.7410001"
+         y="-0.1"
+         x="42.305599"
+         transform="translate(0.5691,24)" />
+      <a
+         id="a4504"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:14:15"
+         style="color:inherit">
+        <path
+           id="path4502"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,43.1648,24)" />
+      </a>
+      <rect
+         id="rect4506"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.6501999"
+         width="0.13"
+         y="-2.8099999"
+         x="-0.064999998"
+         transform="translate(44.2605,20)" />
+      <a
+         id="a4510"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:18:19"
+         style="color:inherit">
+        <path
+           id="path4508"
+           fill="currentColor"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           transform="matrix(0.0036,0,0,-0.0036,45.7274,24)" />
+      </a>
+      <rect
+         id="rect4512"
+         fill="currentColor"
+         ry="0.039999999"
+         height="6.6501999"
+         width="0.13"
+         y="-2.8099999"
+         x="-0.064999998"
+         transform="translate(46.8231,20)" />
+      <a
+         id="a4516"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:10:11"
+         style="color:inherit">
+        <path
+           id="path4514"
+           fill="currentColor"
+           d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+           transform="matrix(0.004,0,0,-0.004,38.161,20)" />
+      </a>
+      <a
+         id="a4546"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes02.ly:103:13:14"
+         style="color:inherit">
+        <polygon
+           id="polygon4542"
+           points="8.2521,-0.2 8.2521,0.2 0.04,0.2 0.04,-0.2 "
+           stroke="currentColor"
+           fill="currentColor"
+           stroke-width="0.08"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           transform="translate(38.596,17.19)" />
+        <polygon
+           id="polygon4544"
+           points="2.6526,-0.2 2.6526,0.2 0.04,0.2 0.04,-0.2 "
+           stroke="currentColor"
+           fill="currentColor"
+           stroke-width="0.08"
+           stroke-linecap="round"
+           stroke-linejoin="round"
+           transform="translate(44.1955,18)" />
+      </a>
+    </g>
+  </g>
+</svg>

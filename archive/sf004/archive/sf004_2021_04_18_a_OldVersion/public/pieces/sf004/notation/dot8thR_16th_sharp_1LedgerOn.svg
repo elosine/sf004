@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg6964"
+   version="1.1"
+   viewBox="0 0 15.846275 15.02491"
+   height="15.02491mm"
+   width="15.846275mm">
+  <defs
+     id="defs6958" />
+  <metadata
+     id="metadata6961">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-74.257676,-125.83755)"
+     id="layer1">
+    <g
+       id="g3493"
+       transform="matrix(1.7572994,0,0,1.7572994,71.299791,-91.661697)">
+      <rect
+         style="stroke-width:1"
+         x="9.0748014"
+         y="130.71904"
+         width="1.6258"
+         height="0.20000002"
+         ry="0.10000001"
+         fill="currentColor"
+         id="rect1972" />
+      <a
+         transform="translate(-6.0789006,107.81903)"
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes03.ly:121:15:16"
+         id="a2012">
+        <path
+           transform="matrix(0.0036,0,0,-0.0036,15.3287,23)"
+           d="m 215,137 c 57,0 111,-29 111,-92 0,-71 -54,-120 -101,-148 -35,-21 -74,-34 -114,-34 -57,0 -111,29 -111,92 0,71 54,120 101,148 35,21 74,34 114,34 z"
+           fill="currentColor"
+           id="path2010" />
+      </a>
+      <a
+         transform="translate(-6.0789006,107.81903)"
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes03.ly:121:10:11"
+         id="a2016">
+        <path
+           transform="matrix(0.004,0,0,-0.004,7.7741,20)"
+           d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+           fill="currentColor"
+           id="path2014" />
+      </a>
+      <path
+         style="stroke-width:0.00399999"
+         d="m 3.1452004,127.31903 c 0,-0.124 0.1,-0.224 0.224,-0.224 0.124,0 0.224,0.1 0.224,0.224 0,0.124 -0.1,0.224 -0.224,0.224 -0.124,0 -0.224,-0.1 -0.224,-0.224 z"
+         fill="currentColor"
+         id="path2018" />
+      <rect
+         style="stroke-width:1"
+         x="10.280399"
+         y="124.00903"
+         width="0.13"
+         height="6.6501999"
+         ry="0.039999999"
+         fill="currentColor"
+         id="rect2020" />
+      <path
+         style="stroke-width:0.00399999"
+         d="m 8.6638002,132.06703 c 0,0.04 -0.032,0.076 -0.072,0.076 -0.04,0 -0.076,-0.036 -0.076,-0.076 v -0.58 l -0.3320001,0.124 v 0.632 c 0,0.04 -0.036,0.076 -0.076,0.076 -0.04,0 -0.072,-0.036 -0.072,-0.076 v -0.58 l -0.1280001,0.048 c -0.008,0.004 -0.02,0.004 -0.028,0.004 -0.044,0 -0.08,-0.036 -0.08,-0.08 v -0.24 c 0,-0.032 0.02,-0.064 0.052,-0.076 l 0.1840002,-0.064 v -0.64 l -0.1280001,0.044 c -0.008,0.004 -0.02,0.004 -0.028,0.004 -0.044,0 -0.08,-0.036 -0.08,-0.08 v -0.24 c 0,-0.032 0.02,-0.06 0.052,-0.072 l 0.1840002,-0.068 v -0.632 c 0,-0.04 0.032,-0.076 0.072,-0.076 0.04,0 0.076,0.036 0.076,0.076 v 0.58 l 0.3319999,-0.124 v -0.632 c 0,-0.04 0.036,-0.076 0.076,-0.076 0.04,0 0.072,0.036 0.072,0.076 v 0.58 l 0.128,-0.048 c 0.008,-0.004 0.02,-0.004 0.028,-0.004 0.044,0 0.08,0.036 0.08,0.08 v 0.24 c 0,0.032 -0.02,0.064 -0.052,0.076 l -0.184,0.064 v 0.64 l 0.128,-0.044 c 0.008,-0.004 0.02,-0.004 0.028,-0.004 0.044,0 0.08,0.036 0.08,0.08 v 0.24 c 0,0.032 -0.02,0.06 -0.052,0.072 l -0.184,0.068 z m -0.4800001,-1.508 v 0.64 l 0.3320001,-0.12 v -0.64 z"
+         fill="currentColor"
+         id="path2022" />
+      <a
+         transform="translate(-6.0789006,107.81903)"
+         style="color:inherit"
+         xlink:href="textedit:///Users/jwy/Documents/GitHub/sf004/public/pieces/sf004/notation/notes03.ly:121:14:15"
+         id="a2130">
+        <polygon
+           transform="translate(8.2091,16.19)"
+           stroke-linejoin="round"
+           stroke-linecap="round"
+           stroke-width="0.08"
+           fill="currentColor"
+           stroke="currentColor"
+           points="0.04,0.2 0.04,-0.2 8.2403,-0.2 8.2403,0.2 "
+           id="polygon2126" />
+        <polygon
+           transform="translate(15.3243,17)"
+           stroke-linejoin="round"
+           stroke-linecap="round"
+           stroke-width="0.08"
+           fill="currentColor"
+           stroke="currentColor"
+           points="0.04,0.2 0.04,-0.2 1.125,-0.2 1.125,0.2 "
+           id="polygon2128" />
+      </a>
+    </g>
+  </g>
+</svg>
