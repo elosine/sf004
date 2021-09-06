@@ -14,7 +14,7 @@ let FRAMECOUNT = 0;
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
 const MS_PER_FRAME = 1000.0 / FRAMERATE;
-const LEAD_IN_TIME_SEC = 6;
+const LEAD_IN_TIME_SEC = 2;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = LEAD_IN_TIME_SEC * FRAMERATE;
 let startTime_epochTime_MS = 0;
@@ -746,8 +746,6 @@ function generateScoreData() {
     //##endef Calculate BBs
 
     //##ef Calculate Scrolling Cursors
-
-
     //look at every go frame, starting at 1; calc num frames since last go frame; map the distance between two beat coordinates
     let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
     let currBeatNum_InLoop = 0;
@@ -771,8 +769,6 @@ function generateScoreData() {
     }); // goFrames_thisTempo.forEach((goFrameNumber, ix) => END
 
     scoreDataObject.scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
-
-
     //##endef Calculate Scrolling Cursors
 
 
@@ -2270,12 +2266,9 @@ function makeScrollingCursorBbs() {
 //##endef Make Scrolling Cursor BBs
 
 //##ef Make Player Tokens
-
-
 //Make number-of-players worth of tokens for each tempo
 function makePlayerTokens() {
-
-  //circle, triangle, diamond, watermellon, square,
+  //circle, triangle, diamond, watermellon, square
   for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
 
     let tPlrSet = [];
@@ -2291,12 +2284,7 @@ function makePlayerTokens() {
     playerTokens.push(tPlrSet);
 
   } //for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
-  // playerTokens[0][4].svg.setAttributeNS(null, "display", 'yes');
-  // playerTokens[0][4].txt.setAttributeNS(null, "display", 'yes');
-  // playerTokens[0][4].move(beatCoords[4].x, beatCoords[4].y)
 } //function makePlayerTokens() end
-
-
 //##endef Make Player Tokens
 
 //##ef Make Signs
@@ -2714,12 +2702,252 @@ function updateBbBouncePad() {
 
 //##endef BBs WIPE/UPDATE/DRAW
 
+//##ef Scrolling Cursors WIPE/UPDATE/DRAW
+
+//###ef wipeTempoCsrs
+function wipeTempoCsrs() {
+  tempoCursors.forEach((tempoCsr) => {
+    tempoCsr.setAttributeNS(null, 'display', 'none');
+  });
+}
+//###endef END wipeTempoCsrs
+
+//###ef updateScrollingCsrs
+function updateScrollingCsrs() {
+  if (FRAMECOUNT > 0) { //No lead in motion for scrolling cursors
+    scoreData.scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
+
+      let setIx = FRAMECOUNT % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+      let tX = posObjSet[setIx].x;
+      let tY1 = posObjSet[setIx].y1;
+      let tY2 = posObjSet[setIx].y2;
+      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
+      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
+
+    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+} // function updateScrollingCsrs() END
+//###endef updateScrollingCsrs
+
+//##endef Scrolling Cursors WIPE/UPDATE/DRAW
+
+//##ef Player Tokens WIPE/UPDATE/DRAW
+
+//###ef wipePlayerTokens
+function wipePlayerTokens() {
+  playerTokens.forEach((thisTemposPlrTokens) => {
+    thisTemposPlrTokens.forEach((plrTknObj) => {
+
+      plrTknObj.svg.setAttributeNS(null, 'display', 'none');
+      plrTknObj.txt.setAttributeNS(null, 'display', 'none');
+
+    });
+  });
+}
+//###endef wipePlayerTokens
+
+//###ef Update Player Tokens
+function updatePlayerTokens() {
+  scoreData.playerTokenTempoNum_perPlayer.forEach((playerTokenLocationByFrame, plrIx) => { //{tempoNum}
+    if (partsToRun.includes(plrIx)) {
+      if (FRAMECOUNT > 0) {
+
+        let setIx = FRAMECOUNT % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+        let tTempoNum = playerTokenLocationByFrame[setIx];
+        let tPlrTokenObj = playerTokens[tTempoNum][plrIx];
+        let coordLookUpIx = FRAMECOUNT % scoreData.scrollingCsrCoords_perTempo[tTempoNum].length;
+        let tBaseX = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
+        let tBaseY = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
+
+        tPlrTokenObj.move(tBaseX, tBaseY);
+        tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
+
+      } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+    } // function updatePlayerTokens() END
+  });
+}
+//###endef Update Player Tokens
+
+//##endef Player Tokens WIPE/UPDATE/DRAW
+
+//##ef Signs WIPE/UPDATE/DRAW
+
+//###ef wipeSigns
+function wipeSigns() {
+  signsByPlrByTrack.forEach((arrayOfSignsForThisPlayer) => {
+    arrayOfSignsForThisPlayer.forEach((arrayOfSignsForOneTrack) => {
+      arrayOfSignsForOneTrack.forEach((tSign) => {
+        tSign.visible = false;
+      });
+    });
+  });
+}
+//###endef wipeSigns
+
+//###ef updateSigns
+function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
+
+  if (FRAMECOUNT >= 0) {
+    scoreData.tempoFlagLocs_perPlayer.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
+      if (partsToRun.includes(plrIx)) {
+
+        let setIx = FRAMECOUNT % tempoFlagLocsByFrame_thisPlr.length;
+
+        if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+
+          tempoFlagLocsByFrame_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+            let tempo_trackNum = signObj.tempoNum;
+            let zLoc = signObj.zLoc;
+            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+            tSign.position.z = zLoc;
+            tSign.position.x = xPosOfTracks[tempo_trackNum];
+            tSign.visible = true;
+          });
+        } // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+      }
+    }); // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+  } // if (FRAMECOUNT >= 0) END
+
+  //
+  else if (FRAMECOUNT < 0) { //lead in
+    scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) => { //{tempoNum}
+      if (partsToRun.includes(plrIx)) {
+
+        if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) {
+
+          let setIx = leadIn_tempoFlagLocs_thisPlr.length + FRAMECOUNT;
+
+          if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+            leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+              let tempo_trackNum = signObj.tempoNum;
+              let zLoc = signObj.zLoc;
+              let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+              tSign.position.z = zLoc;
+              tSign.position.x = xPosOfTracks[tempo_trackNum];
+              tSign.visible = true;
+
+            }); // leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => END
+          } // if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) END
+
+        } // if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) END
+
+      } // if (partsToRun.includes(plrIx))
+    }); // scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) =>  END
+  } // else if (FRAMECOUNT < 0) END
+
+} // function updateSigns() END
+//###endef updateSigns
+
+//##endef Signs WIPE/UPDATE/DRAW
+
+//##ef Unison Signs WIPE/UPDATE/DRAW
+
+//#ef Wipe Unison Signs
+function wipeUnisonSigns() {
+
+  unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
+  });
+
+  unisonOffSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
+  });
+
+}
+
+//#endef Wipe Unison Signs
+
+//#ef Update Unison Signs
+
+function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
+
+  //##ef Lead In
+  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
+
+    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
+    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+
+      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
+
+        let tSign;
+        if (signObj.end) {
+          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+        } else {
+          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        }
+
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
+
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+
+  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
+  //##endef Lead
+
+  //##ef Loop After Lead In
+  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
+    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+    if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+
+      setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
+
+        let tSign;
+        if (signObj.end) {
+          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+        } else {
+          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        }
+
+        tSign.position.z = GO_Z + zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
+
+      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+
+    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
+  //##endef Loop After Lead In
+
+} // function updateUnisonSigns() END
+
+//#endef Update Unison Signs
+
+//##endef Unison Signs WIPE/UPDATE/DRAW
+
 
 //##ef Wipe Function
 function wipe() {
   wipeTempoFrets();
   wipeGoFrets();
   wipeBBs();
+  wipeTempoCsrs();
+  wipePlayerTokens();
+  wipeSigns();
 } // function wipe() END
 //##endef Wipe Function
 
@@ -2729,6 +2957,9 @@ function update() {
   updateGoFrets();
   updateBBs();
   updateBbBouncePad();
+  updateScrollingCsrs();
+  updatePlayerTokens();
+  updateSigns()
 }
 //##endef Update Function
 

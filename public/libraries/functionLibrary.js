@@ -1102,8 +1102,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 0:
 
-      yAdjSvg = 63;
-      yAdjTxt = 63;
+      yAdjSvg = 13;
+      yAdjTxt = 13;
 
       let tCirc = mkSvgCircle({
         svgContainer: svgCanvas,
@@ -1133,8 +1133,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 1:
 
-      yAdjSvg = 65;
-      yAdjTxt = 61;
+      yAdjSvg = 17;
+      yAdjTxt = 13;
 
       let tTri = mkSvgTriangle({
         svgContainer: svgCanvas,
@@ -1165,8 +1165,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 2:
 
-      yAdjSvg = 65;
-      yAdjTxt = 65;
+      yAdjSvg = 15;
+      yAdjTxt = 15;
 
       let tDia = mkSvgDiamond({
         svgContainer: svgCanvas,
@@ -1197,8 +1197,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 3:
 
-      yAdjSvg = 69;
-      yAdjTxt = 62;
+      yAdjSvg = 20;
+      yAdjTxt = 12;
 
       let tArc = mkSvgArc({
         svgContainer: svgCanvas,
@@ -1231,8 +1231,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 4:
 
-      yAdjSvg = 72;
-      yAdjTxt = 62;
+      yAdjSvg = 23;
+      yAdjTxt = 13;
 
       let tSqr = mkSvgRect({
         svgContainer: svgCanvas,
@@ -1263,8 +1263,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 5:
 
-      yAdjSvg = 70;
-      yAdjTxt = 75;
+      yAdjSvg = 20;
+      yAdjTxt = 15;
 
       let tTri2 = mkSvgTriangle2({
         svgContainer: svgCanvas,
@@ -1303,7 +1303,6 @@ let mkPlrTkns = function(svgCanvas, type) {
   playerTokenObj['move'] = function(aX, aY) {
     playerTokenObj.svg.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
     playerTokenObj.txt.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
-
   } // playerTokenObj['move'] = function(mvBaseX, mvBaseY) END
 
   return playerTokenObj;
