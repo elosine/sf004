@@ -10,8 +10,14 @@ const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lav
 
 //##ef Timing
 const FRAMERATE = 60;
+let FRAMECOUNT = 0;
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
+const MS_PER_FRAME = 1000.0 / FRAMERATE;
+const LEAD_IN_TIME_SEC = 6;
+const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
+const LEAD_IN_FRAMES = LEAD_IN_TIME_SEC * FRAMERATE;
+let startTime_epochTime_MS = 0;
 //##endef Timing
 
 //##ef World Canvas Variables
@@ -106,8 +112,6 @@ const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 //##endef BBs Variables
 
 //##ef Staff Notation Variables
-
-
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
@@ -217,8 +221,6 @@ let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be 
 
 let motivesByBeat = [];
 for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
-
-
 //##endef END Staff Notation Variables
 
 //##ef Scrolling Tempo Cursors
@@ -236,7 +238,7 @@ const SCRBB_CENTER = (-SCRBB_W / 2) - SCRBB_GAP;
 const SCRBB_LEFT = -SCRBB_W - SCRBB_GAP;
 const SCRBBCIRC_R = SCRBB_W - 4;
 const SCRBBCIRC_TOP_CY = SCRBB_TOP + 5;
-const SCRBBCIRC_BOTTOM_CY = - SCRBBCIRC_R;
+const SCRBBCIRC_BOTTOM_CY = -SCRBBCIRC_R;
 const SCRBB_TRAVEL_DIST = SCRBBCIRC_BOTTOM_CY - SCRBBCIRC_TOP_CY;
 const SCRBB_BOUNCE_WEIGHT = 3;
 const SCRBB_BOUNCE_WEIGHT_HALF = SCRBB_BOUNCE_WEIGHT / 2;
@@ -404,6 +406,20 @@ CANVAS_W = CANVAS_MARGIN + PITCH_SETS_W + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANV
 CANVAS_H = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_H + CANVAS_MARGIN;
 //##endef Readjust Canvas Size
 
+//#ef Animation Engine Variables
+let cumulativeChangeBtwnFrames_MS = 0;
+let epochTimeOfLastFrame_MS;
+let animationEngineIsRunning = true;
+//#endef END Animation Engine Variables
+
+//#ef Control Panel Vars
+const CTRLPANEL_W = 89;
+const CTRLPANEL_H = 200;
+const CTRLPANEL_BTN_W = 60;
+const CTRLPANEL_BTN_H = 35;
+const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
+const CTRLPANEL_MARGIN = 7;
+//#endef END Control Panel Vars
 
 //#ef SOCKET IO
 let ioConnection;
@@ -415,6 +431,13 @@ if (window.location.hostname == 'localhost') {
 }
 const SOCKET = ioConnection;
 //#endef > END SOCKET IO
+
+//#ef TIMESYNC
+const TS = timesync.create({
+  server: '/timesync',
+  interval: 1000
+});
+//#endef TIMESYNC
 
 
 //#endef GLOBAL VARIABLES
@@ -444,8 +467,7 @@ function init() {
   makeUnisonToken();
   makePitchSets();
   makeArticulations();
-
-  console.log(scrollingCsrBbsObjSet);
+  makeControlPanel();
 
 
   RENDERER.render(SCENE, CAMERA);
@@ -482,8 +504,6 @@ function processUrlArgs() {
 //#endef PROCESS URL ARGS
 
 //#ef GENERATE SCORE DATA
-
-
 function generateScoreData() {
 
 
@@ -530,8 +550,6 @@ function generateScoreData() {
 
 
     //##ef Calculate Loop Length & Go Frames
-
-
     // make about 11 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
     let framesPerBeat = FRAMERATE / (tempo / 60);
     let beatsPerCycle = Math.round(tempo * 11);
@@ -555,12 +573,9 @@ function generateScoreData() {
     // goFrames_thisTempo.pop();
 
     scoreDataObject.goFrames_perTempo.push(goFrames_thisTempo);
-
-
     //##endef Calculate Loop Length & Go Frames
 
     //##ef Calculate Tempo Fret Locations Per Frame
-
 
     //###ef Tempo Fret Main Cycle
     let tempoFretLocs_thisTempo = [];
@@ -568,7 +583,7 @@ function generateScoreData() {
     //Add RUNWAY_LENGTH_FRAMES worth of goframes to end of goframes set so that there is a smooth transition
     let goFrames_thisTempo_plus = deepCopy(goFrames_thisTempo);
     goFrames_thisTempo.forEach((goFrm) => {
-      if (goFrm <= RUNWAY_LENGTH_FRAMES) {
+      if (goFrm <= RUNWAY_LENGTH_FRAMES && goFrm > 0) { // Find set of go frames from first to the go frame at end of runway at the start of piece; add these to end so that you have a full runway of tempo frets before you loop; >0 because if you include first go frame you will double up
         goFrames_thisTempo_plus.push(goFrm + tempoFretsLoopLengthInFrames_thisTempo);
       }
     });
@@ -581,7 +596,7 @@ function generateScoreData() {
       goFrames_thisTempo_plus.forEach((goFrame) => { //look at each go frame to see if it is on scene
         //Look at each go frame for every frame in cycle
         //only include go frames that are on scene
-        if (goFrame >= (currFrameNumber - 30) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
+        if (goFrame >= (currFrameNumber - 1) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
 
           let framesUntilGo = goFrame - currFrameNumber; //Guarantee that each goFrame will have a 0/GO_Z fret location
           let pxUntilGo = framesUntilGo * PX_PER_FRAME;
@@ -596,6 +611,7 @@ function generateScoreData() {
     } //for (let currFrameNumber = 0; currFrameNumber < tempoFretsLoopLengthInFrames_thisTempo; currFrameNumber++) END
 
     scoreDataObject.tempoFretLocations_perTempo.push(tempoFretLocs_thisTempo);
+
     //###endef Tempo Fret Main Cycle
 
     //###ef Tempo Fret Lead In
@@ -630,7 +646,6 @@ function generateScoreData() {
     scoreDataObject.leadIn_tempoFretLocations_perTempo.push(tempoFretLocs_leadIn_thisTempo);
     //###endef Tempo Fret Lead In
 
-
     //##endef Calculate Tempo Fret Locations Per Frame
 
     //##ef Calculate Go Frets Blink
@@ -662,7 +677,7 @@ function generateScoreData() {
 
     //##ef Main Cycle
     let bbYpos_thisTempo = [];
-    let leadInAscent = [];
+    let bbLeadIn = [];
 
     goFrames_thisTempo.forEach((goFrm, goFrmIx) => { //goFrames_thisTempo contains the frame number of each go frame
 
@@ -683,13 +698,15 @@ function generateScoreData() {
         }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
 
         ascentPlot.forEach((ascentPos) => {
+
           let tBbY = BBCIRC_TOP_CY + ascentPos.y; //calculate the absolute y position of bb
           bbYpos_thisTempo.push(Math.round(tBbY)); //populate bbYpos_thisTempo array with bby position for every frame
 
           //save first bounce for lead-in
           if (goFrmIx == 1) {
-            leadInAscent.push(tBbY);
+            bbLeadIn.push(tBbY);
           }
+
         }); // ascentPlot.forEach((ascentPos) => END
 
         let descentPlot = plot(function(x) {
@@ -697,8 +714,15 @@ function generateScoreData() {
         }, [0, 1, 0, 1], numFramesDown, BB_TRAVEL_DIST);
 
         descentPlot.forEach((descentPos) => {
+
           let tBbY = BBCIRC_BOTTOM_CY - descentPos.y;
           bbYpos_thisTempo.push(Math.round(tBbY));
+
+          //save first bounce for lead-in
+          if (goFrmIx == 1) {
+            bbLeadIn.push(tBbY);
+          }
+
         }); // descentPlot.forEach((descentPos) => END
 
       } // if(goFrmIx>0) END
@@ -711,9 +735,10 @@ function generateScoreData() {
     //##ef Lead In
     let leadIn_bbYpos_thisTempo = [];
     //make 1 ascent just before first beat
-    leadInAscent.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
+    bbLeadIn.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
       leadIn_bbYpos_thisTempo.push(bbYpos);
     });
+
     scoreDataObject.leadIn_bbYpos_perTempo.push(leadIn_bbYpos_thisTempo);
     //##endef Lead In
 
@@ -1255,7 +1280,6 @@ function generateScoreData() {
   //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
   //RESULTS:
   //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
-  // console.log(articulationChgByFrame);
 
   //###ef POPULATE MASTER SET TO REPLACE LATER
   //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
@@ -1440,11 +1464,8 @@ function generateScoreData() {
     let next_artFrame = next_artObj.frame;
     let next_artType = next_artObj.artNum;
 
-    // console.log(this_artFrame);
-
     let tempMotiveSet = deepCopy(motiveChgByFrameSet[this_artFrame]); //tempMotiveSet has where rests and motuves are
     //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
-    // console.log(tempMotiveSet);
 
     // fill in previous sets articulations
     previousSetArticulationsByBeatNum.forEach((aObj) => {
@@ -1473,11 +1494,9 @@ function generateScoreData() {
       }
 
     });
-    // console.log(thisSetMotivesAndArts);
 
     //If subtracting, randomly choose beat with articulation and Remove
     if (this_artType == 0) { //type:0 means subtracting articulation
-      // console.log('sub');
 
       let tSetToRmv = [];
       thisSetMotivesAndArts.forEach((mSet) => {
@@ -1500,7 +1519,6 @@ function generateScoreData() {
     //  randomly choose between these and add
     //  calculate x ad y pos
     else if (this_artType == 1) { //adding an articulation
-      // console.log('adding');
 
       let tSetBeatsToAddArt = []; // {beatNum:,partialNumsTaken:} //which beats have motives that do not have more than max num articulations & have available partials to add articulation
 
@@ -1530,7 +1548,6 @@ function generateScoreData() {
 
 
       }); // thisSetMotivesAndArts.forEach((mSet) => { //{  beatNum:, motiveNum:, articulationsSet: [ {articulationType:, x:, y:, partialNum:} ]  }
-      // console.log(tSetBeatsToAddArt);
 
       //Choose a beat from tSetBeatsToAddArt if available and add an
       if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
@@ -1541,8 +1558,6 @@ function generateScoreData() {
         let t_motiveToUse = tempMotiveSet[t_beatNum].motiveNum; //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
         let t_setOfPartialsToUse = [];
 
-        // console.log(t_motiveToUse);
-
         //find correct motive to find num partials available in this motive
         let t_numPartialsThisMotive = 0;
         motiveInfoSet.forEach((t_motiveInfoObj) => {
@@ -1550,7 +1565,6 @@ function generateScoreData() {
             t_numPartialsThisMotive = t_motiveInfoObj.numPartials;
           }
         });
-        // console.log('numPartThisMotive: ' + t_numPartialsThisMotive);
 
         //Go through num of partials in this motive find which partials can add an articulation
         for (let pNum = 0; pNum < t_numPartialsThisMotive; pNum++) {
@@ -1561,10 +1575,8 @@ function generateScoreData() {
           });
           if (t_partAvailable) t_setOfPartialsToUse.push(pNum); //if not in taken set, available
         } //for(let pNum=0;pNum<motiveInfoSet[t_motiveToUse].numPartials;pNum++)
-        // console.log(t_setOfPartialsToUse);
 
         let t_partialToUse = choose(t_setOfPartialsToUse);
-        // console.log(t_partialToUse);
 
         //Calc X/y pos
         //articulationPosByMotive[motiveNum][partialNum]
@@ -1580,8 +1592,6 @@ function generateScoreData() {
         })
 
       } //   if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
-      // console.log(tempMotiveSet); //updated
-
 
     } // else if (this_artType == 1) { //adding an articulation
 
@@ -1642,18 +1652,15 @@ function generateScoreData() {
 
   //##endef CALCULATIONS FOR PITCH SETS
 
+
   return scoreDataObject;
-
 } // function generateScoreData() END
-
-
 //#endef GENERATE SCORE DATA
 
 //#ef SCORE DATA MANAGER
 
 
 function makeScoreDataManager() {
-
   // #ef Score Data Manager Panel
 
   let scoreDataManagerW = 300;
@@ -1837,7 +1844,6 @@ function makeScoreDataManager() {
   //#endef END Load Score Data from Server Button
 
   scoreDataManagerPanel.smallify();
-
 } // function makeScoreDataManager() END
 
 
@@ -1998,8 +2004,6 @@ function makeGoFrets() {
 //##endef Make Go Frets
 
 //##ef Make Tempo Frets
-
-
 function makeTempoFrets() {
 
   let tempoFretGeometry = new THREE.BoxBufferGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
@@ -2028,13 +2032,9 @@ function makeTempoFrets() {
   }); //xPosOfTracks.forEach((trXpos) END
 
 } //makeTempoFrets() end
-
-
 //##endef Make Tempo Frets
 
 //##ef Make BBs
-
-
 function makeBouncingBalls() {
 
   for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) {
@@ -2059,7 +2059,7 @@ function makeBouncingBalls() {
     bbSet[bbIx]['bbCirc'] = mkSvgCircle({
       svgContainer: bbSet[bbIx].svgCont,
       cx: BB_CENTER,
-      cy: BBCIRC_TOP_CY,
+      cy: BBCIRC_BOTTOM_CY,
       r: BBCIRC_R,
       fill: TEMPO_COLORS[bbIx],
       stroke: 'white',
@@ -2100,8 +2100,6 @@ function makeBouncingBalls() {
   } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
 
 } //makeBouncingBalls() end
-
-
 //##endef Make BBs
 
 //##ef Make Staff Notation
@@ -2244,7 +2242,7 @@ function makeScrollingCursorBbs() {
       x1: SCRBB_LEFT,
       y1: SCRBB_BOUNCE_WEIGHT_HALF,
       x2: -SCRBB_GAP,
-      y2:   SCRBB_BOUNCE_WEIGHT_HALF,
+      y2: SCRBB_BOUNCE_WEIGHT_HALF,
       stroke: 'black',
       strokeW: SCRBB_BOUNCE_WEIGHT
     });
@@ -2254,7 +2252,7 @@ function makeScrollingCursorBbs() {
       x1: SCRBB_LEFT,
       y1: SCRBB_BOUNCE_WEIGHT_HALF,
       x2: -SCRBB_GAP,
-      y2:   SCRBB_BOUNCE_WEIGHT_HALF,
+      y2: SCRBB_BOUNCE_WEIGHT_HALF,
       stroke: 'yellow',
       strokeW: SCRBB_BOUNCE_WEIGHT
     });
@@ -2539,6 +2537,326 @@ function makeArticulations() {
 
 
 //#endef BUILD WORLD
+
+//#ef WIPE/UPDATE/DRAW
+
+
+//##ef Tempo Frets WIPE/UPDATE/DRAW
+
+//###ef wipeTempoFrets
+function wipeTempoFrets() {
+  tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
+    arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
+      tTempoFret.visible = false;
+    });
+  });
+}
+//###endef wipeTempoFrets
+
+//###ef updateTempoFrets
+function updateTempoFrets() {
+
+  //###ef Tempo Frets - Frame by Frame Animation Loop
+  if (FRAMECOUNT >= 0) {
+    scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let tempoFretLocationsSetNum = FRAMECOUNT % setOfTempoFretLocsByFrame.length; //adjust frame count for lead in frames and modulo for cycle length
+
+      setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => { //this goes through the set of tfs that were created at init, only draws the necessary ones and positions them
+
+        tempoFretsPerTrack[tempoIx][tfIx].position.z = loc;
+        tempoFretsPerTrack[tempoIx][tfIx].visible = true;
+
+      }); //setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => END
+
+    }); // scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => END
+  } // if (FRAMECOUNT >= 0) END
+  //###endef Tempo Frets - Frame by Frame Animation Loop
+
+  //###ef Tempo Frets - Lead In Frames
+  if (FRAMECOUNT < 0) {
+
+    scoreData.leadIn_tempoFretLocations_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
+
+      if (-FRAMECOUNT <= thisTempo_tfSet.length) { //FRAMECOUNT is negative; only start lead in set if FRAMECOUNT = the length of lead in tf set for this tempo
+
+        let tfSetIx = thisTempo_tfSet.length + FRAMECOUNT; //count from FRAMECOUNT/thisTempo_tfSet.length and go backwards; ie the first index in set is the furtherest away
+
+        thisTempo_tfSet[tfSetIx].forEach((tfLoc, tfIx) => { //each tf location for this tempo
+
+          tempoFretsPerTrack[tempoIx][tfIx].position.z = tfLoc; //tempoFretsPerTrack is set of tfs already created by tempo
+          tempoFretsPerTrack[tempoIx][tfIx].visible = true;
+
+        }); // tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
+
+      }
+
+    }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
+
+  } // if (FRAMECOUNT < 0) END
+  //###endef Tempo Frets - Lead In Frames
+
+} //function updateTempoFrets()  END
+//###endef updateTempoFrets
+
+//##endef Tempo Frets WIPE/UPDATE/DRAW
+
+//##ef GoFrets WIPE/UPDATE/DRAW
+
+//###ef wipeGoFrets
+function wipeGoFrets() {
+  goFrets.forEach((goFret, fretIx) => {
+    goFretsGo[fretIx].visible = false;
+  });
+}
+//###endef wipeGoFrets
+
+//###ef updateGoFrets
+function updateGoFrets() {
+  if (FRAMECOUNT >= 0) {
+
+    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+
+          goFrets[tempoIx].visible = true;
+          goFretsGo[tempoIx].visible = false;
+
+          break;
+
+        case 1:
+
+          goFrets[tempoIx].visible = false;
+          goFretsGo[tempoIx].visible = true;
+
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } // if (FRAMECOUNT >= 0) END
+} // function updateGoFrets() END
+//###endef updateGoFrets
+
+//##endef GoFrets WIPE/UPDATE/DRAW
+
+//##ef BBs WIPE/UPDATE/DRAW
+
+//###ef wipeBBs
+function wipeBBs() {
+  bbSet.forEach((tbb) => {
+    tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+  }); // bbSet.forEach((tbb) =>
+} // function wipeBbComplex()
+//###endef wipeBBs
+
+// #ef updateBBs
+function updateBBs() {
+
+  if (FRAMECOUNT >= 0) {
+    scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => { // Loop: set of goFrames
+
+      let bbYposSetIx = FRAMECOUNT % bbYposSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+      let tBbCy = bbYposSet[bbYposSetIx];
+
+      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', tBbCy);
+      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'display', 'yes');
+
+    }); // scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT >= 0) END
+  //
+  else if (FRAMECOUNT < 0) {
+    scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) => {
+
+      if (-FRAMECOUNT <= leadInSet.length) {
+        let tfSetIx = leadInSet.length + FRAMECOUNT;
+        bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', leadInSet[tfSetIx]);
+      } //  if (-FRAMECOUNT <= leadInSet.length)
+
+    }); // scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) =>  END
+  } // if (FRAMECOUNT >= 0) END
+
+} // function updateBBs() END
+//###endef updateBBs
+
+//###ef updateBbBouncePad
+function updateBbBouncePad() {
+  if (FRAMECOUNT >= 0) {
+
+    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+          break;
+
+        case 1:
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } // if (FRAMECOUNT >= 0) END
+} // function updateBbBouncePad() END
+//###endef updateBbBouncePad
+
+//##endef BBs WIPE/UPDATE/DRAW
+
+
+//##ef Wipe Function
+function wipe() {
+  wipeTempoFrets();
+  wipeGoFrets();
+  wipeBBs();
+} // function wipe() END
+//##endef Wipe Function
+
+//##ef Update Function
+function update() {
+  updateTempoFrets();
+  updateGoFrets();
+  updateBBs();
+  updateBbBouncePad();
+}
+//##endef Update Function
+
+//##ef Draw Function
+function draw() {
+  RENDERER.render(SCENE, CAMERA);
+}
+//##endef Draw Function
+
+
+//#endef WIPE/UPDATE/DRAW
+
+//#ef ANIMATION
+
+
+//##ef Animation Engine
+function animationEngine(timestamp) { //timestamp not used; timeSync server library used instead
+
+  let ts_Date = new Date(TS.now()); //Date stamp object from TimeSync library
+  let tsNowEpochTime_MS = ts_Date.getTime();
+  cumulativeChangeBtwnFrames_MS += tsNowEpochTime_MS - epochTimeOfLastFrame_MS;
+  epochTimeOfLastFrame_MS = tsNowEpochTime_MS; //update epochTimeOfLastFrame_MS for next frame
+
+  while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) { //if too little change of clock time will wait until 1 animation frame's worth of MS before updating etc.; if too much change will update several times until caught up with clock time
+
+    if (cumulativeChangeBtwnFrames_MS > (MS_PER_FRAME * FRAMERATE)) cumulativeChangeBtwnFrames_MS = MS_PER_FRAME; //escape hatch if more than 1 second of frames has passed then just skip to next update according to clock
+
+    pieceClock(tsNowEpochTime_MS);
+    wipe();
+    update();
+    draw();
+
+    cumulativeChangeBtwnFrames_MS -= MS_PER_FRAME; //subtract from cumulativeChangeBtwnFrames_MS 1 frame worth of MS until while cond is satisified
+
+  } // while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) END
+
+  if (animationEngineIsRunning) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
+  // if (FRAMECOUNT < 120) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
+} // function animationEngine(timestamp) END
+//##endef Animation Engine END
+
+//##ef Piece Clock
+function pieceClock(nowEpochTime) {
+
+  PIECE_TIME_MS = nowEpochTime - startTime_epochTime_MS - LEAD_IN_TIME_MS; //total MS transpired since peace begun, not including lead-in time
+  FRAMECOUNT = Math.round((PIECE_TIME_MS / 1000) * FRAMERATE); //Update FRAMECOUNT based on timeSync Time //if in lead-in FRAMECOUNT will be negative
+
+}
+//##endef Piece Clock
+
+
+//#endef ANIMATION
+
+//#ef CONTROL PANEL
+
+
+//##ef Make Control Panel Function
+function makeControlPanel() {
+
+  //###ef Control Panel Panel
+  let controlPanelPanel = mkPanel({
+    w: CTRLPANEL_W,
+    h: CTRLPANEL_H,
+    title: 'sf004 Control Panel',
+    ipos: 'left-top',
+    offsetX: '0px',
+    offsetY: '0px',
+    autopos: 'none',
+    headerSize: 'xs',
+    onwindowresize: true,
+    contentOverflow: 'hidden',
+    clr: 'black'
+  });
+  //###endef Control Panel Panel
+
+  //###ef Start Piece Button
+  let startButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_MARGIN,
+    left: CTRLPANEL_MARGIN,
+    label: 'Start',
+    fontSize: 16,
+    action: function() {
+      markStartTime_startAnimation();
+    }
+  });
+  //###endef Start Piece Button
+
+} // function makeControlPanel() END
+//##endef Make Control Panel Function
+
+//##ef Start Piece Button Function & Socket
+
+
+// Broadcast Start Time when Start Button is pressed
+let markStartTime_startAnimation = function() {
+
+  let ts_Date = new Date(TS.now());
+  let t_startTime_epoch = ts_Date.getTime();
+
+  // Send start time to server to broadcast to rest of players
+  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
+    pieceId: PIECE_ID,
+    startTime_epochTime_MS: t_startTime_epoch
+  });
+
+} // let markStartTime = function() END
+
+// Receive new start time from server broadcast and set startTime_epochTime_MS
+SOCKET.on('sf004_newStartTime_fromServer', function(data) {
+
+  if (data.pieceId == PIECE_ID) {
+
+    startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with current epochTime
+    epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
+    animationEngineIsRunning = true; //unlock gate
+    requestAnimationFrame(animationEngine); //kick off animation
+
+  } //if (data.pieceId == PIECE_ID)
+
+}); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
+
+//##endef Start Piece function & socket
+
+
+//#endef CONTROL PANEL
 
 
 

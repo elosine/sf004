@@ -25,11 +25,10 @@ app.use('/timesync', timesyncServer.requestHandler);
 //#endef END TIMESYNC SERVER
 
 //#ef SOCKET IO
-
 io.on('connection', function(socket) {
 
 
-  //#ef LOAD PIECE FROM SERVER
+  //##ef LOAD PIECE FROM SERVER
   // Request for load piece from splash page
   socket.on('sf004_loadPieceFromServer', function(data) {
     let pieceId = data.pieceId;
@@ -52,29 +51,27 @@ io.on('connection', function(socket) {
       });
     });
   });
-  //#endef END LOAD PIECE FROM SERVER
+  //##endef END LOAD PIECE FROM SERVER
 
-  //#ef Set Start Time Broadcast
-
+  //##ef Set Start Time Broadcast
   socket.on('sf004_newStartTimeBroadcast_toServer', function(data) {
 
     let pieceId = data.pieceId;
-    let startTime_epoch = data.startTime_epoch;
+    let startTime_epochTime_MS = data.startTime_epochTime_MS;
 
     socket.broadcast.emit('sf004_newStartTime_fromServer', {
       pieceId: pieceId,
-      startTime_epoch: startTime_epoch
+      startTime_epochTime_MS: startTime_epochTime_MS
     });
 
     socket.emit('sf004_newStartTime_fromServer', {
       pieceId: pieceId,
-      startTime_epoch: startTime_epoch
+      startTime_epochTime_MS: startTime_epochTime_MS
     });
 
   }); // socket.on('sf004_newStartTimeBroadcast_send', function(data) END
+  //##endef END Set Start Time Broadcast
 
-  //#endef END Set Start Time Broadcast
 
 }); // End Socket IO
-
 //#endef >> END SOCKET IO
