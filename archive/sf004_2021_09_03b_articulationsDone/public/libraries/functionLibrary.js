@@ -1102,8 +1102,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 0:
 
-      yAdjSvg = 13;
-      yAdjTxt = 13;
+      yAdjSvg = 63;
+      yAdjTxt = 63;
 
       let tCirc = mkSvgCircle({
         svgContainer: svgCanvas,
@@ -1133,8 +1133,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 1:
 
-      yAdjSvg = 17;
-      yAdjTxt = 13;
+      yAdjSvg = 65;
+      yAdjTxt = 61;
 
       let tTri = mkSvgTriangle({
         svgContainer: svgCanvas,
@@ -1165,8 +1165,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 2:
 
-      yAdjSvg = 15;
-      yAdjTxt = 15;
+      yAdjSvg = 65;
+      yAdjTxt = 65;
 
       let tDia = mkSvgDiamond({
         svgContainer: svgCanvas,
@@ -1197,8 +1197,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 3:
 
-      yAdjSvg = 20;
-      yAdjTxt = 12;
+      yAdjSvg = 69;
+      yAdjTxt = 62;
 
       let tArc = mkSvgArc({
         svgContainer: svgCanvas,
@@ -1231,8 +1231,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 4:
 
-      yAdjSvg = 23;
-      yAdjTxt = 13;
+      yAdjSvg = 72;
+      yAdjTxt = 62;
 
       let tSqr = mkSvgRect({
         svgContainer: svgCanvas,
@@ -1263,8 +1263,8 @@ let mkPlrTkns = function(svgCanvas, type) {
 
     case 5:
 
-      yAdjSvg = 20;
-      yAdjTxt = 25;
+      yAdjSvg = 70;
+      yAdjTxt = 75;
 
       let tTri2 = mkSvgTriangle2({
         svgContainer: svgCanvas,
@@ -1303,6 +1303,7 @@ let mkPlrTkns = function(svgCanvas, type) {
   playerTokenObj['move'] = function(aX, aY) {
     playerTokenObj.svg.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
     playerTokenObj.txt.setAttributeNS(null, "transform", "translate(" + aX.toString() + "," + aY.toString() + ")");
+
   } // playerTokenObj['move'] = function(mvBaseX, mvBaseY) END
 
   return playerTokenObj;
@@ -1378,81 +1379,6 @@ let shuffle = function(array) {
 }
 
 //#endef shuffle
-
-//#ef Cycle Through Set Functions
-
-let cycleThroughSet_inOrder = function(ogSet, numCycles) {
-
-  let setToReturn = [];
-  let numIterations = ogSet.length * numCycles;
-  for (let i = 0; i < numIterations; i++) {
-    setToReturn.push(ogSet[i % ogSet.length]);
-  }
-
-  return setToReturn;
-
-}
-
-
-let cycleThroughSet_random = function(ogSet, numCycles) {
-
-  let ogSetClone = deepCopy(ogSet);
-  let setToReturn = [];
-  let numIterations = ogSet.length * numCycles;
-
-  for (let i = 0; i < numIterations; i++) {
-    if (ogSetClone.length == 0) ogSetClone = deepCopy(ogSet); //when all used up replenish
-    let thisChoice = chooseIndex(ogSetClone); //select the index number from the remaining set
-    setToReturn.push(ogSetClone[thisChoice]);
-    ogSetClone.splice(thisChoice, 1); //remove this choice from the set
-  }
-
-  return setToReturn;
-
-}
-
-
-let cycleThroughSet_mirror = function(ogSet, numCycles) {
-
-  let setToReturn = [];
-  let numIterations = ogSet.length * (numCycles * 2);
-  for (let i = 0; i < numCycles; i++) {
-    for (let j = 0; j < ogSet.length; j++) {
-      setToReturn.push(ogSet[j]);
-    }
-    for (let k = ogSet.length - 1; k >= 0; k--) {
-      setToReturn.push(ogSet[k]);
-    }
-  }
-
-  return setToReturn;
-
-}
-
-let cycleThroughSet_palindrome = function(ogSet, numCycles) {
-
-  let setToReturn = [];
-  let numIterations = ogSet.length * (numCycles * 2);
-
-  for (let i = 0; i < numCycles; i++) {
-
-    for (let j = 0; j < ogSet.length; j++) {
-      setToReturn.push(ogSet[j]);
-    }
-    for (let k = ogSet.length - 2; k >= 1; k--) {
-      setToReturn.push(ogSet[k]);
-    }
-
-  } // for (let i = 0; i < numCycles; i++)
-
-  return setToReturn;
-
-}
-
-
-//#endef Cycle Through Set Functions
-
-
 
 
 

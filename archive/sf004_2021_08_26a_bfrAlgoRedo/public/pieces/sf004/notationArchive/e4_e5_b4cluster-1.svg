@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" width="30.00mm" height="30.00mm" viewBox="0 0 17.0717 17.0717">
+<style text="style/css">
+<![CDATA[
+tspan { white-space: pre; }
+]]>
+</style>
+<!-- Page: 1/2 -->
+<text transform="translate(0.5691, -0.0000)" font-family="serif" font-size="2.2001" text-anchor="start" fill="currentColor">
+<tspan/>
+</text>
+<line transform="translate(0.5691, 13.5577)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="12.7763" y2="-0.0000"/>
+<line transform="translate(0.5691, 12.0577)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="12.7763" y2="-0.0000"/>
+<line transform="translate(0.5691, 10.5577)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="12.7763" y2="-0.0000"/>
+<line transform="translate(0.5691, 9.0577)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="12.7763" y2="-0.0000"/>
+<line transform="translate(0.5691, 7.5577)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="12.7763" y2="-0.0000"/>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4cluster.ly:91:15:16">
+<path transform="translate(6.9278, 11.3077) scale(0.0060, -0.0060)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<path transform="translate(4.9278, 11.3077) scale(0.0060, -0.0060)" d="M215 -316c0 -9 -8 -17 -17 -17s-17 8 -17 17v151l-87 -31v-162c0 -9 -8 -17 -17 -17s-17 8 -17 17v150l-39 -13c-10 -4 -21 4 -21 15v64c0 7 5 13 11 15l49 18v164l-39 -14c-10 -4 -21 4 -21 15v65c0 7 5 13 11 15l49 17v163c0 9 8 17 17 17s17 -8 17 -17v-151l87 31v162
+c0 9 8 17 17 17s17 -8 17 -17v-150l39 13c10 4 21 -4 21 -15v-64c0 -7 -5 -13 -11 -15l-49 -18v-164l39 14c10 4 21 -4 21 -15v-65c0 -7 -5 -13 -11 -15l-49 -17v-163zM94 67v-164l87 30v164z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4cluster.ly:91:20:21">
+<path transform="translate(9.1865, 10.5577) scale(0.0060, -0.0060)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4cluster.ly:91:8:9">
+<path transform="translate(2.5691, 13.5577) scale(0.0060, -0.0060)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5_b4cluster.ly:91:23:24">
+<path transform="translate(11.4452, 9.8077) scale(0.0060, -0.0060)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+</svg>

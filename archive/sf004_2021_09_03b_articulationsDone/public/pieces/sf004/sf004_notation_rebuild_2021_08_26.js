@@ -10,14 +10,8 @@ const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lav
 
 //##ef Timing
 const FRAMERATE = 60;
-let FRAMECOUNT = 0;
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
-const MS_PER_FRAME = 1000.0 / FRAMERATE;
-const LEAD_IN_TIME_SEC = 2;
-const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
-const LEAD_IN_FRAMES = LEAD_IN_TIME_SEC * FRAMERATE;
-let startTime_epochTime_MS = 0;
 //##endef Timing
 
 //##ef World Canvas Variables
@@ -112,6 +106,8 @@ const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
 //##endef BBs Variables
 
 //##ef Staff Notation Variables
+
+
 let rhythmicNotationObj = {};
 let notationImageObjectSet = {};
 
@@ -221,28 +217,13 @@ let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be 
 
 let motivesByBeat = [];
 for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
+
+
 //##endef END Staff Notation Variables
 
 //##ef Scrolling Tempo Cursors
 let tempoCursors = [];
 //##endef Scrolling Tempo Cursors
-
-//##ef Scrolling Cursor BBs Variables
-let scrollingCsrBbsObjSet = [];
-for (let trIx = 0; trIx < NUM_TEMPOS; trIx++) scrollingCsrBbsObjSet.push({});
-const SCRBB_GAP = 3;
-const SCRBB_W = 9;
-const SCRBB_H = NOTATION_CURSOR_H + 2;
-const SCRBB_TOP = HALF_NOTEHEAD_H - NOTATION_CURSOR_H - 1;
-const SCRBB_CENTER = (-SCRBB_W / 2) - SCRBB_GAP;
-const SCRBB_LEFT = -SCRBB_W - SCRBB_GAP;
-const SCRBBCIRC_R = SCRBB_W - 4;
-const SCRBBCIRC_TOP_CY = SCRBB_TOP + 5;
-const SCRBBCIRC_BOTTOM_CY = -SCRBBCIRC_R;
-const SCRBB_TRAVEL_DIST = SCRBBCIRC_BOTTOM_CY - SCRBBCIRC_TOP_CY;
-const SCRBB_BOUNCE_WEIGHT = 3;
-const SCRBB_BOUNCE_WEIGHT_HALF = SCRBB_BOUNCE_WEIGHT / 2;
-//##endef Scrolling Cursor BBs Variables
 
 //##ef Player Tokens
 let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
@@ -331,7 +312,7 @@ let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
 //##ef Articulations Variables
 let articulationsPath = "/pieces/sf004/notationSVGs/articulations/";
-let articulationsObj = { //{path:,amt:,num:,w:,h:}
+let articulationsObj = {
   marcato: {
     path: articulationsPath + 'marcato.svg',
     amt: (TOTAL_NUM_BEATS * 5),
@@ -361,37 +342,37 @@ articulationPosByMotive.forEach((partialSet, mNum) => {
 
   switch (mNum) {
 
-    case 0: //quarter
+    case 0:
       partialSet[0] = 0;
       break;
 
-    case 1: //dot8thR_16th
+    case 1:
       partialSet[0] = (BEAT_LENGTH_PX / 3.85) * 3;
       break;
 
-    case 2: //eighthR_8th
+    case 2:
       partialSet[0] = BEAT_LENGTH_PX / 2;
       break;
 
-    case 3: //triplet
+    case 3:
       for (let ix = 0; ix < partialSet.length; ix++) {
         partialSet[ix] = (BEAT_LENGTH_PX / 3) * ix;
       }
       break;
 
-    case 4: //quadruplet
+    case 4:
       for (let ix = 0; ix < partialSet.length; ix++) {
         partialSet[ix] = (BEAT_LENGTH_PX / 4.15) * ix;
       }
       break;
 
-    case 5: //eighthR_two16ths
+    case 5:
       for (let ix = 0; ix < partialSet.length; ix++) {
         partialSet[ix] = (BEAT_LENGTH_PX / 4) * (ix + 2);
       }
       break;
 
-    case 6: //two16th_8thR
+    case 6:
       for (let ix = 0; ix < partialSet.length; ix++) {
         partialSet[ix] = (BEAT_LENGTH_PX / 4) * ix;
       }
@@ -406,20 +387,6 @@ CANVAS_W = CANVAS_MARGIN + PITCH_SETS_W + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANV
 CANVAS_H = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_H + CANVAS_MARGIN;
 //##endef Readjust Canvas Size
 
-//#ef Animation Engine Variables
-let cumulativeChangeBtwnFrames_MS = 0;
-let epochTimeOfLastFrame_MS;
-let animationEngineIsRunning = true;
-//#endef END Animation Engine Variables
-
-//#ef Control Panel Vars
-const CTRLPANEL_W = 89;
-const CTRLPANEL_H = 200;
-const CTRLPANEL_BTN_W = 60;
-const CTRLPANEL_BTN_H = 35;
-const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
-const CTRLPANEL_MARGIN = 7;
-//#endef END Control Panel Vars
 
 //#ef SOCKET IO
 let ioConnection;
@@ -431,13 +398,6 @@ if (window.location.hostname == 'localhost') {
 }
 const SOCKET = ioConnection;
 //#endef > END SOCKET IO
-
-//#ef TIMESYNC
-const TS = timesync.create({
-  server: '/timesync',
-  interval: 1000
-});
-//#endef TIMESYNC
 
 
 //#endef GLOBAL VARIABLES
@@ -460,14 +420,14 @@ function init() {
   makeBouncingBalls();
   makeStaffNotation();
   makeScrollingTempoCursors();
-  makeScrollingCursorBbs();
   makePlayerTokens();
   makeSigns();
   makeUnisonSigns();
   makeUnisonToken();
   makePitchSets();
   makeArticulations();
-  makeControlPanel();
+
+
 
 
   RENDERER.render(SCENE, CAMERA);
@@ -504,6 +464,8 @@ function processUrlArgs() {
 //#endef PROCESS URL ARGS
 
 //#ef GENERATE SCORE DATA
+
+
 function generateScoreData() {
 
 
@@ -527,7 +489,6 @@ function generateScoreData() {
   scoreDataObject['leadIn_unisonFlagLocs'] = [];
   scoreDataObject['unisonPlayerTokenTempoNum'] = [];
   scoreDataObject['motiveSet'] = [];
-  scoreDataObject['pitchSets'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -550,6 +511,8 @@ function generateScoreData() {
 
 
     //##ef Calculate Loop Length & Go Frames
+
+
     // make about 11 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
     let framesPerBeat = FRAMERATE / (tempo / 60);
     let beatsPerCycle = Math.round(tempo * 11);
@@ -573,9 +536,12 @@ function generateScoreData() {
     // goFrames_thisTempo.pop();
 
     scoreDataObject.goFrames_perTempo.push(goFrames_thisTempo);
+
+
     //##endef Calculate Loop Length & Go Frames
 
     //##ef Calculate Tempo Fret Locations Per Frame
+
 
     //###ef Tempo Fret Main Cycle
     let tempoFretLocs_thisTempo = [];
@@ -583,7 +549,7 @@ function generateScoreData() {
     //Add RUNWAY_LENGTH_FRAMES worth of goframes to end of goframes set so that there is a smooth transition
     let goFrames_thisTempo_plus = deepCopy(goFrames_thisTempo);
     goFrames_thisTempo.forEach((goFrm) => {
-      if (goFrm <= RUNWAY_LENGTH_FRAMES && goFrm > 0) { // Find set of go frames from first to the go frame at end of runway at the start of piece; add these to end so that you have a full runway of tempo frets before you loop; >0 because if you include first go frame you will double up
+      if (goFrm <= RUNWAY_LENGTH_FRAMES) {
         goFrames_thisTempo_plus.push(goFrm + tempoFretsLoopLengthInFrames_thisTempo);
       }
     });
@@ -596,7 +562,7 @@ function generateScoreData() {
       goFrames_thisTempo_plus.forEach((goFrame) => { //look at each go frame to see if it is on scene
         //Look at each go frame for every frame in cycle
         //only include go frames that are on scene
-        if (goFrame >= (currFrameNumber - 1) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
+        if (goFrame >= (currFrameNumber - 30) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
 
           let framesUntilGo = goFrame - currFrameNumber; //Guarantee that each goFrame will have a 0/GO_Z fret location
           let pxUntilGo = framesUntilGo * PX_PER_FRAME;
@@ -611,7 +577,6 @@ function generateScoreData() {
     } //for (let currFrameNumber = 0; currFrameNumber < tempoFretsLoopLengthInFrames_thisTempo; currFrameNumber++) END
 
     scoreDataObject.tempoFretLocations_perTempo.push(tempoFretLocs_thisTempo);
-
     //###endef Tempo Fret Main Cycle
 
     //###ef Tempo Fret Lead In
@@ -646,6 +611,7 @@ function generateScoreData() {
     scoreDataObject.leadIn_tempoFretLocations_perTempo.push(tempoFretLocs_leadIn_thisTempo);
     //###endef Tempo Fret Lead In
 
+
     //##endef Calculate Tempo Fret Locations Per Frame
 
     //##ef Calculate Go Frets Blink
@@ -677,7 +643,7 @@ function generateScoreData() {
 
     //##ef Main Cycle
     let bbYpos_thisTempo = [];
-    let bbLeadIn = [];
+    let leadInAscent = [];
 
     goFrames_thisTempo.forEach((goFrm, goFrmIx) => { //goFrames_thisTempo contains the frame number of each go frame
 
@@ -698,15 +664,13 @@ function generateScoreData() {
         }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
 
         ascentPlot.forEach((ascentPos) => {
-
           let tBbY = BBCIRC_TOP_CY + ascentPos.y; //calculate the absolute y position of bb
           bbYpos_thisTempo.push(Math.round(tBbY)); //populate bbYpos_thisTempo array with bby position for every frame
 
           //save first bounce for lead-in
           if (goFrmIx == 1) {
-            bbLeadIn.push(tBbY);
+            leadInAscent.push(tBbY);
           }
-
         }); // ascentPlot.forEach((ascentPos) => END
 
         let descentPlot = plot(function(x) {
@@ -714,15 +678,8 @@ function generateScoreData() {
         }, [0, 1, 0, 1], numFramesDown, BB_TRAVEL_DIST);
 
         descentPlot.forEach((descentPos) => {
-
           let tBbY = BBCIRC_BOTTOM_CY - descentPos.y;
           bbYpos_thisTempo.push(Math.round(tBbY));
-
-          //save first bounce for lead-in
-          if (goFrmIx == 1) {
-            bbLeadIn.push(tBbY);
-          }
-
         }); // descentPlot.forEach((descentPos) => END
 
       } // if(goFrmIx>0) END
@@ -735,10 +692,9 @@ function generateScoreData() {
     //##ef Lead In
     let leadIn_bbYpos_thisTempo = [];
     //make 1 ascent just before first beat
-    bbLeadIn.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
+    leadInAscent.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
       leadIn_bbYpos_thisTempo.push(bbYpos);
     });
-
     scoreDataObject.leadIn_bbYpos_perTempo.push(leadIn_bbYpos_thisTempo);
     //##endef Lead In
 
@@ -746,6 +702,8 @@ function generateScoreData() {
     //##endef Calculate BBs
 
     //##ef Calculate Scrolling Cursors
+
+
     //look at every go frame, starting at 1; calc num frames since last go frame; map the distance between two beat coordinates
     let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
     let currBeatNum_InLoop = 0;
@@ -769,6 +727,8 @@ function generateScoreData() {
     }); // goFrames_thisTempo.forEach((goFrameNumber, ix) => END
 
     scoreDataObject.scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
+
+
     //##endef Calculate Scrolling Cursors
 
 
@@ -1232,16 +1192,16 @@ function generateScoreData() {
 
   //Make big set of motive change objects: {motiveNum:, time:}
   let motiveChangeTimesObjSet = [];
-  let chgFrmNum = Math.round(choose(dursBtwnMotiveChgSet) * FRAMERATE);
-  let orderedMotiveNumSetIx = 0;
-  while (chgFrmNum < motiveSetByFrame_length) { //Avoid while infinite loops see break at end of this loop
+  let chgFrmNum = 0;
+  for (let i = 0; i < 200000; i++) { //Avoid while infinite loops see break at end of this loop
     let tObj = {};
-    tObj['motiveNum'] = orderedMotiveNumSet[orderedMotiveNumSetIx];
-    orderedMotiveNumSetIx++;
-    tObj['frame'] = chgFrmNum;
-    motiveChangeTimesObjSet.push(tObj);
     let timeToNextMotiveChg = choose(dursBtwnMotiveChgSet);
     chgFrmNum = chgFrmNum + Math.round(timeToNextMotiveChg * FRAMERATE);
+    tObj['motiveNum'] = orderedMotiveNumSet[i];
+    tObj['frame'] = chgFrmNum;
+    motiveChangeTimesObjSet.push(tObj);
+
+    if (chgFrmNum > motiveSetByFrame_length) break;
   } // for (let i = 0; i < 100000; i++) END
   //###endef CALCULATE WHEN(FRAME) TO CHANGE MOTIVES
   //RESULTS:
@@ -1276,6 +1236,7 @@ function generateScoreData() {
   //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
   //RESULTS:
   //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
+  // console.log(articulationChgByFrame);
 
   //###ef POPULATE MASTER SET TO REPLACE LATER
   //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
@@ -1295,7 +1256,6 @@ function generateScoreData() {
   //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
 
   //###ef MAKE ALL RESTS CHANGES
-  let previousSetWithRests = deepCopy(motiveChgByFrameSet_currSet);
   for (var restIx = 1; restIx < restsByFrame.length; restIx++) { //determine what the motive set is for this change then fill in til next change
 
     let restObj = restsByFrame[restIx - 1]; //{frame:,restType}
@@ -1305,43 +1265,138 @@ function generateScoreData() {
     let next_restFrame = next_restObj.frame;
     let next_restType = next_restObj.restType;
 
-    let tNotesSet = deepCopy(previousSetWithRests); //tNotesSet becomes the set to update
+    let tNotesSet = deepCopy(motiveChgByFrameSet_currSet); //tNotesSet becomes the set to update
     //<<tNotesSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
-
-    //Make set of current beats with rests or motives
-    let beatsWithMotives = []; //[beatNums]
-    let beatsWithRests = []; //[beatNums]
-    tNotesSet.forEach((mObj, beatNum) => {
-      if (mObj.motiveNum == 99) beatsWithMotives.push(beatNum);
-      else if (mObj.motiveNum == -1) beatsWithRests.push(beatNum);
-    });
 
     // Add Rest
     if (restType == 1) { // if restType == 1, add rest
-      let t_newRest_beatNum = choose(beatsWithMotives);
-      tNotesSet[t_newRest_beatNum].motiveNum = -1;
+      for (var i = 0; i < 99; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
+
+        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
+
+        if (tNotesSet[tChoice].motiveNum != -1) { //you got a non-rest
+
+          tNotesSet[tChoice].motiveNum = -1; //add a rest //turn this non-rest into a rest
+
+          //Copy tNotesSet over range from the frame of this rest change to the next rest change
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
+
+            //UPDATE MASTER SET
+            //Copy this altered set of motives and articulations for this frame to the master set
+            let tSet = deepCopy(tNotesSet);
+            motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
+
+          } //for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change END
+
+          // Update the current set of motives for next round to alter
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet); //this is the new set for the next time to compare to
+
+          break; //break the < 99 loop
+
+        } // if (tNotesSet[tChoice.motiveNum] != -1) { //you got a non-rest END
+
+      } //   for (var i = 0; i < 99; i++) END
     } // if (restType == 1) { END
     //
     //Remove Rest, add motive
     else if (restType == 0) { //Remove Rest, add motive
-      let t_newMotive_beatNum = choose(beatsWithRests);
-      tNotesSet[t_newMotive_beatNum].motiveNum = 99;
+      for (var i = 0; i < 99; i++) { // keep choosing until you get a non-rest (!=-1) <1000 is to avoid infinite while loop
+
+        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
+
+        if (tNotesSet[tChoice].motiveNum == -1) { //you got a rest
+
+          tNotesSet[tChoice].motiveNum = 99; //placeholder for motive; replaced below
+
+          //Copy tNotesSet over range from the frame of this rest change to the next rest change
+          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
+
+            //UPDATE MASTER SET
+            //Copy this altered set of motives and articulations for this frame to the master set
+            let tSet = deepCopy(tNotesSet);
+            motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
+
+          } //for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change END
+
+          // Update the current set of motives for next round to alter
+          motiveChgByFrameSet_currSet = deepCopy(tNotesSet); //this is the new set for the next time to compare to
+
+          break; //break the < 1000 loop
+
+        } // if (tNotesSet[tChoice.motiveNum] != -1) { //you got a non-rest END
+
+      } //   for (var i = 0; i < 1000; i++) END
     } // else if (restType == 0) { //Remove Rest, add motive END
 
-    //Copy tNotesSet over range from the frame of this rest change to the next rest change
-    for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change
+  } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
+
+  //###endef MAKE ALL RESTS CHANGES
+  //RESULTS:
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests only
+
+  //###ef MAKE ALL MOTIVE CHANGES
+  let previousSetMotiveByBeatNum = []; //{beatNum:,motiveNum:}
+  for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { //determine what the motive set is for this change then fill in til next change
+
+    let motiveObj = motiveChangeTimesObjSet[motiveIx - 1]; //{motiveNum:,frame:}
+    let motiveFrame = motiveObj.frame;
+    let motiveType = motiveObj.motiveNum;
+    let next_motiveObj = motiveChangeTimesObjSet[motiveIx];
+    let next_motiveFrame = next_motiveObj.frame;
+    let next_motiveType = next_motiveObj.motiveNum;
+
+    let tempRestMotiveSet = deepCopy(motiveChgByFrameSet[motiveFrame]); //tempRestMotiveSet has where rests are, change one of the non-rests(motives)
+    //<<tempRestMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+    //figure out which beats from the rests array are non-rests; these will all be motiveNum=99
+    let nonRestIxSet = [];
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      if (mObj.motiveNum == 99) nonRestIxSet.push(mIx);
+    });
+    //Compare nonRestIxSet with previousSetMotiveByBeatNum
+    //Replace any matches with the beatNum from previousSetMotiveByBeatNum with its motiveNum
+    nonRestIxSet.forEach((nonRestIx) => {
+      previousSetMotiveByBeatNum.forEach((psObj) => { //{beatNum:,motiveNum:}
+        if (nonRestIx == psObj.beatNum) tempRestMotiveSet[nonRestIx].motiveNum = psObj.motiveNum;
+      });
+    });
+    //make set of indexes of 99s, if no 99s then add indexes of other motives
+    let setOfIxToChange = [];
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      if (mObj.motiveNum == 99) setOfIxToChange.push(mIx);
+    });
+    if (setOfIxToChange.length == 0) {
+      tempRestMotiveSet.forEach((mObj, mIx) => {
+        if (mObj.motiveNum != -1) setOfIxToChange.push(mIx);
+      });
+    }
+    let ixToChange = choose(setOfIxToChange);
+
+    tempRestMotiveSet[ixToChange].motiveNum = motiveType;
+
+    //Update previousSetMotiveByBeatNum
+    previousSetMotiveByBeatNum = [];
+    let tMotiveByBeatNumObj = {}; //{beatNum:,motiveNum:}
+    tempRestMotiveSet.forEach((mObj, mIx) => {
+      let tMotiveByBeatNumObj = {}; //{beatNum:,motiveNum:}
+      if (mObj.motiveNum != -1 && mObj.motiveNum != 99) {
+        tMotiveByBeatNumObj['beatNum'] = mIx;
+        tMotiveByBeatNumObj['motiveNum'] = mObj.motiveNum;
+        previousSetMotiveByBeatNum.push(tMotiveByBeatNumObj);
+      }
+    });
+
+    //Copy this updated set from this motive Change to the next motive change
+    for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change
 
       //UPDATE MASTER SET
       //Copy this altered set of motives and articulations for this frame to the master set
-      let tSet = deepCopy(tNotesSet);
-      motiveChgByFrameSet[frmIx] = tSet; //replace each set in master set with this new set until next rest change
+      motiveChgByFrameSet[frmIx] = deepCopy(tempRestMotiveSet); //replace each set in master set with this new set until next rest change
 
-    } //for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) { //from this restChange to the next rest change END
+    } // for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change END
 
-    // Update the current set of motives for next round to alter
-    previousSetWithRests = deepCopy(tNotesSet); //this is the new set for the next time to compare to
+    motiveChgCurrSet = deepCopy(tempRestMotiveSet);
 
-  } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
+  } // for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { END
 
   //Change all the 99s to 0 or Quarters
   motiveChgByFrameSet.forEach((setOfMotiveObj) => {
@@ -1349,202 +1404,14 @@ function generateScoreData() {
       if (mObj.motiveNum == 99) mObj.motiveNum = 0;
     });
   });
-
-  let motiveSet_restsOnly = deepCopy(motiveChgByFrameSet);
-
-  //###endef MAKE ALL RESTS CHANGES
-  //RESULTS:
-  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests only
-  //<<motiveSet_restsOnly{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests only
-
-  //###ef MAKE ALL MOTIVE CHANGES
-  let previousMotivesSet = deepCopy(motiveSet_restsOnly[0]);
-  for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { //determine what the motive set is for this change then fill in til next change
-
-    let this_motiveObj = motiveChangeTimesObjSet[motiveIx - 1]; //{motiveNum:,frame:}
-    let this_motiveFrame = this_motiveObj.frame;
-    let this_motiveType = this_motiveObj.motiveNum;
-    let next_motiveObj = motiveChangeTimesObjSet[motiveIx];
-    let next_motiveFrame = next_motiveObj.frame;
-
-
-    for (let frmIx = this_motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change
-
-      let tempRestMotiveSet = deepCopy(motiveSet_restsOnly[frmIx]); //tempRestMotiveSet has where rests are, change one of the non-rests(motives)
-
-      //Copy the previous set's motives into the rest's only set
-      tempRestMotiveSet.forEach((restsObj, restsBeatNum) => { //set with just rests
-        if (restsObj.motiveNum != -1) { //if this beat's motive is not a rest in the justRests set
-          if (previousMotivesSet[restsBeatNum].motiveNum != -1) { //if the last motive set for this beat's motiveNum is a motive
-            tempRestMotiveSet[restsBeatNum].motiveNum = previousMotivesSet[restsBeatNum].motiveNum;
-          }
-        }
-      });
-
-      //Update one of the motives for the first iteration of this loop; then the rest of the loop just looks for rest changes
-      if (frmIx == this_motiveFrame) {
-        let setOfBeatsToChange = [];
-        tempRestMotiveSet.forEach((mObj, beatNum) => {
-          if (mObj.motiveNum != -1) setOfBeatsToChange.push(beatNum);
-        });
-        let beatToChange = choose(setOfBeatsToChange);
-        tempRestMotiveSet[beatToChange].motiveNum = this_motiveType;
-      }
-
-      motiveChgByFrameSet[frmIx] = deepCopy(tempRestMotiveSet);
-      previousMotivesSet = deepCopy(tempRestMotiveSet);
-
-    } // for (let frmIx = this_motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change END
-
-  } // for (var motiveIx = 1; motiveIx < motiveChangeTimesObjSet.length; motiveIx++) { END
-
-  let motiveChgByFrameSet_motivesAndRestsOnly = deepCopy(motiveChgByFrameSet);
-
   //###endef MAKE ALL MOTIVE CHANGES
   //RESULTS:
   //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests & motives
-  //<<motiveChgByFrameSet_motivesAndRestsOnly{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>> //With rests & motives
 
   //###ef ADD ARTICULATIONS
 
   //<<articulationChgByFrame{type:,frame:}>>
-  let previousArticulationSet = motiveChgByFrameSet[0]; //{ motiveNum:, articulations:[ {articulationType:,x:,y:,partialNum:} ] }
-  console.log(previousArticulationSet);
-
-  for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
-
-    let this_artObj = articulationChgByFrame[artIx - 1]; //{type:,frame:}
-    let this_artFrame = this_artObj.frame;
-    let this_artType = this_artObj.type;
-    let next_artObj = articulationChgByFrame[artIx];
-    let next_artFrame = next_artObj.frame;
-
-    for (let frmIx = this_artFrame; frmIx < next_artFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change
-
-      let tempMotiveSet = deepCopy(motiveChgByFrameSet_motivesAndRestsOnly[frmIx]); //tempRestMotiveSet has where rests are, change one of the non-rests(motives)
-
-      //if motives from previous frame's set has articulations
-      // check if current motives and rests only has those same motives
-      //copy the articulations over
-      //Copy the previous set's motives into the rest's only set
-      tempMotiveSet.forEach((motiveOnlyObj, motiveOnlyBeatNum) => { //set with the right just rests and motives; need to copy articulations over from previous
-        if (motiveOnlyObj.motiveNum != -1) { //if this beat's motive is not a rest
-          if (previousArticulationSet[motiveOnlyBeatNum].motiveNum == motiveOnlyObj.motiveNum) { //if the motiveOnly motive is the same as the previousArticulationSet motive
-            tempMotiveSet[motiveOnlyBeatNum].articulations = previousArticulationSet[motiveOnlyBeatNum].articulations; //copy articulations over
-          }
-        }
-      });
-
-      //Update one of the motives for the first iteration of this loop; then the rest of the loop just looks for motive changes
-      if (frmIx == this_artFrame) {
-
-        //Find out how many articulations per motive and which beats
-        let thisSetMotivesAndArts = []; //{beatNum:, motiveNum:, availablePartials:, hasPartials:}
-        tempMotiveSet.forEach((tmObj, bNum1) => {
-
-          let tMotNum = tmObj.motiveNum;
-
-          if (tMotNum != -1) {
-            let tObj = {};
-            tObj['beatNum'] = bNum1;
-            tObj['motiveNum'] = tMotNum;
-            tObj['availablePartials'] = [];
-            tObj['hasPartials'] = false;
-            //look at motiveNum, see how many partials, see if any available partials
-            let numAvailablePartials = articulationPosByMotive[tMotNum].length;
-            if (numAvailablePartials > tmObj.articulations.length) {
-              //make numbered set of available partials for this motive
-              let availPartialsSet = numberedSetFromSize({
-                sz: articulationPosByMotive[tMotNum].length
-              });
-              tmObj.articulations.forEach((t_artObj3) => {
-                if (t_artObj3.partialNum != -1) {
-                  const takenPartialIx = availPartialsSet.indexOf(t_artObj3.partialNum);
-                  availPartialsSet.splice(takenPartialIx, 1);
-                }
-              });
-              tObj.availablePartials = deepCopy(availPartialsSet);
-            }
-            //see if there are articulations
-
-            if (tmObj.articulations.length > 0) {
-              tObj.hasPartials = true;
-            }
-
-
-            thisSetMotivesAndArts.push(tObj);
-
-          }
-
-        });
-
-        //choose a beat to add or subtract a motive
-        if (this_artType == 0) { //type:0 means subtracting articulation
-          let beatsToSubtractArticulation = [];
-          thisSetMotivesAndArts.forEach((t_artObj) => { //{beatNum:, motiveNum:, availablePartials:, hasPartials:}
-            if (t_artObj.hasPartials) beatsToSubtractArticulation.push(t_artObj.beatNum);
-          });
-
-          if (beatsToSubtractArticulation.length > 0) {
-            let beatToSubtractArticulation = choose(beatsToSubtractArticulation);
-            for (let ii = 0; ii < tempMotiveSet[beatToSubtractArticulation].articulations.length; ii++) {
-              if (tempMotiveSet[beatToSubtractArticulation].articulations[ii].partialNum != -1) {
-                tempMotiveSet[beatToSubtractArticulation].articulations[ii] = {
-                  articulationType: -1,
-                  x: 0,
-                  y: 0,
-                  partialNum: -1
-                };
-              }
-            }
-
-          }
-
-        } //  if (this_artType == 0)
-
-        //choose a beat to add or subtract a motive
-        else if (this_artType == 1) { //type:1 means adding articulation
-
-          let beatsToAddArticulation = [];
-          thisSetMotivesAndArts.forEach((t_artObj) => { //{beatNum:, motiveNum:, availablePartials:, hasPartials:}
-            if (t_artObj.availablePartials.length > 0) {
-              t_obj9 = {};
-              t_obj9['beatNum'] = t_artObj.beatNum;
-              t_obj9['availablePartials'] = t_artObj.availablePartials;
-              t_obj9['motiveNum'] = t_artObj.motiveNum;
-              beatsToAddArticulation.push(t_obj9);
-            }
-          });
-
-          let beatToAddArticulationObj = choose(beatsToAddArticulation);
-          let partialToAddArt = choose(beatToAddArticulationObj.availablePartials);
-          let tXpos = beatCoords[beatToAddArticulationObj.beatNum].x + articulationPosByMotive[beatToAddArticulationObj.motiveNum][partialToAddArt];
-          let tYpos = beatCoords[beatToAddArticulationObj.beatNum].y;
-          tempMotiveSet[beatToAddArticulationObj.beatNum].articulations.push({
-            articulationType: 0,
-            x: tXpos,
-            y: tYpos,
-            partialNum: partialToAddArt
-          })
-
-
-
-        } //  else if (this_artType == 1)
-
-      } //if (frmIx == this_artFrame)
-
-      motiveChgByFrameSet[frmIx] = deepCopy(tempMotiveSet);
-      previousArticulationSet = deepCopy(tempMotiveSet);
-    } //for (let frmIx = this_artFrame; frmIx < next_artFrame; frmIx++)
-  } //for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++)
-
-  //###endef ADD ARTICULATIONS
-
-  /*
-  //###ef ADD ARTICULATIONS OLD
-
-  //<<articulationChgByFrame{type:,frame:}>>
-  let previousSetWithArticulations = []; //{ motiveNum:, articulations:[ {articulationType:,x:,y:,partialNum:} ] }
+  let previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:,partialNum:}], beatNum}
   for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
 
     let this_artObj = articulationChgByFrame[artIx - 1]; //{type:,frame:}
@@ -1554,30 +1421,23 @@ function generateScoreData() {
     let next_artFrame = next_artObj.frame;
     let next_artType = next_artObj.artNum;
 
-    let tempMotiveSet = deepCopy(motiveChgByFrameSet[this_artFrame]); //tempMotiveSet has where rests and motives are
+    // console.log(this_artFrame);
+
+    let tempMotiveSet = deepCopy(motiveChgByFrameSet[this_artFrame]); //tempMotiveSet has where rests and motuves are
     //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+    // console.log(tempMotiveSet);
 
-    // Compare tempMotiveSet, which at this point is only rests and motives and no articulations
-    // with previousSetWithArticulations (same format as tempMotiveSet)
-    // see what motives are now in tempMotiveSet and which beats
-    // if previousSetWithArticulations has the same motive at the same beat, then copy over the articulations
-    previousSetWithArticulations.forEach((prevSetObj, prevSetBeatNum) => {
-      let prevSetMotiveNum = prevSetObj.motiveNum;
-      let prevSetArticulations = prevSetObj.articulations;
+    // fill in previous sets articulations
+    previousSetArticulationsByBeatNum.forEach((aObj) => {
 
-      tempMotiveSet.forEach((currMotiveRestOnlyObj, currMotiveRestOnlyBeatNum) => {
-        let currMotiveRestOnlyMotiveNum = currMotiveRestOnlyObj.motiveNum;
+      let tArtSetThisBeat = aObj.articulations;
+      let tBeatNum = aObj.beatNum;
 
-        if (currMotiveRestOnlyMotiveNum != -1) { //make sure this beat did not become a rest
-          if (prevSetBeatNum == currMotiveRestOnlyBeatNum && prevSetMotiveNum == currMotiveRestOnlyMotiveNum) {
-            currMotiveRestOnlyObj.articulations = prevSetArticulations; //add articulations from previous iteration into this set
-          } // if (prevSetBeatNum == currMotiveRestOnlyBeatNum && prevSetMotiveNum == currMotiveRestOnlyMotiveNum)
-        } //if (currMotiveRestOnlyMotiveNum != -1)
+      tempMotiveSet.forEach((tMotiveObj, motIx) => {
+        if (tBeatNum == motIx) tMotiveObj.articulations = tArtSetThisBeat;
+      });
 
-      }); // tempMotiveSet.forEach((currMotiveRestOnlyObj, currMotiveRestOnlyBeatNum) =>
-
-    }); //   previousSetWithArticulations.forEach((prevSetObj, prevSetBeatNum) =>
-
+    }); // previousSetArticulationsByBeatNum.forEach((aObj) =>
 
     //Find out how many articulations per motive and which beats
     let thisSetMotivesAndArts = []; //{beatNum:, motiveNum:, articulationsSet:}
@@ -1594,9 +1454,11 @@ function generateScoreData() {
       }
 
     });
+    // console.log(thisSetMotivesAndArts);
 
     //If subtracting, randomly choose beat with articulation and Remove
     if (this_artType == 0) { //type:0 means subtracting articulation
+      // console.log('sub');
 
       let tSetToRmv = [];
       thisSetMotivesAndArts.forEach((mSet) => {
@@ -1619,6 +1481,7 @@ function generateScoreData() {
     //  randomly choose between these and add
     //  calculate x ad y pos
     else if (this_artType == 1) { //adding an articulation
+      // console.log('adding');
 
       let tSetBeatsToAddArt = []; // {beatNum:,partialNumsTaken:} //which beats have motives that do not have more than max num articulations & have available partials to add articulation
 
@@ -1648,6 +1511,7 @@ function generateScoreData() {
 
 
       }); // thisSetMotivesAndArts.forEach((mSet) => { //{  beatNum:, motiveNum:, articulationsSet: [ {articulationType:, x:, y:, partialNum:} ]  }
+      // console.log(tSetBeatsToAddArt);
 
       //Choose a beat from tSetBeatsToAddArt if available and add an
       if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
@@ -1658,6 +1522,8 @@ function generateScoreData() {
         let t_motiveToUse = tempMotiveSet[t_beatNum].motiveNum; //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
         let t_setOfPartialsToUse = [];
 
+        // console.log(t_motiveToUse);
+
         //find correct motive to find num partials available in this motive
         let t_numPartialsThisMotive = 0;
         motiveInfoSet.forEach((t_motiveInfoObj) => {
@@ -1665,6 +1531,7 @@ function generateScoreData() {
             t_numPartialsThisMotive = t_motiveInfoObj.numPartials;
           }
         });
+        // console.log('numPartThisMotive: ' + t_numPartialsThisMotive);
 
         //Go through num of partials in this motive find which partials can add an articulation
         for (let pNum = 0; pNum < t_numPartialsThisMotive; pNum++) {
@@ -1675,8 +1542,10 @@ function generateScoreData() {
           });
           if (t_partAvailable) t_setOfPartialsToUse.push(pNum); //if not in taken set, available
         } //for(let pNum=0;pNum<motiveInfoSet[t_motiveToUse].numPartials;pNum++)
+        // console.log(t_setOfPartialsToUse);
 
         let t_partialToUse = choose(t_setOfPartialsToUse);
+        // console.log(t_partialToUse);
 
         //Calc X/y pos
         //articulationPosByMotive[motiveNum][partialNum]
@@ -1692,6 +1561,8 @@ function generateScoreData() {
         })
 
       } //   if (tSetBeatsToAddArt.length > 0) { //make sure there are beats available to add articulations to
+      // console.log(tempMotiveSet); //updated
+
 
     } // else if (this_artType == 1) { //adding an articulation
 
@@ -1705,56 +1576,44 @@ function generateScoreData() {
 
     } // for (let frmIx = motiveFrame; frmIx < next_motiveFrame; frmIx++) { //fill in this updated set from this motive Change to the next motive change END
 
-    previousSetWithArticulations = []; //{articulations:[{articulationType:,x:,y:,partialNum:}], beatNum} //reset this set
+    previousSetArticulationsByBeatNum = []; //{articulations:[{articulationType:,x:,y:,partialNum:}], beatNum} //reset this set
     //<<tempMotiveSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
 
-    //update previousSetWithArticulations for next change
-    previousSetWithArticulations = deepCopy(tempMotiveSet);
+    //update previousSetArticulationsByBeatNum for next change
+    tempMotiveSet.forEach((t_motObj, t_beatNum) => {
+      previousSetArticulationsByBeatNum.push({
+        articulations: t_motObj.articulations,
+        beatNum: t_beatNum
+      });
+    });
+
 
   } //   for (var artIx = 1; artIx < articulationChgByFrame.length; artIx++) { //determine what the motive set is for this change then fill in til next change
 
 
   //###endef ADD ARTICULATIONS
-  */
+
+  console.log(motiveChgByFrameSet);
+
 
   scoreDataObject.motiveSet = motiveChgByFrameSet;
 
 
   //##endef CALCULATIONS FOR NOTATION
 
-  //##ef CALCULATIONS FOR PITCH SETS
-
-  let availablePitchSetNumbers = []; //make a numbered Set of all available pitch sets
-  for (let i = 0; i < pitchSetsDictionary.length; i++) availablePitchSetNumbers.push(i);
-  let setOfPitchSetNumbers = cycleThroughSet_palindrome(availablePitchSetNumbers, 99); //create a long list of pitch set numbers in a palindrome
-  // Decide which frames to change pitch sets, add to main array
-  let pitchSetChangesByFrame = [];
-  let nextFrameToChangePs = 0;
-  let currPsIx = 0;
-  let currPs = 0;
-  for (let fIx = 0; fIx < motiveChgByFrameSet.length; fIx++) {
-    if (fIx == nextFrameToChangePs) { //if this is a change frame, update the currPs and update all the iterators
-      currPs = setOfPitchSetNumbers[currPsIx];
-      //UPDATE
-      currPsIx++;
-      nextFrameToChangePs = nextFrameToChangePs + (rrandInt(24, 37) * FRAMERATE); //change pitch sets every 24-37 seconds
-    }
-    pitchSetChangesByFrame.push(currPs);
-  }
-  scoreDataObject.pitchSets = pitchSetChangesByFrame;
-
-
-  //##endef CALCULATIONS FOR PITCH SETS
-
 
   return scoreDataObject;
+
 } // function generateScoreData() END
+
+
 //#endef GENERATE SCORE DATA
 
 //#ef SCORE DATA MANAGER
 
 
 function makeScoreDataManager() {
+
   // #ef Score Data Manager Panel
 
   let scoreDataManagerW = 300;
@@ -1938,6 +1797,7 @@ function makeScoreDataManager() {
   //#endef END Load Score Data from Server Button
 
   scoreDataManagerPanel.smallify();
+
 } // function makeScoreDataManager() END
 
 
@@ -2098,6 +1958,8 @@ function makeGoFrets() {
 //##endef Make Go Frets
 
 //##ef Make Tempo Frets
+
+
 function makeTempoFrets() {
 
   let tempoFretGeometry = new THREE.BoxBufferGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
@@ -2126,9 +1988,13 @@ function makeTempoFrets() {
   }); //xPosOfTracks.forEach((trXpos) END
 
 } //makeTempoFrets() end
+
+
 //##endef Make Tempo Frets
 
 //##ef Make BBs
+
+
 function makeBouncingBalls() {
 
   for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) {
@@ -2153,7 +2019,7 @@ function makeBouncingBalls() {
     bbSet[bbIx]['bbCirc'] = mkSvgCircle({
       svgContainer: bbSet[bbIx].svgCont,
       cx: BB_CENTER,
-      cy: BBCIRC_BOTTOM_CY,
+      cy: BBCIRC_TOP_CY,
       r: BBCIRC_R,
       fill: TEMPO_COLORS[bbIx],
       stroke: 'white',
@@ -2194,6 +2060,8 @@ function makeBouncingBalls() {
   } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
 
 } //makeBouncingBalls() end
+
+
 //##endef Make BBs
 
 //##ef Make Staff Notation
@@ -2250,8 +2118,8 @@ function makeStaffNotation() {
 
       let tLabel = motiveObj.lbl;
       let motiveNum = motiveObj.num;
+      // let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
       let tDisp = motiveObj.num == 0 ? 'yes' : 'none'; //initial notation displayed
-      // let tDisp = motiveObj.num == 3 ? 'yes' : 'none'; //initial notation displayed
 
       // Create HTML SVG image
       let tSvgImage = document.createElementNS(SVG_NS, "image");
@@ -2296,77 +2164,19 @@ function makeScrollingTempoCursors() {
     tempoCursors.push(tLine);
 
   } //for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
-  // tempoCursors[0].setAttributeNS(null, 'display', 'yes');
-  // tempoCursors[0].setAttributeNS(null, 'transform', 'translate(' + beatCoords[3].x.toString() + ',' + beatCoords[3].y.toString() + ')');
+
 } // function makeScrollingTempoCursors() END
 
 
 //##endef Make Scrolling Tempo Cursors
 
-//##ef Make Scrolling Cursor BBs
-
-
-function makeScrollingCursorBbs() {
-  // scrollingCsrBbsObjSet
-  for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) {
-
-    scrollingCsrBbsObjSet[csrBbIx]['rect'] = mkSvgRect({
-      svgContainer: rhythmicNotationObj.svgCont,
-      w: SCRBB_W,
-      h: SCRBB_H,
-      x: SCRBB_LEFT,
-      y: SCRBB_TOP,
-      fill: 'white',
-      stroke: 'black',
-      strokeW: 0,
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx]['ball'] = mkSvgCircle({
-      svgContainer: rhythmicNotationObj.svgCont,
-      cx: SCRBB_CENTER,
-      cy: SCRBBCIRC_TOP_CY,
-      r: SCRBBCIRC_R,
-      fill: TEMPO_COLORS[csrBbIx],
-      stroke: 'white',
-      strokeW: 0
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOff'] = mkSvgLine({
-      svgContainer: rhythmicNotationObj.svgCont,
-      x1: SCRBB_LEFT,
-      y1: SCRBB_BOUNCE_WEIGHT_HALF,
-      x2: -SCRBB_GAP,
-      y2: SCRBB_BOUNCE_WEIGHT_HALF,
-      stroke: 'black',
-      strokeW: SCRBB_BOUNCE_WEIGHT
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOn'] = mkSvgLine({
-      svgContainer: rhythmicNotationObj.svgCont,
-      x1: SCRBB_LEFT,
-      y1: SCRBB_BOUNCE_WEIGHT_HALF,
-      x2: -SCRBB_GAP,
-      y2: SCRBB_BOUNCE_WEIGHT_HALF,
-      stroke: 'yellow',
-      strokeW: SCRBB_BOUNCE_WEIGHT
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx].rect.setAttributeNS(null, 'display', 'none');
-    scrollingCsrBbsObjSet[csrBbIx].ball.setAttributeNS(null, 'display', 'none');
-    scrollingCsrBbsObjSet[csrBbIx].bouncePadOn.setAttributeNS(null, 'display', 'none');
-    scrollingCsrBbsObjSet[csrBbIx].bouncePadOff.setAttributeNS(null, 'display', 'none');
-
-  } //for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) END
-
-} //function makeScrollingCursorBbs() END
-
-
-//##endef Make Scrolling Cursor BBs
-
 //##ef Make Player Tokens
+
+
 //Make number-of-players worth of tokens for each tempo
 function makePlayerTokens() {
-  //circle, triangle, diamond, watermellon, square
+
+  //circle, triangle, diamond, watermellon, square,
   for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
 
     let tPlrSet = [];
@@ -2382,7 +2192,12 @@ function makePlayerTokens() {
     playerTokens.push(tPlrSet);
 
   } //for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
+  // playerTokens[0][4].svg.setAttributeNS(null, "display", 'yes');
+  // playerTokens[0][4].txt.setAttributeNS(null, "display", 'yes');
+  // playerTokens[0][4].move(beatCoords[4].x, beatCoords[4].y)
 } //function makePlayerTokens() end
+
+
 //##endef Make Player Tokens
 
 //##ef Make Signs
@@ -2586,6 +2401,8 @@ function makePitchSets() {
 //##endef Make Pitch Sets
 
 //##ef Make Articulations
+
+
 function makeArticulations() {
   for (let key in articulationsObj) {
 
@@ -2614,692 +2431,13 @@ function makeArticulations() {
     articulationsSet[tNum] = tArtSet;
 
   } // for (let key in articulationsObj) END
-
 } //function makeArticulations()
+
+
 //##endef Make Articulations
 
 
 //#endef BUILD WORLD
-
-//#ef WIPE/UPDATE/DRAW
-
-
-//##ef Tempo Frets WIPE/UPDATE/DRAW
-
-//###ef wipeTempoFrets
-function wipeTempoFrets() {
-  tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
-    arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
-      tTempoFret.visible = false;
-    });
-  });
-}
-//###endef wipeTempoFrets
-
-//###ef updateTempoFrets
-function updateTempoFrets() {
-
-  //###ef Tempo Frets - Frame by Frame Animation Loop
-  if (FRAMECOUNT >= 0) {
-    scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let tempoFretLocationsSetNum = FRAMECOUNT % setOfTempoFretLocsByFrame.length; //adjust frame count for lead in frames and modulo for cycle length
-
-      setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => { //this goes through the set of tfs that were created at init, only draws the necessary ones and positions them
-
-        tempoFretsPerTrack[tempoIx][tfIx].position.z = loc;
-        tempoFretsPerTrack[tempoIx][tfIx].visible = true;
-
-      }); //setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => END
-
-    }); // scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => END
-  } // if (FRAMECOUNT >= 0) END
-  //###endef Tempo Frets - Frame by Frame Animation Loop
-
-  //###ef Tempo Frets - Lead In Frames
-  if (FRAMECOUNT < 0) {
-
-    scoreData.leadIn_tempoFretLocations_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
-
-      if (-FRAMECOUNT <= thisTempo_tfSet.length) { //FRAMECOUNT is negative; only start lead in set if FRAMECOUNT = the length of lead in tf set for this tempo
-
-        let tfSetIx = thisTempo_tfSet.length + FRAMECOUNT; //count from FRAMECOUNT/thisTempo_tfSet.length and go backwards; ie the first index in set is the furtherest away
-
-        thisTempo_tfSet[tfSetIx].forEach((tfLoc, tfIx) => { //each tf location for this tempo
-
-          tempoFretsPerTrack[tempoIx][tfIx].position.z = tfLoc; //tempoFretsPerTrack is set of tfs already created by tempo
-          tempoFretsPerTrack[tempoIx][tfIx].visible = true;
-
-        }); // tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
-
-      }
-
-    }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
-
-  } // if (FRAMECOUNT < 0) END
-  //###endef Tempo Frets - Lead In Frames
-
-} //function updateTempoFrets()  END
-//###endef updateTempoFrets
-
-//##endef Tempo Frets WIPE/UPDATE/DRAW
-
-//##ef GoFrets WIPE/UPDATE/DRAW
-
-//###ef wipeGoFrets
-function wipeGoFrets() {
-  goFrets.forEach((goFret, fretIx) => {
-    goFretsGo[fretIx].visible = false;
-  });
-}
-//###endef wipeGoFrets
-
-//###ef updateGoFrets
-function updateGoFrets() {
-  if (FRAMECOUNT >= 0) {
-
-    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-
-          goFrets[tempoIx].visible = true;
-          goFretsGo[tempoIx].visible = false;
-
-          break;
-
-        case 1:
-
-          goFrets[tempoIx].visible = false;
-          goFretsGo[tempoIx].visible = true;
-
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } // if (FRAMECOUNT >= 0) END
-} // function updateGoFrets() END
-//###endef updateGoFrets
-
-//##endef GoFrets WIPE/UPDATE/DRAW
-
-//##ef BBs WIPE/UPDATE/DRAW
-
-//###ef wipeBBs
-function wipeBBs() {
-  bbSet.forEach((tbb) => {
-    tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-  }); // bbSet.forEach((tbb) =>
-} // function wipeBbComplex()
-//###endef wipeBBs
-
-// #ef updateBBs
-function updateBBs() {
-
-  if (FRAMECOUNT >= 0) {
-    scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => { // Loop: set of goFrames
-
-      let bbYposSetIx = FRAMECOUNT % bbYposSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-      let tBbCy = bbYposSet[bbYposSetIx];
-
-      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', tBbCy);
-      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'display', 'yes');
-
-    }); // scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => END
-  } // if (FRAMECOUNT >= 0) END
-  //
-  else if (FRAMECOUNT < 0) {
-    scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) => {
-
-      if (-FRAMECOUNT <= leadInSet.length) {
-        let tfSetIx = leadInSet.length + FRAMECOUNT;
-        bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', leadInSet[tfSetIx]);
-      } //  if (-FRAMECOUNT <= leadInSet.length)
-
-    }); // scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) =>  END
-  } // if (FRAMECOUNT >= 0) END
-
-} // function updateBBs() END
-//###endef updateBBs
-
-//###ef updateBbBouncePad
-function updateBbBouncePad() {
-  if (FRAMECOUNT >= 0) {
-
-    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-          break;
-
-        case 1:
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } // if (FRAMECOUNT >= 0) END
-} // function updateBbBouncePad() END
-//###endef updateBbBouncePad
-
-//##endef BBs WIPE/UPDATE/DRAW
-
-//##ef Scrolling Cursors WIPE/UPDATE/DRAW
-
-//###ef wipeTempoCsrs
-function wipeTempoCsrs() {
-  tempoCursors.forEach((tempoCsr) => {
-    tempoCsr.setAttributeNS(null, 'display', 'none');
-  });
-}
-//###endef END wipeTempoCsrs
-
-//###ef updateScrollingCsrs
-function updateScrollingCsrs() {
-  if (FRAMECOUNT > 0) { //No lead in motion for scrolling cursors
-    scoreData.scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
-
-      let setIx = FRAMECOUNT % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-      let tX = posObjSet[setIx].x;
-      let tY1 = posObjSet[setIx].y1;
-      let tY2 = posObjSet[setIx].y2;
-      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
-      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
-
-    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
-  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
-} // function updateScrollingCsrs() END
-//###endef updateScrollingCsrs
-
-//##endef Scrolling Cursors WIPE/UPDATE/DRAW
-
-//##ef Player Tokens WIPE/UPDATE/DRAW
-
-//###ef wipePlayerTokens
-function wipePlayerTokens() {
-  playerTokens.forEach((thisTemposPlrTokens) => {
-    thisTemposPlrTokens.forEach((plrTknObj) => {
-
-      plrTknObj.svg.setAttributeNS(null, 'display', 'none');
-      plrTknObj.txt.setAttributeNS(null, 'display', 'none');
-
-    });
-  });
-}
-//###endef wipePlayerTokens
-
-//###ef Update Player Tokens
-function updatePlayerTokens() {
-  scoreData.playerTokenTempoNum_perPlayer.forEach((playerTokenLocationByFrame, plrIx) => { //{tempoNum}
-    if (partsToRun.includes(plrIx)) {
-      if (FRAMECOUNT > 0) {
-
-        let setIx = FRAMECOUNT % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-        let tTempoNum = playerTokenLocationByFrame[setIx];
-        let tPlrTokenObj = playerTokens[tTempoNum][plrIx];
-        let coordLookUpIx = FRAMECOUNT % scoreData.scrollingCsrCoords_perTempo[tTempoNum].length;
-        let tBaseX = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
-        let tBaseY = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
-
-        tPlrTokenObj.move(tBaseX, tBaseY);
-        tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
-        tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
-        tPlrTokenObj.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
-
-      } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
-    } // function updatePlayerTokens() END
-  });
-}
-//###endef Update Player Tokens
-
-//##endef Player Tokens WIPE/UPDATE/DRAW
-
-//##ef Signs WIPE/UPDATE/DRAW
-
-//###ef wipeSigns
-function wipeSigns() {
-  signsByPlrByTrack.forEach((arrayOfSignsForThisPlayer) => {
-    arrayOfSignsForThisPlayer.forEach((arrayOfSignsForOneTrack) => {
-      arrayOfSignsForOneTrack.forEach((tSign) => {
-        tSign.visible = false;
-      });
-    });
-  });
-}
-//###endef wipeSigns
-
-//###ef updateSigns
-function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  if (FRAMECOUNT >= 0) {
-    scoreData.tempoFlagLocs_perPlayer.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
-      if (partsToRun.includes(plrIx)) {
-
-        let setIx = FRAMECOUNT % tempoFlagLocsByFrame_thisPlr.length;
-
-        if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-          tempoFlagLocsByFrame_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
-
-            tSign.position.z = zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
-          });
-        } // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-      }
-    }); // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-  } // if (FRAMECOUNT >= 0) END
-
-  //
-  else if (FRAMECOUNT < 0) { //lead in
-    scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) => { //{tempoNum}
-      if (partsToRun.includes(plrIx)) {
-
-        if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) {
-
-          let setIx = leadIn_tempoFlagLocs_thisPlr.length + FRAMECOUNT;
-
-          if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-            leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-              let tempo_trackNum = signObj.tempoNum;
-              let zLoc = signObj.zLoc;
-              let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
-
-              tSign.position.z = zLoc;
-              tSign.position.x = xPosOfTracks[tempo_trackNum];
-              tSign.visible = true;
-
-            }); // leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => END
-          } // if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) END
-
-        } // if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) END
-
-      } // if (partsToRun.includes(plrIx))
-    }); // scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) =>  END
-  } // else if (FRAMECOUNT < 0) END
-
-} // function updateSigns() END
-//###endef updateSigns
-
-//##endef Signs WIPE/UPDATE/DRAW
-
-//##ef Unison Signs WIPE/UPDATE/DRAW
-
-//###ef Wipe Unison Signs
-function wipeUnisonSigns() {
-  unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-    arrayOfSignsForOneTrack.forEach((tSign) => {
-      tSign.visible = false;
-    });
-  });
-  unisonOffSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-    arrayOfSignsForOneTrack.forEach((tSign) => {
-      tSign.visible = false;
-    });
-  });
-}
-//###endef Wipe Unison Signs
-
-//###ef Update Unison Signs
-function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  if (FRAMECOUNT >= 0) {
-
-    let setIx = FRAMECOUNT % scoreData.unisonFlagLocs.length;
-    if (scoreData.unisonFlagLocs[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-      scoreData.unisonFlagLocs[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-        let tempo_trackNum = signObj.tempoNum;
-        let zLoc = signObj.zLoc;
-
-        let tSign;
-        if (signObj.end) {
-          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
-        } else {
-          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
-        }
-
-        tSign.position.z = zLoc;
-        tSign.position.x = xPosOfTracks[tempo_trackNum];
-        tSign.visible = true;
-
-      }); // scoreData.unisonFlagLocs[setIx].forEach((signObj, flagIx) => END
-    } // if (scoreData.unisonFlagLocs[setIx].length > 0) END
-  } // if (FRAMECOUNT >= 0) END
-  //
-  else if (FRAMECOUNT < 0) {
-    if (-FRAMECOUNT <= scoreData.leadIn_unisonFlagLocs.length) {
-
-      let setIx = scoreData.leadIn_unisonFlagLocs.length + FRAMECOUNT;
-
-      if (scoreData.leadIn_unisonFlagLocs[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-        scoreData.leadIn_unisonFlagLocs[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-          let tempo_trackNum = signObj.tempoNum;
-          let zLoc = signObj.zLoc;
-
-          let tSign;
-          if (signObj.end) {
-            tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
-          } else {
-            tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
-          }
-
-          tSign.position.z = zLoc;
-          tSign.position.x = xPosOfTracks[tempo_trackNum];
-          tSign.visible = true;
-
-        }); // scoreData.leadIn_unisonFlagLocs[setIx].forEach((signObj, flagIx) => END
-      } // if (scoreData.leadIn_unisonFlagLocs[setIx].length > 0) END
-
-    } // if (-FRAMECOUNT <= scoreData.leadIn_unisonFlagLocs.length)
-  } // else if (FRAMECOUNT < 0)  END
-
-} // function updateUnisonSigns() END
-//###endef Update Unison Signs
-
-//##endef Unison Signs WIPE/UPDATE/DRAW
-
-//##ef Unison Tokens WIPE/UPDATE/DRAW
-
-//###ef Wipe Unison Tokens
-function wipeUnisonToken() {
-  unisonToken.svg.setAttributeNS(null, 'display', 'none');
-  unisonToken.txt.setAttributeNS(null, 'display', 'none');
-}
-//###endef Wipe Unison Tokens
-
-//###ef Update Unison Tokens
-function updateUnisonToken() {
-  if (FRAMECOUNT >= 0) {
-
-    let setIx = FRAMECOUNT % scoreData.unisonPlayerTokenTempoNum.length;
-
-    if (scoreData.unisonPlayerTokenTempoNum[setIx] != -1) {
-
-      let tTempoNum = scoreData.unisonPlayerTokenTempoNum[setIx];
-      let coordLookUpIx = FRAMECOUNT % scoreData.scrollingCsrCoords_perTempo[tTempoNum].length;
-      let tBaseX = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
-      let tBaseY = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
-
-      unisonToken.move(tBaseX, tBaseY);
-      unisonToken.svg.setAttributeNS(null, "display", 'yes');
-      unisonToken.txt.setAttributeNS(null, "display", 'yes');
-      unisonToken.svg.setAttributeNS(null, "fill", TEMPO_COLORS[tTempoNum]);
-      unisonToken.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
-
-    } //if (scoreData.unisonPlayerTokenTempoNum[setIx] != -1)
-
-  } // if (FRAMECOUNT >=0) END
-} // function updateUnisonPlayerToken()
-//###endef Update Unison Tokens
-
-//##endef Unison Tokens WIPE/UPDATE/DRAW
-
-//##ef Notation WIPE/UPDATE/DRAW
-
-//###ef wipeRhythmicNotation
-function wipeRhythmicNotation() {
-  if (FRAMECOUNT >= 0) {
-    motivesByBeat.forEach((thisBeatsMotiveDic) => { //length=16[{key is motiveNum and stores image}]
-      for (let key in thisBeatsMotiveDic) {
-        let tMotive = thisBeatsMotiveDic[key];
-        tMotive.setAttributeNS(null, 'display', 'none');
-      }
-    });
-  }
-}
-//###endef wipeRhythmicNotation
-
-//###ef Update Notation
-function updateNotation() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-  if (FRAMECOUNT >= 0) {
-
-    let setIx = FRAMECOUNT % scoreData.motiveSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-    scoreData.motiveSet[setIx].forEach((motiveObj, beatNum) => { //a set of objects that are on scene {motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}
-
-      let t_motiveNum = motiveObj.motiveNum;
-
-      motivesByBeat[beatNum][t_motiveNum].setAttributeNS(null, "display", 'yes');
-
-    }); // scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => => END
-
-  } // if (FRAMECOUNT >= 0) END
-} // function updateNotation() END
-//###endef Update Notation
-
-//##endef Notation WIPE/UPDATE/DRAW
-
-//##ef Articulations WIPE/UPDATE/DRAW
-
-//###ef wipeArticulations
-function wipeArticulations() {
-  articulationsSet.forEach((thisArtImgSet) => {
-    thisArtImgSet.forEach((tImg, i) => {
-      tImg.setAttributeNS(null, 'display', 'none');
-    });
-  });
-}
-//###endef wipeArticulations
-
-//###ef Update Articulations
-function updateArticulations() {
-  if (FRAMECOUNT >= 0) {
-
-    let setIx = FRAMECOUNT % scoreData.motiveSet.length;
-    let articulationsSetIxToUse = 0; //local counter to cycle through all available articulation images
-
-    scoreData.motiveSet[setIx].forEach((motiveObj, beatNum) => { //a set of 16 objects for each beat that are on scene {motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}
-
-      let t_motiveNum = motiveObj.motiveNum;
-
-      if (t_motiveNum != -1) { //-1 are rests
-        motiveObj.articulations.forEach((artObj) => { //{articulationType:,x:,y:,partialNum:}
-
-          let t_artType = artObj.articulationType;
-          let tX = artObj.x;
-          let tY = artObj.y;
-
-          if (t_artType != -1) {
-            articulationsSet[t_artType][articulationsSetIxToUse].setAttributeNS(null, 'transform', "translate(" + tX.toString() + "," + tY.toString() + ")");
-            articulationsSet[t_artType][articulationsSetIxToUse].setAttributeNS(null, "display", 'yes');
-            articulationsSetIxToUse++;
-          } //   if (t_artType != -1)
-
-        }); // motiveObj.forEach((artObj)
-
-      } //if (t_motiveNum != -1)
-
-    }); // scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => => END
-
-  } // if (FRAMECOUNT >= 0) END
-} // function updateArticulations() END
-//###endef Update Articulations
-
-//##endef Articulations WIPE/UPDATE/DRAW
-
-
-
-//##ef Wipe Function
-function wipe() {
-  wipeTempoFrets();
-  wipeGoFrets();
-  wipeBBs();
-  wipeTempoCsrs();
-  wipePlayerTokens();
-  wipeSigns();
-  wipeUnisonSigns();
-  wipeUnisonToken();
-  wipeRhythmicNotation();
-  wipeArticulations();
-} // function wipe() END
-//##endef Wipe Function
-
-//##ef Update Function
-function update() {
-  updateTempoFrets();
-  updateGoFrets();
-  updateBBs();
-  updateBbBouncePad();
-  updateScrollingCsrs();
-  updatePlayerTokens();
-  updateSigns();
-  updateUnisonSigns();
-  updateUnisonToken();
-  updateNotation();
-  updateArticulations();
-}
-//##endef Update Function
-
-//##ef Draw Function
-function draw() {
-  RENDERER.render(SCENE, CAMERA);
-}
-//##endef Draw Function
-
-
-//#endef WIPE/UPDATE/DRAW
-
-//#ef ANIMATION
-
-
-//##ef Animation Engine
-function animationEngine(timestamp) { //timestamp not used; timeSync server library used instead
-
-  let ts_Date = new Date(TS.now()); //Date stamp object from TimeSync library
-  let tsNowEpochTime_MS = ts_Date.getTime();
-  cumulativeChangeBtwnFrames_MS += tsNowEpochTime_MS - epochTimeOfLastFrame_MS;
-  epochTimeOfLastFrame_MS = tsNowEpochTime_MS; //update epochTimeOfLastFrame_MS for next frame
-
-  while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) { //if too little change of clock time will wait until 1 animation frame's worth of MS before updating etc.; if too much change will update several times until caught up with clock time
-
-    if (cumulativeChangeBtwnFrames_MS > (MS_PER_FRAME * FRAMERATE)) cumulativeChangeBtwnFrames_MS = MS_PER_FRAME; //escape hatch if more than 1 second of frames has passed then just skip to next update according to clock
-
-    pieceClock(tsNowEpochTime_MS);
-    wipe();
-    update();
-    draw();
-
-    cumulativeChangeBtwnFrames_MS -= MS_PER_FRAME; //subtract from cumulativeChangeBtwnFrames_MS 1 frame worth of MS until while cond is satisified
-
-  } // while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) END
-
-  if (animationEngineIsRunning) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
-  // if (FRAMECOUNT < 120) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
-} // function animationEngine(timestamp) END
-//##endef Animation Engine END
-
-//##ef Piece Clock
-function pieceClock(nowEpochTime) {
-
-  PIECE_TIME_MS = nowEpochTime - startTime_epochTime_MS - LEAD_IN_TIME_MS; //total MS transpired since peace begun, not including lead-in time
-  FRAMECOUNT = Math.round((PIECE_TIME_MS / 1000) * FRAMERATE); //Update FRAMECOUNT based on timeSync Time //if in lead-in FRAMECOUNT will be negative
-
-}
-//##endef Piece Clock
-
-
-//#endef ANIMATION
-
-//#ef CONTROL PANEL
-
-
-//##ef Make Control Panel Function
-function makeControlPanel() {
-
-  //###ef Control Panel Panel
-  let controlPanelPanel = mkPanel({
-    w: CTRLPANEL_W,
-    h: CTRLPANEL_H,
-    title: 'sf004 Control Panel',
-    ipos: 'left-top',
-    offsetX: '0px',
-    offsetY: '0px',
-    autopos: 'none',
-    headerSize: 'xs',
-    onwindowresize: true,
-    contentOverflow: 'hidden',
-    clr: 'black'
-  });
-  //###endef Control Panel Panel
-
-  //###ef Start Piece Button
-  let startButton = mkButton({
-    canvas: controlPanelPanel.content,
-    w: CTRLPANEL_BTN_W,
-    h: CTRLPANEL_BTN_H,
-    top: CTRLPANEL_MARGIN,
-    left: CTRLPANEL_MARGIN,
-    label: 'Start',
-    fontSize: 16,
-    action: function() {
-      markStartTime_startAnimation();
-    }
-  });
-  //###endef Start Piece Button
-
-} // function makeControlPanel() END
-//##endef Make Control Panel Function
-
-//##ef Start Piece Button Function & Socket
-
-
-// Broadcast Start Time when Start Button is pressed
-let markStartTime_startAnimation = function() {
-
-  let ts_Date = new Date(TS.now());
-  let t_startTime_epoch = ts_Date.getTime();
-
-  // Send start time to server to broadcast to rest of players
-  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
-    pieceId: PIECE_ID,
-    startTime_epochTime_MS: t_startTime_epoch
-  });
-
-} // let markStartTime = function() END
-
-// Receive new start time from server broadcast and set startTime_epochTime_MS
-SOCKET.on('sf004_newStartTime_fromServer', function(data) {
-
-  if (data.pieceId == PIECE_ID) {
-
-    startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with current epochTime
-    epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
-    animationEngineIsRunning = true; //unlock gate
-    requestAnimationFrame(animationEngine); //kick off animation
-
-  } //if (data.pieceId == PIECE_ID)
-
-}); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
-
-//##endef Start Piece function & socket
-
-
-//#endef CONTROL PANEL
 
 
 

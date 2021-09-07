@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg481"
+   viewBox="0 0 6.2594691 6.8010498"
+   height="11.951446mm"
+   width="10.999784mm"
+   version="1.2">
+  <metadata
+     id="metadata487">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs485" />
+  <style
+     id="style457"
+     text="style/css"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <text
+     y="-4.999981e-05"
+     x="-6.8315036e-05"
+     id="text461"
+     fill="currentColor"
+     text-anchor="start"
+     font-size="2.2001px"
+     font-family="serif"><tspan
+       id="tspan459" /></text>
+  <line
+     id="line463"
+     y2="6.0585499"
+     x2="6.200932"
+     y1="6.0585499"
+     x1="0.058531687"
+     stroke="currentColor"
+     stroke-width="0.1171"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <line
+     id="line465"
+     y2="4.5585499"
+     x2="6.200932"
+     y1="4.5585499"
+     x1="0.058531687"
+     stroke="currentColor"
+     stroke-width="0.1171"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <line
+     id="line467"
+     y2="3.0585499"
+     x2="6.200932"
+     y1="3.0585499"
+     x1="0.058531687"
+     stroke="currentColor"
+     stroke-width="0.1171"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <line
+     id="line469"
+     y2="1.55855"
+     x2="6.200932"
+     y1="1.55855"
+     x1="0.058531687"
+     stroke="currentColor"
+     stroke-width="0.1171"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <line
+     id="line471"
+     y2="0.05855"
+     x2="6.200932"
+     y1="0.05855"
+     x1="0.058531687"
+     stroke="currentColor"
+     stroke-width="0.1171"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <a
+     transform="translate(-0.56916832,-4.9999809e-5)"
+     id="a475"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5.ly:90:10:11"
+     style="color:inherit">
+    <path
+       id="path473"
+       fill="currentColor"
+       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+       transform="matrix(0.0055,0,0,-0.0055,2.5691,6.0586)" />
+  </a>
+  <a
+     transform="translate(-0.56916832,-4.9999809e-5)"
+     id="a479"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5.ly:90:15:16"
+     style="color:inherit">
+    <path
+       id="path477"
+       fill="currentColor"
+       d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
+       transform="matrix(0.0055,0,0,-0.0055,2.5691,0.8086)" />
+  </a>
+</svg>
