@@ -1452,6 +1452,21 @@ let cycleThroughSet_palindrome = function(ogSet, numCycles) {
 
 //#endef Cycle Through Set Functions
 
+//#ef conditionalChoose
+let conditionalChoose = function(cSet, condition){
+
+  let setToReturn = [];
+
+  for(let i=0;i<cSet.length;i++){
+    if(cSet[i]==condition){
+      setToReturn.push(cSet[i]);
+    }
+  }
+
+  return setToReturn;
+}
+//#endef conditionalChoose
+
 
 
 

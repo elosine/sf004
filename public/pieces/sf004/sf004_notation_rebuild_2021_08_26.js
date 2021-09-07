@@ -151,7 +151,7 @@ for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
 //###endef Beat Coordinates
 
 //###ef Motive Dictionary
-let motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be notationSvgPaths_labels
+let motiveInfoSet = [{ // [{path:, lbl:, num:, w:, h:, numPartials:}]
     path: "/pieces/sf004/notationSVGs/motives/qtr_rest.svg",
     lbl: 'qtr_rest',
     num: -1,
@@ -1276,12 +1276,12 @@ function generateScoreData() {
   //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
   //RESULTS:
   //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
-
+  console.log(articulationChgByFrame);
   //###ef POPULATE MASTER SET TO REPLACE LATER
   //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
   let motiveChgByFrameSet = []; //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
   let tMotiveObj = { //empty set
-    motiveNum: 99, //99 is place holder for motive to be replaced later
+    motiveNum: 0, //start with all quarters
     articulations: []
   }
   for (let i = 0; i < motiveSetByFrame_length; i++) {
@@ -1294,6 +1294,222 @@ function generateScoreData() {
   //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
   //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
 
+  //###ef CALCULATE FRAME BY FRAME SET
+
+
+  let previous_motiveChgByFrameSet = deepCopy(motiveChgByFrameSet[0]); //First frame's set of 16 beats of motive objects as initilization
+
+  for (let frmIx = 0; frmIx < motiveSetByFrame_length; frmIx++) {
+
+    //Start with the previous frame's set of motives per beat
+    let motiveSet_thisFrame = deepCopy(previous_motiveChgByFrameSet);
+
+    //##ef RESTS
+    //Look through restsByFrame set <<restsByFrame[{frame:,restType:(0-subtract,1-add)}]>>
+    for (let restIx = 0; restIx < restsByFrame.length; restIx++) {
+      if (restsByFrame[restIx].frame == frmIx) { //Is there a rest change on this frame in the restsByFrame set?
+
+        let addOrSubtractRest = restsByFrame[restIx].restType; // =0 to remove rest; =1 to add rest
+
+        //###ef REMOVE REST
+        if (addOrSubtractRest == 0) { //remove rest
+
+          //Make a set of beats-with-rests
+          let beatsWithRests = []; //collect all beat numbers with rests
+
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum == -1) beatsWithRests.push(beatNum); //motiveNum: -1 indicates rest
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with rests and remove and update motiveSet_thisFrame
+          if (beatsWithRests.length > 0) { //if there are any beats with rests
+            let beatWithRestToRemove = choose(beatsWithRests);
+            //Replace this beat with an object with motiveNum:0 (quarter-note) and no articulations
+            motiveSet_thisFrame[beatWithRestToRemove] = {
+              motiveNum: 0,
+              articulations: []
+            }; // motiveSet_thisFrame[beatWithRestToRemove] = {
+          } //  if(t_beatsWithRests.length>0)
+
+        } // if(addOrSubtractRest == 0){ //remove rest
+        //###endef REMOVE REST
+
+        //###ef ADD REST
+        else if (addOrSubtractRest == 1) { //add rest
+
+          //Make a set of beats-with-motives
+          let beatsWithMotives = []; //collect all beat numbers with motives
+
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum != -1) beatsWithMotives.push(beatNum); //motiveNum: !=-1 indicates motive
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with motives and remove and update motiveSet_thisFrame
+          if (beatsWithMotives.length > 0) { //if there are any beats with motives
+            let beatWithMotiveToRemove = choose(beatsWithMotives);
+            //Replace this beat with an object with motiveNum: -1 (rest) and no articulations
+            motiveSet_thisFrame[beatWithMotiveToRemove] = {
+              motiveNum: -1,
+              articulations: []
+            }; // motiveSet_thisFrame[beatWithMotiveToRemove] = {
+          } // if (beatsWithMotives.length > 0)
+
+        } //else if(addOrSubtractRest == 1){ //add rest
+        //###endef ADD REST
+
+      } // if(restsByFrame.frame == frmIx){ //There is a rest change on this frame
+    } // for(let restIx=0;restIx<restsByFrame.length;restIx++)
+    //##endef RESTS
+
+    //##ef MOTIVES
+    //Look through motiveChangeTimesObjSet <<motiveChangeTimesObjSet{motiveNum:,frame:}>>
+    for (let motiveChgSetIx = 0; motiveChgSetIx < motiveChangeTimesObjSet.length; motiveChgSetIx++) {
+      if (motiveChangeTimesObjSet[motiveChgSetIx].frame == frmIx) { //Is there a motive change on this frame
+
+        let newMotiveNum = motiveChangeTimesObjSet[motiveChgSetIx].motiveNum; //This is the motive number to replace one in the set
+
+        //Make a set of beats-with-motives
+        let beatsWithMotives = []; //collect all beat numbers with motives
+
+        //Look through motiveSet_thisFrame and see which beats have motives, if it is a motive, add beatNum to beatsWithMotives set
+        for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+          if (motiveSet_thisFrame[beatNum].motiveNum != -1) beatsWithMotives.push(beatNum); //motiveNum: !=-1 indicates motive
+        } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+        //Choose randomly from the set of beats with motives and update with new motive number and update motiveSet_thisFrame
+        if (beatsWithMotives.length > 0) { //if there are any beats with motives
+          let beatWithMotiveToChg = choose(beatsWithMotives);
+          //Replace this beat with an object with motiveNum: -1 (rest) and no articulations
+          motiveSet_thisFrame[beatWithMotiveToChg] = {
+            motiveNum: newMotiveNum,
+            articulations: []
+          }; // motiveSet_thisFrame[beatWithMotiveToChg] = {
+        } // if (beatsWithMotives.length > 0) //if there are any beats with motives
+
+      } // if (motiveChangeTimesObjSet[motiveChgSetIx].frame == frmIx) { //Is there a motive change on this frame
+    } // for (let motiveChgSetIx = 0; motiveChgSetIx < motiveChangeTimesObjSet.length; motiveChgSetIx++)
+    //##endef MOTIVES
+
+    //##ef ARTICULATIONS
+    //Look through articulationChgByFrame set <<articulationChgByFrame{type:(0-subtract,1-add),frame:}>>
+    for (let artSetIx = 0; artSetIx < articulationChgByFrame.length; artSetIx++) {
+      if (articulationChgByFrame[artSetIx].frame == frmIx) { //Is there an articulation change on this frame
+
+        let addOrSubtractArt = articulationChgByFrame[artSetIx].type; // =0 to remove articulation; =1 to add articulation
+
+        //###ef REMOVE ARTICULATION
+        if (addOrSubtractArt == 0) { //remove articulation
+
+          //Make a set of beats-with-articulations
+          let beatsWithArticulations = []; //collect all beat numbers with articulations
+
+          //Look through motiveSet_thisFrame and see which beats have motives with articulations, randomly choose one of these beats, remove articulation from that beat
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum != -1) { //is a motive
+              if (motiveSet_thisFrame[beatNum].articulations.length > 0) { //this motive on this beat has articulations
+
+                beatsWithArticulations.push(beatNum); // add beat number to beatsWithArticulations set
+
+              } // if (motiveSet_thisFrame[beatNum].articulations.length > 0) { //this motive on this beat has articulations
+            } // if (motiveSet_thisFrame[beatNum].motiveNum != -1) { //is a motive
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with articulations, then choose randomly from the articulations set, then remove articulation
+          if (beatsWithArticulations.length > 0) { //if there are beats with articulations
+            let beatWithArtsToRemove = choose(beatsWithArticulations);
+            //Remove one of the articulations in this beat's articulation set
+            let indexOfarticulationToRemoveFromThisMotive = chooseIndex(motiveSet_thisFrame[beatWithArtsToRemove].articulations); //choose an index to remove from the array of articulations
+            motiveSet_thisFrame[beatWithArtsToRemove].articulations.splice(indexOfarticulationToRemoveFromThisMotive, 1); //remove
+          } // if (beatsWithArticulations.length > 0) { //if there are beats with articulations
+
+        } // if (addOrSubtractArt == 0) { //remove articulation
+        //###endef REMOVE ARTICULATION
+
+        //###ef ADD ARTICULATION
+        else if (addOrSubtractArt == 1) { //add articulation
+
+          //Make a set of beats-with-motives
+          let beats_availPartials_toAddArt = []; //[{beatNum:, motiveNum:, partial:}] //partial is already chosen before adding to set
+
+          //Look through motiveSet_thisFrame and see which beats have motives, and look at these motive's articulations set to see if any partials are available to add an articulation
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            let motiveNumThisBeat = motiveSet_thisFrame[beatNum].motiveNum;
+            if (motiveNumThisBeat != -1) { //this beat has a motive
+
+              //Look up total number of partials for the motive at this beat
+              let totalNumPartialsThisMotive = 0;
+              motiveInfoSet.forEach((motiveInfoObj) => { //motiveInfoSet [{path:, lbl:, num:, w:, h:, numPartials:}]
+                if (motiveInfoObj.num == motiveNumThisBeat) {
+                  totalNumPartialsThisMotive = motiveInfoObj.numPartials;
+                } // motiveInfoSet.forEach((motiveInfoObj) =>
+              }); //motiveInfoSet.forEach((motiveInfoObj) => { //motiveInfoSet [{path:, lbl:, num:, w:, h:, numPartials:}]
+
+              //Find out if there any available partials without articulations already in this beat's motive
+              let availPartialsSet = numberedSetFromSize({ //create an array of 0,1,2,3... for number of available partials
+                sz: totalNumPartialsThisMotive
+              });
+              motiveSet_thisFrame[beatNum].articulations.forEach((artObj, i) => { //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
+                const takenPartialIx = availPartialsSet.indexOf(artObj.partialNum); //find the index of the partialNum that already has an articulation
+                availPartialsSet.splice(takenPartialIx, 1); //remove this index from the availPartialsSet
+              }); //motiveSet_thisFrame[beatNum].articulations.forEach((artObj, i) => { //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
+
+              //If there are available partials for this motive on this beat, add to beats_availPartials_toAddArt
+              if (availPartialsSet.length > 0) {
+                tObj = {};
+                tObj['beatNum'] = beatNum;
+                tObj['motiveNum'] = motiveNumThisBeat;
+                //Choose a random partial to update here
+                let partialToUse = choose(availPartialsSet);
+                tObj['partial'] = partialToUse;
+                beats_availPartials_toAddArt.push(tObj);
+              } //if (availPartialsSet.length > 0)
+
+            } //if (motiveSet_thisFrame[beatNum].motiveNum != -1)
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+          //RESULTS:<<beats_availPartials_toAddArt[{beatNum:,partial:}]>>
+
+          //Choose randomly from the set of beats_availPartials_toAddArt, add an articulation to the motive at that beat
+          if (beats_availPartials_toAddArt.length > 0) { //if there are any beats with motives with available partials to add an articulation
+            let beats_availPartials_obj = choose(beats_availPartials_toAddArt);
+            let beatToAddArticulation = beats_availPartials_obj.beatNum;
+            let motiveNumToAddArticulation = beats_availPartials_obj.motiveNum;
+            let partialToAddArticulation = beats_availPartials_obj.partial;
+            //look up x/y location for this articulation
+            let tX = beatCoords[beatToAddArticulation].x + articulationPosByMotive[motiveNumToAddArticulation][partialToAddArticulation];
+            let tY = beatCoords[beatToAddArticulation].y;
+            //Add to this beat's motive's articulation array
+            motiveSet_thisFrame[beatToAddArticulation].articulations.push({
+              articulationType: 0,
+              x: tX,
+              y: tY,
+              partialNum: partialToAddArticulation
+            }); // motiveSet_thisFrame[beatToAddArticulation].articulations.push
+          } // if (beats_availPartials_toAddArt.length > 0) { //if there are any beats with motives with available partials to add an articulation
+
+        } // else if (addOrSubtractArt == 1) { //add articulation
+        //###endef ADD ARTICULATION
+
+      } // if (articulationChgByFrame[artSetIx].frame == frmIx) { //Is there an articulation change on this frame
+    } // for (let artSetIx = 0; artSetIx < articulationChgByFrame.length; artSetIx++) {
+    //##endef ARTICULATIONS
+
+
+    //##ef THIS FRAME'S UPDATES BEFORE MOVING ON TO NEXT FRAME
+    //Copy set of motives per beat for this frame to master set
+    motiveChgByFrameSet[frmIx] = deepCopy(motiveSet_thisFrame);
+    //Update previous_motiveChgByFrameSet for next frame
+    previous_motiveChgByFrameSet = deepCopy(motiveSet_thisFrame);
+    //##endef THIS FRAME'S UPDATES BEFORE MOVING ON TO NEXT FRAME
+
+  } // for(let frmIx=0;frmIx<motiveSetByFrame_length;frmIx++) //End of big frame by frame loop
+
+
+  //###endef CALCULATE FRAME BY FRAME SET
+
+  scoreDataObject.motiveSet = motiveChgByFrameSet; //This is the final set
+
+
+  /*
   //###ef MAKE ALL RESTS CHANGES
   let previousSetWithRests = deepCopy(motiveChgByFrameSet_currSet);
   for (var restIx = 1; restIx < restsByFrame.length; restIx++) { //determine what the motive set is for this change then fill in til next change
@@ -1540,7 +1756,7 @@ function generateScoreData() {
 
   //###endef ADD ARTICULATIONS
 
-  /*
+
   //###ef ADD ARTICULATIONS OLD
 
   //<<articulationChgByFrame{type:,frame:}>>
@@ -1717,9 +1933,6 @@ function generateScoreData() {
   //###endef ADD ARTICULATIONS
   */
 
-  scoreDataObject.motiveSet = motiveChgByFrameSet;
-
-
   //##endef CALCULATIONS FOR NOTATION
 
   //##ef CALCULATIONS FOR PITCH SETS
@@ -1745,6 +1958,7 @@ function generateScoreData() {
 
 
   //##endef CALCULATIONS FOR PITCH SETS
+
 
 
   return scoreDataObject;
