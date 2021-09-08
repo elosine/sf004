@@ -6,41 +6,13 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="1.0 (4035a4f, 2020-05-01)"
-   sodipodi:docname="e4_e5.svg"
-   version="1.2"
-   width="8.2498379mm"
-   height="8.9635849mm"
-   viewBox="0 0 4.6946016 5.1007878"
-   id="svg481">
-  <sodipodi:namedview
-     inkscape:current-layer="svg481"
-     inkscape:window-maximized="0"
-     inkscape:window-y="67"
-     inkscape:window-x="791"
-     inkscape:cy="22.585409"
-     inkscape:cx="20.78701"
-     inkscape:zoom="7.5948886"
-     fit-margin-bottom="0"
-     fit-margin-right="0"
-     fit-margin-left="0"
-     fit-margin-top="0"
-     showgrid="false"
-     id="namedview653"
-     inkscape:window-height="801"
-     inkscape:window-width="1376"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     guidetolerance="10"
-     gridtolerance="10"
-     objecttolerance="10"
-     borderopacity="1"
-     bordercolor="#666666"
-     pagecolor="#ffffff" />
+   id="svg34"
+   viewBox="0 0 6.2594691 6.7605501"
+   height="11.880276mm"
+   width="10.999784mm"
+   version="1.2">
   <metadata
-     id="metadata487">
+     id="metadata40">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -52,96 +24,95 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs485" />
+     id="defs38" />
   <style
-     text="style/css"
-     id="style457"><![CDATA[
+     id="style10"
+     text="style/css"><![CDATA[
 tspan { white-space: pre; }
 ]]></style>
   <!-- Page: 1/1 -->
-  <text
-     font-family="serif"
-     font-size="2.2001px"
-     text-anchor="start"
-     fill="currentColor"
-     id="text461"
-     x="-6.5873777e-05"
-     y="-4.999981e-05"><tspan
-       id="tspan459" /></text>
   <g
-     transform="matrix(0.75,0,0,0.75,-2.137125e-6,0)"
-     id="g664">
+     id="g66">
+    <text
+       font-family="serif"
+       font-size="2.2001px"
+       text-anchor="start"
+       fill="currentColor"
+       id="text14"
+       x="-6.8315036e-05"
+       y="-4.999981e-05"><tspan
+         id="tspan12" /></text>
     <line
-       id="line463"
-       y2="6.0585499"
-       x2="6.200932"
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="0.1171"
+       stroke="currentColor"
+       x1="0.058531687"
        y1="6.0585499"
-       x1="0.058531687"
-       stroke="currentColor"
-       stroke-width="0.1171"
-       stroke-linecap="round"
-       stroke-linejoin="round" />
-    <line
-       id="line465"
-       y2="4.5585499"
        x2="6.200932"
+       y2="6.0585499"
+       id="line16" />
+    <line
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="0.1171"
+       stroke="currentColor"
+       x1="0.058531687"
        y1="4.5585499"
-       x1="0.058531687"
-       stroke="currentColor"
-       stroke-width="0.1171"
-       stroke-linecap="round"
-       stroke-linejoin="round" />
-    <line
-       id="line467"
-       y2="3.0585499"
        x2="6.200932"
+       y2="4.5585499"
+       id="line18" />
+    <line
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="0.1171"
+       stroke="currentColor"
+       x1="0.058531687"
        y1="3.0585499"
-       x1="0.058531687"
-       stroke="currentColor"
-       stroke-width="0.1171"
-       stroke-linecap="round"
-       stroke-linejoin="round" />
-    <line
-       id="line469"
-       y2="1.55855"
        x2="6.200932"
+       y2="3.0585499"
+       id="line20" />
+    <line
+       stroke-linejoin="round"
+       stroke-linecap="round"
+       stroke-width="0.1171"
+       stroke="currentColor"
+       x1="0.058531687"
        y1="1.55855"
-       x1="0.058531687"
-       stroke="currentColor"
-       stroke-width="0.1171"
-       stroke-linecap="round"
-       stroke-linejoin="round" />
-    <line
-       id="line471"
-       y2="0.05855"
        x2="6.200932"
-       y1="0.05855"
-       x1="0.058531687"
-       stroke="currentColor"
-       stroke-width="0.1171"
+       y2="1.55855"
+       id="line22" />
+    <line
+       stroke-linejoin="round"
        stroke-linecap="round"
-       stroke-linejoin="round" />
+       stroke-width="0.1171"
+       stroke="currentColor"
+       x1="0.058531687"
+       y1="0.05855"
+       x2="6.200932"
+       y2="0.05855"
+       id="line24" />
     <a
-       transform="translate(-0.56916832,-4.9999809e-5)"
-       id="a475"
-       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5.ly:90:10:11"
-       style="color:inherit">
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4_e5.ly:90:10:11"
+       id="a28"
+       transform="translate(-0.56916832,-4.9999809e-5)">
       <path
-         id="path473"
-         fill="currentColor"
+         transform="matrix(0.0052,0,0,-0.0052,2.5691,6.0586)"
          d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-         transform="matrix(0.0055,0,0,-0.0055,2.5691,6.0586)" />
+         fill="currentColor"
+         id="path26" />
     </a>
     <a
-       transform="translate(-0.56916832,-4.9999809e-5)"
-       id="a479"
-       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notationArchive/e4_e5.ly:90:15:16"
-       style="color:inherit">
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4_e5.ly:90:15:16"
+       id="a32"
+       transform="translate(-0.56916832,-4.9999809e-5)">
       <path
-         id="path477"
-         fill="currentColor"
+         transform="matrix(0.0052,0,0,-0.0052,2.5691,0.8086)"
          d="m 222,135 c 53,0 104,-27 104,-86 0,-71 -56,-120 -103,-148 -36,-22 -76,-36 -118,-36 -53,0 -105,27 -105,86 0,71 57,120 104,148 36,22 76,36 118,36 z"
-         transform="matrix(0.0055,0,0,-0.0055,2.5691,0.8086)" />
+         fill="currentColor"
+         id="path30" />
     </a>
   </g>
 </svg>

@@ -52,7 +52,7 @@
         %\once \override TupletNumber #'text = "7:4"
         %\set tupletFullLength = ##t %http://lilypond.org/doc/v2.19/Documentation/snippets/rhythms
         
-        \override NoteHead.font-size = #-0.75
+        \override NoteHead.font-size = #-1.25
         
         \override Stem.details.beamed-lengths = #'(0)
         \override Stem.details.lengths = #'(0)

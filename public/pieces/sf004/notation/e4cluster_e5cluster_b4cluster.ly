@@ -1,7 +1,7 @@
 \version "2.20.0"
 
 \paper{
-  paper-width = 30
+  paper-width = 13
   paper-height = 30
 
   top-margin = 0
@@ -52,7 +52,8 @@
         %\once \override TupletNumber #'text = "7:4"
         %\set tupletFullLength = ##t %http://lilypond.org/doc/v2.19/Documentation/snippets/rhythms
         
-        \override NoteHead.font-size = #-0.75
+        \override NoteHead.font-size = #-1.25
+        
         
        % \override Stem.details.beamed-lengths = #'(7)
        % \override Stem.details.lengths = #'(7)
@@ -92,7 +93,7 @@
         %         }         
         
         
-        <<dis'4 e' f'>>   <<ais' b' c''>>  <<dis'' e'' f''>>  
+        <<dis'4 e' f'  ais' b' c''  dis'' e'' f''>>  
        
         
         

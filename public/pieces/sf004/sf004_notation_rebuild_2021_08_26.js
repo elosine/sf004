@@ -22,9 +22,11 @@ let startTime_epochTime_MS = 0;
 
 //##ef World Canvas Variables
 let worldPanel;
-const CANVAS_MARGIN = 7;
-let CANVAS_W = 590;
-let CANVAS_H = 515;
+const CANVAS_MARGIN = 4;
+// let CANVAS_W = 590;
+// let CANVAS_H = 515;
+let CANVAS_W = 441;
+let CANVAS_H = 474;
 let CANVAS_CENTER = CANVAS_W / 2;
 //##endef END World Canvas Variables
 
@@ -117,19 +119,20 @@ let notationImageObjectSet = {};
 
 const NOTES_PADDING = 6;
 const BEAT_LENGTH_PX = 46;
-const TOP_STAFF_LINE_Y = 54 + unisonTokenSize + NOTES_PADDING; //unisonTokenSize from functionLibrary.js
-const VERT_DIST_BTWN_STAVES = 73 + unisonTokenSize + 4;
+const TOP_STAFF_LINE_Y = 49 + unisonTokenSize + NOTES_PADDING; //unisonTokenSize from functionLibrary.js
+const VERT_DIST_BTWN_STAVES = 64 + unisonTokenSize + 4;
 const FIRST_BEAT_L = NOTES_PADDING;
 const NUM_BEATS_PER_STAFFLINE = 8;
 const NUM_STAFFLINES = 2;
 const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
-const STAFF_BTM_MARGIN = 26 + NOTES_PADDING;
+const STAFF_BTM_MARGIN = 9 + NOTES_PADDING;
 const NOTEHEAD_H = 6;
 const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
 const RHYTHMIC_NOTATION_CANVAS_W = NOTES_PADDING + (BEAT_LENGTH_PX * NUM_BEATS_PER_STAFFLINE) + NOTES_PADDING; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
 const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
-const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W / 2);
+const ADJ_FOR_PITCH_SETS_WIN = 26;
+const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W / 2) + ADJ_FOR_PITCH_SETS_WIN;
 const NOTATION_CURSOR_H = 50;
 
 //###ef Beat Coordinates
@@ -275,29 +278,29 @@ let pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
     path: pitchSetsPath + 'e4_e5.svg',
     lbl: 'e4_e5',
     num: 0,
-    w: 31,
-    h: 34
+    w: 42,
+    h: 45
   },
   {
     path: pitchSetsPath + 'e4_e5_b4.svg',
     lbl: 'e4_e5_b4',
     num: 1,
-    w: 31,
-    h: 34
+    w: 42,
+    h: 45
   },
   {
     path: pitchSetsPath + 'e4_e5_b4cluster.svg',
     lbl: 'e4_e5_b4cluster',
     num: 2,
-    w: 31,
-    h: 34
+    w: 42,
+    h: 45
   },
   {
     path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
     lbl: 'e4cluster_e5cluster_b4cluster',
     num: 3,
-    w: 82,
-    h: 44
+    w: 45,
+    h: 59
   }
 ];
 //###endef Pitch Sets Dictionary
@@ -319,12 +322,13 @@ let findPsContWidthHeight = function() {
   return whObj;
 }
 
-let PITCH_SETS_W = findPsContWidthHeight().w + 8;
-let PITCH_SETS_H = findPsContWidthHeight().h + 8;
-let PITCH_SETS_TOP = RHYTHMIC_NOTATION_CANVAS_TOP;
-let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L - PITCH_SETS_W - CANVAS_MARGIN;
-let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
-let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
+const PITCH_SETS_W = 49;
+const PITCH_SETS_H = 63;
+const PITCH_SETS_GAP = 2;
+const PITCH_SETS_TOP = RHYTHMIC_NOTATION_CANVAS_TOP;
+const PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L - PITCH_SETS_W - PITCH_SETS_GAP;
+const PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
+const PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
 
 //##endef Pitch Sets Variables
@@ -400,11 +404,6 @@ articulationPosByMotive.forEach((partialSet, mNum) => {
   } // switch t_mNum
 });
 //##endef END Articulations Variables
-
-//##ef Readjust Canvas Size
-CANVAS_W = CANVAS_MARGIN + PITCH_SETS_W + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_W + CANVAS_MARGIN + 2;
-CANVAS_H = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN + RHYTHMIC_NOTATION_CANVAS_H + CANVAS_MARGIN;
-//##endef Readjust Canvas Size
 
 //#ef Animation Engine Variables
 let cumulativeChangeBtwnFrames_MS = 0;
@@ -528,6 +527,7 @@ function generateScoreData() {
   scoreDataObject['unisonPlayerTokenTempoNum'] = [];
   scoreDataObject['motiveSet'] = [];
   scoreDataObject['pitchSets'] = [];
+  scoreDataObject['psChgIndicator'] = [];
   //##endef GENERATE SCORE DATA - VARIABLES
 
   //##ef Generate Tempos
@@ -1269,7 +1269,7 @@ function generateScoreData() {
     artObj['type'] = addSubtractArtType;
     articulationChgByFrame.push(artObj); //add to main array
     articulationCounter = (articulationCounter + 1) % numArtToAddSub; //update counter
-    if (articulationCounter == 0)addSubtractArtType = (addSubtractArtType + 1) % 2; //when counter reaches reset/0 then toggle addSubtractArtType
+    if (articulationCounter == 0) addSubtractArtType = (addSubtractArtType + 1) % 2; //when counter reaches reset/0 then toggle addSubtractArtType
 
   } while (articulationGapFrames < motiveSetByFrame_length);
   //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
@@ -1518,12 +1518,15 @@ function generateScoreData() {
   let setOfPitchSetNumbers = cycleThroughSet_palindrome(availablePitchSetNumbers, 99); //create a long list of pitch set numbers in a palindrome
   // Decide which frames to change pitch sets, add to main array
   let pitchSetChangesByFrame = [];
+  let psChangeIndicatorStateByFrame = []; //0=off;1=on
+  for (let i = 0; i < motiveChgByFrameSet.length; i++) psChangeIndicatorStateByFrame.push(0); //populate w/zeros
   let nextFrameToChangePs = 0;
   let currPsIx = 0;
   let currPs = 0;
   for (let fIx = 0; fIx < motiveChgByFrameSet.length; fIx++) {
     if (fIx == nextFrameToChangePs) { //if this is a change frame, update the currPs and update all the iterators
       currPs = setOfPitchSetNumbers[currPsIx];
+      for (let i = 0; i < 90; i++) psChangeIndicatorStateByFrame[fIx + i] = 1; //update the ps change indicator set
       //UPDATE
       currPsIx++;
       nextFrameToChangePs = nextFrameToChangePs + (rrandInt(24, 37) * FRAMERATE); //change pitch sets every 24-37 seconds
@@ -1531,6 +1534,7 @@ function generateScoreData() {
     pitchSetChangesByFrame.push(currPs);
   }
   scoreDataObject.pitchSets = pitchSetChangesByFrame;
+  scoreDataObject.psChgIndicator = psChangeIndicatorStateByFrame;
 
 
   //##endef CALCULATIONS FOR PITCH SETS
@@ -2338,8 +2342,8 @@ function makePitchSets() {
     let tx = PITCH_SETS_CENTER_W - (psObj.w / 2);
     let ty = PITCH_SETS_MIDDLE_H - (psObj.h / 2);
 
-    // let tDisplay = tPsNum == 0 ? 'yes' : 'none';
-    let tDisplay = tPsNum == 3 ? 'yes' : 'none';
+    let tDisplay = tPsNum == 0 ? 'yes' : 'none';
+    // let tDisplay = tPsNum == 3 ? 'yes' : 'none';
 
     // Create HTML SVG image
     let tSvgImage = document.createElementNS(SVG_NS, "image");
@@ -2364,7 +2368,7 @@ function makePitchSets() {
     h: PITCH_SETS_H,
     fill: 'none',
     stroke: clr_neonMagenta,
-    strokeW: 8
+    strokeW: 13
   });
 
   pitchSetsObj['chgIndicator'].setAttributeNS(null, 'display', 'none');
@@ -2932,6 +2936,48 @@ function updateArticulations() {
 
 //##endef Articulations WIPE/UPDATE/DRAW
 
+//##ef Pitch Sets WIPE/UPDATE/DRAW
+
+//###ef wipePitchSets
+function wipePitchSets() {
+  if (FRAMECOUNT >= 0) {
+    pitchSetsObj.svgs.forEach((thisPsImg) => {
+      thisPsImg.setAttributeNS(null, 'display', 'none');
+    });
+  }
+}
+//###endef wipePitchSets
+
+//###ef Update Pitch Sets
+function updatePitchSets() {
+  if (FRAMECOUNT >= 0) {
+    let setIx = FRAMECOUNT % scoreData.pitchSets.length;
+    pitchSetsObj.svgs[scoreData.pitchSets[setIx]].setAttributeNS(null, "display", 'yes');
+  } // if (FRAMECOUNT >= 0) END
+} // function updatePitchSets() END
+//###endef Update Pitch Sets
+
+//##endef Pitch Sets WIPE/UPDATE/DRAW
+
+//##ef Pitch Set Indicator WIPE/UPDATE/DRAW
+
+//###ef wipePitchSetIndicator
+function wipePitchSetIndicator() {
+  pitchSetsObj.chgIndicator.setAttributeNS(null, 'display', 'none');
+}
+//###endef wipePitchSetIndicator
+
+//###ef Update Pitch Set Indicator
+function updatePitchSetIndicator() {
+  if (FRAMECOUNT >= 0) {
+    let setIx = FRAMECOUNT % scoreData.psChgIndicator.length;
+    if (scoreData.psChgIndicator[setIx] == 1) pitchSetsObj.chgIndicator.setAttributeNS(null, "display", 'yes');
+  } // if (FRAMECOUNT >= 0) END
+} // function updatePitchSetIndicator() END
+//###endef Update Pitch Set Indicator
+
+//##endef Update Pitch Set Indicator WIPE/UPDATE/DRAW
+
 
 
 //##ef Wipe Function
@@ -2946,6 +2992,8 @@ function wipe() {
   wipeUnisonToken();
   wipeRhythmicNotation();
   wipeArticulations();
+  wipePitchSets();
+  wipePitchSetIndicator();
 } // function wipe() END
 //##endef Wipe Function
 
@@ -2962,6 +3010,8 @@ function update() {
   updateUnisonToken();
   updateNotation();
   updateArticulations();
+  updatePitchSets();
+  updatePitchSetIndicator();
 }
 //##endef Update Function
 
