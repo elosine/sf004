@@ -133,7 +133,6 @@ const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VE
 const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
 const ADJ_FOR_PITCH_SETS_WIN = 26;
 const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W / 2) + ADJ_FOR_PITCH_SETS_WIN;
-const NOTATION_CURSOR_H = 50;
 
 //###ef Beat Coordinates
 
@@ -228,6 +227,8 @@ for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
 
 //##ef Scrolling Tempo Cursors
 let tempoCursors = [];
+const NOTATION_CURSOR_H = 50;
+const NOTATION_CURSOR_STROKE_W = 3;
 //##endef Scrolling Tempo Cursors
 
 //##ef Scrolling Cursor BBs Variables
@@ -2082,7 +2083,7 @@ function makeScrollingTempoCursors() {
       x2: 0,
       y2: HALF_NOTEHEAD_H,
       stroke: TEMPO_COLORS[tempoCsrIx],
-      strokeW: 3
+      strokeW: NOTATION_CURSOR_STROKE_W
     });
     tLine.setAttributeNS(null, 'stroke-linecap', 'round');
     tLine.setAttributeNS(null, 'display', 'none');
@@ -2104,17 +2105,6 @@ function makeScrollingCursorBbs() {
   // scrollingCsrBbsObjSet
   for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) {
 
-    scrollingCsrBbsObjSet[csrBbIx]['rect'] = mkSvgRect({
-      svgContainer: rhythmicNotationObj.svgCont,
-      w: SCRBB_W,
-      h: SCRBB_H,
-      x: SCRBB_LEFT,
-      y: SCRBB_TOP,
-      fill: 'white',
-      stroke: 'black',
-      strokeW: 0,
-    });
-
     scrollingCsrBbsObjSet[csrBbIx]['ball'] = mkSvgCircle({
       svgContainer: rhythmicNotationObj.svgCont,
       cx: SCRBB_CENTER,
@@ -2125,30 +2115,7 @@ function makeScrollingCursorBbs() {
       strokeW: 0
     });
 
-    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOff'] = mkSvgLine({
-      svgContainer: rhythmicNotationObj.svgCont,
-      x1: SCRBB_LEFT,
-      y1: SCRBB_BOUNCE_WEIGHT_HALF,
-      x2: -SCRBB_GAP,
-      y2: SCRBB_BOUNCE_WEIGHT_HALF,
-      stroke: 'black',
-      strokeW: SCRBB_BOUNCE_WEIGHT
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx]['bouncePadOn'] = mkSvgLine({
-      svgContainer: rhythmicNotationObj.svgCont,
-      x1: SCRBB_LEFT,
-      y1: SCRBB_BOUNCE_WEIGHT_HALF,
-      x2: -SCRBB_GAP,
-      y2: SCRBB_BOUNCE_WEIGHT_HALF,
-      stroke: 'yellow',
-      strokeW: SCRBB_BOUNCE_WEIGHT
-    });
-
-    scrollingCsrBbsObjSet[csrBbIx].rect.setAttributeNS(null, 'display', 'none');
     scrollingCsrBbsObjSet[csrBbIx].ball.setAttributeNS(null, 'display', 'none');
-    scrollingCsrBbsObjSet[csrBbIx].bouncePadOn.setAttributeNS(null, 'display', 'none');
-    scrollingCsrBbsObjSet[csrBbIx].bouncePadOff.setAttributeNS(null, 'display', 'none');
 
   } //for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) END
 
@@ -2978,6 +2945,42 @@ function updatePitchSetIndicator() {
 
 //##endef Update Pitch Set Indicator WIPE/UPDATE/DRAW
 
+//##ef Scrolling BBs WIPE/UPDATE/DRAW
+
+//###ef wipeScrBBs
+function wipeScrBBs() {
+  scrollingCsrBbsObjSet.forEach((scrBbObj) => {
+    scrBbObj.ball.setAttributeNS(null, 'display', 'none');
+  }); // bbSet.forEach((tbb) =>
+} // function wipeBbComplex()
+//###endef wipeScrBBs
+
+//###ef updateScrollingBBs
+function updateScrollingBBs() {
+  if (FRAMECOUNT > 0) { //No lead in motion for scrolling cursors
+    scoreData.scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
+
+      let setIx = FRAMECOUNT % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames //scoreData.scrollingCsrCoords_perTempo & scoreData.bbYpos_perTempo arrays are same length so you can just one modulo
+      //From scrollingCsrCoords_perTempo:
+      let tX = posObjSet[setIx].x;
+      let tY1 = posObjSet[setIx].y1;
+      let tY2 = posObjSet[setIx].y2;
+      //From bbYpos_perTempo:
+      let tBbCy = scoreData.bbYpos_perTempo[tempoIx][setIx];
+
+      let tBbCy_norm = (tBbCy - BBCIRC_TOP_CY) / (BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY); //BBCIRC_TOP_CY to BBCIRC_BOTTOM_CY is the distance of the larger bbs; normalize this distance and multiple by the length of the scrolling cursor
+      let scrBbY = tY2 - HALF_NOTEHEAD_H + (tBbCy_norm * NOTATION_CURSOR_H);
+      let scrBbX = tX + SCRBBCIRC_R + NOTATION_CURSOR_STROKE_W;
+      scrollingCsrBbsObjSet[tempoIx].ball.setAttributeNS(null, 'transform', "translate(" + scrBbX.toString() + "," + scrBbY.toString() + ")");
+      scrollingCsrBbsObjSet[tempoIx].ball.setAttributeNS(null, 'display', "yes");
+
+    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+} // function updateScrollingCsrs() END
+//###endef updateScrollingBBs
+
+//##endef Scrolling BBs WIPE/UPDATE/DRAW
+
 
 
 //##ef Wipe Function
@@ -2994,6 +2997,7 @@ function wipe() {
   wipeArticulations();
   wipePitchSets();
   wipePitchSetIndicator();
+  wipeScrBBs();
 } // function wipe() END
 //##endef Wipe Function
 
@@ -3012,6 +3016,7 @@ function update() {
   updateArticulations();
   updatePitchSets();
   updatePitchSetIndicator();
+  updateScrollingBBs();
 }
 //##endef Update Function
 
