@@ -576,9 +576,9 @@ function generateScoreData() {
 
 
     //##ef Calculate Loop Length & Go Frames
-    // make about 11 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
+    // make about 9 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
     let framesPerBeat = FRAMERATE / (tempo / 60);
-    let beatsPerCycle = Math.round(tempo * 11);
+    let beatsPerCycle = Math.round(tempo * 9);
     while ((beatsPerCycle % TOTAL_NUM_BEATS) != 0) { //keep adding beats until the cycle is divisible by TOTAL_NUM_BEATS
       beatsPerCycle++;
       if (beatsPerCycle > 99999) break;
