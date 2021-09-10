@@ -1,72 +1,434 @@
-//#ef RUNTIME
+//#ef GLOBAL VARIABLES
 
 
-//#ef Global Vars
-
-const NUM_TEMPOS = 5;
-const NUM_PLAYERS = 5;
+//##ef General Variables
+let scoreData;
+let NUM_TEMPOS = 5;
+let NUM_PLAYERS = 5;
 const TEMPO_COLORS = [clr_brightOrange, clr_brightGreen, clr_brightBlue, clr_lavander, clr_darkRed2];
-// const TEMPO_COLORS = [clr_brightOrange, clr_lavander, clr_brightGreen, clr_brightBlue, clr_darkRed2];
+//##endef General Variables
 
-// #ef Animation Engine Variables
+//##ef URL Args
+let PIECE_ID;
+let partsToRun = [];
+let TOTAL_NUM_PARTS_TO_RUN;
+let SCORE_DATA_FILE_TO_LOAD = "";
+//##endef URL Args
 
+//##ef Timing
 const FRAMERATE = 60;
-const MS_PER_FRAME = Math.round(1000.0 / FRAMERATE);
 let FRAMECOUNT = 0;
-let PIECE_TIME_MS = 0
 const PX_PER_SEC = 100;
 const PX_PER_FRAME = PX_PER_SEC / FRAMERATE;
+const MS_PER_FRAME = 1000.0 / FRAMERATE;
 const LEAD_IN_TIME_SEC = 2;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
-const LEAD_IN_FRAMES = Math.round(LEAD_IN_TIME_SEC * FRAMERATE);
+const LEAD_IN_FRAMES = LEAD_IN_TIME_SEC * FRAMERATE;
+let startTime_epochTime_MS = 0;
+//##endef Timing
 
-// #endef END Animation Engine Variables
+//##ef World Canvas Variables
+let worldPanel;
+const CANVAS_MARGIN = 4;
+// let CANVAS_W = 590;
+// let CANVAS_H = 515;
+let CANVAS_W = 441;
+let CANVAS_H = 474;
+let CANVAS_CENTER = CANVAS_W / 2;
+//##endef END World Canvas Variables
 
-// #ef notationSvgPaths_labels
-let notationSvgPaths_labels = [{
-    path: "/pieces/sf004/notationSVGs/quarter.svg",
-    lbl: 'quarter'
+//##ef ThreeJS Scene Variables
+const RENDERER_W = 340;
+const RENDERER_H = 180;
+const RENDERER_TOP = CANVAS_MARGIN;
+const RENDERER_DIV_LEFT = CANVAS_CENTER - (RENDERER_W / 2);
+let SCENE, CAMERA, SUN, SUN2, RENDERER_DIV, RENDERER;
+let materialColors = [];
+for (let matlClrIx = 0; matlClrIx < TEMPO_COLORS.length; matlClrIx++) {
+  let tMatlClr = new THREE.MeshLambertMaterial({
+    color: TEMPO_COLORS[matlClrIx]
+  });
+  materialColors.push(tMatlClr);
+}
+let matl_yellow = new THREE.MeshLambertMaterial({
+  color: 'yellow'
+});
+// const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
+const CAM_Y = 150;
+// const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
+const CAM_Z = 21;
+// const CAM_ROTATION_X = -68; // -90 directly above looking down
+const CAM_ROTATION_X = -45; // -90 directly above looking down
+//##endef END ThreeJS Scene Variables
+
+//##ef Runway Variables
+const RUNWAY_W = RENDERER_W;
+const RUNWAY_H = RENDERER_H;
+const RUNWAY_L = 1000;
+const HALF_RUNWAY_W = RUNWAY_W / 2;
+const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
+const RUNWAY_LENGTH_FRAMES = Math.round(RUNWAY_L / PX_PER_FRAME);
+//##endef END Runway Variables
+
+//##ef Tracks Variables
+const NUM_TRACKS = NUM_TEMPOS;
+const TRACK_DIAMETER = 8;
+const HALF_TRACK_DIAMETER = TRACK_DIAMETER / 2;
+const TRACK_GAP = RUNWAY_W / NUM_TRACKS;
+const HALF_TRACK_GAP = TRACK_GAP / 2;
+let xPosOfTracks = [];
+for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
+  xPosOfTracks.push(-HALF_RUNWAY_W + (TRACK_GAP * trIx) + HALF_TRACK_GAP);
+}
+//##endef END Tracks Variables
+
+//##ef Go Frets Variables
+let goFrets = [];
+let goFretsGo = [];
+const GO_FRET_W = 54;
+const GO_FRET_H = 11;
+const HALF_GO_FRET_H = GO_FRET_H / 2;
+const GO_FRET_L = 13;
+const HALF_GO_FRET_L = GO_FRET_L / 2;
+const GO_Z = -HALF_GO_FRET_L;
+const GO_FRET_Y = HALF_TRACK_DIAMETER;
+//##endef END Go Frets Variables
+
+//#ef Tempo Frets Variables
+let tempoFretsPerTrack = [];
+const TEMPO_FRET_W = GO_FRET_W - 2;
+const TEMPO_FRET_H = GO_FRET_H - 2;
+const TEMPO_FRET_L = GO_FRET_L - 5;
+const TEMPO_FRET_Y = HALF_TRACK_DIAMETER;
+const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L; //Initially make enough tempo frets, which end to end would fill track length
+//#endef Tempo Frets Variables
+
+//##ef BBs Variables
+let bbSet = [];
+for (let trIx = 0; trIx < NUM_TRACKS; trIx++) bbSet.push({});
+const BB_W = 51;
+const BB_H = 90;
+const BB_TOP = RENDERER_TOP + RENDERER_H;
+const BB_CENTER = BB_W / 2;
+const BB_PAD_LEFT = 10;
+const BB_GAP = 16;
+const BBCIRC_R = 13;
+const BBCIRC_TOP_CY = BBCIRC_R + 3;
+const BBCIRC_BOTTOM_CY = BB_H - BBCIRC_R;
+const BB_TRAVEL_DIST = BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY;
+const BB_BOUNCE_WEIGHT = 6;
+const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
+//##endef BBs Variables
+
+//##ef Staff Notation Variables
+let rhythmicNotationObj = {};
+let notationImageObjectSet = {};
+
+const NOTES_PADDING = 6;
+const BEAT_LENGTH_PX = 46;
+const TOP_STAFF_LINE_Y = 49 + unisonTokenSize + NOTES_PADDING; //unisonTokenSize from functionLibrary.js
+const VERT_DIST_BTWN_STAVES = 64 + unisonTokenSize + 4;
+const FIRST_BEAT_L = NOTES_PADDING;
+const NUM_BEATS_PER_STAFFLINE = 8;
+const NUM_STAFFLINES = 2;
+const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
+const STAFF_BTM_MARGIN = 9 + NOTES_PADDING;
+const NOTEHEAD_H = 6;
+const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
+const RHYTHMIC_NOTATION_CANVAS_W = NOTES_PADDING + (BEAT_LENGTH_PX * NUM_BEATS_PER_STAFFLINE) + NOTES_PADDING; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
+const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
+const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
+const ADJ_FOR_PITCH_SETS_WIN = 26;
+const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_CENTER - (RHYTHMIC_NOTATION_CANVAS_W / 2) + ADJ_FOR_PITCH_SETS_WIN;
+
+//###ef Beat Coordinates
+
+let beatXLocations = [];
+for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
+  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_LENGTH_PX));
+}
+
+let beatCoords = [];
+for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
+  for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFFLINE; beatPerStaffIx++) {
+    let tCoordObj = {};
+    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_LENGTH_PX);
+    tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
+    beatCoords.push(tCoordObj);
+  }
+}
+//###endef Beat Coordinates
+
+//###ef Motive Dictionary
+let motiveInfoSet = [{ // [{path:, lbl:, num:, w:, h:, numPartials:}]
+    path: "/pieces/sf004/notationSVGs/motives/qtr_rest.svg",
+    lbl: 'qtr_rest',
+    num: -1,
+    w: 7,
+    h: 19,
+    numPartials: 0
   },
   {
-    path: "/pieces/sf004/notationSVGs/quintuplet.svg",
-    lbl: 'quintuplet'
+    path: "/pieces/sf004/notationSVGs/motives/quarter.svg",
+    lbl: 'quarter',
+    num: 0,
+    w: 7,
+    h: 39.4,
+    numPartials: 1
   },
   {
-    path: "/pieces/sf004/notationSVGs/quadruplet.svg",
-    lbl: 'quadruplet'
+    path: "/pieces/sf004/notationSVGs/motives/dot8thR_16th.svg",
+    lbl: 'dot8thR_16th',
+    num: 1,
+    w: 42.6,
+    h: 39,
+    numPartials: 1
   },
   {
-    path: "/pieces/sf004/notationSVGs/triplet.svg",
-    lbl: 'triplet'
+    path: "/pieces/sf004/notationSVGs/motives/eighthR_8th.svg",
+    lbl: 'eighthR_8th',
+    num: 2,
+    w: 30,
+    h: 39,
+    numPartials: 1
   },
   {
-    path: "/pieces/sf004/notationSVGs/dot8thR_16th.svg",
-    lbl: 'dot8thR_16th'
+    path: "/pieces/sf004/notationSVGs/motives/triplet.svg",
+    lbl: 'triplet',
+    num: 3,
+    w: 39,
+    h: 50.3,
+    numPartials: 3
   },
   {
-    path: "/pieces/sf004/notationSVGs/two16th_8thR.svg",
-    lbl: 'two16th_8thR'
+    path: "/pieces/sf004/notationSVGs/motives/quadruplet.svg",
+    lbl: 'quadruplet',
+    num: 4,
+    w: 40.5,
+    h: 39,
+    numPartials: 4
   },
   {
-    path: "/pieces/sf004/notationSVGs/eighthR_two16ths.svg",
-    lbl: 'eighthR_two16ths'
+    path: "/pieces/sf004/notationSVGs/motives/eighthR_two16ths.svg",
+    lbl: 'eighthR_two16ths',
+    num: 5,
+    w: 41.5,
+    h: 39,
+    numPartials: 2
   },
   {
-    path: "/pieces/sf004/notationSVGs/eighthR_8th.svg",
-    lbl: 'eighthR_8th'
+    path: "/pieces/sf004/notationSVGs/motives/two16th_8thR.svg",
+    lbl: 'two16th_8thR',
+    num: 6,
+    w: 23,
+    h: 39,
+    numPartials: 2
+  }
+
+];
+//###endef Motive Dictionary
+
+let motivesByBeat = [];
+for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) motivesByBeat.push({});
+//##endef END Staff Notation Variables
+
+//##ef Scrolling Tempo Cursors
+let tempoCursors = [];
+const NOTATION_CURSOR_H = 50;
+const NOTATION_CURSOR_STROKE_W = 3;
+//##endef Scrolling Tempo Cursors
+
+//##ef Scrolling Cursor BBs Variables
+let scrollingCsrBbsObjSet = [];
+for (let trIx = 0; trIx < NUM_TEMPOS; trIx++) scrollingCsrBbsObjSet.push({});
+const SCRBB_GAP = 3;
+const SCRBB_W = 9;
+const SCRBB_H = NOTATION_CURSOR_H + 2;
+const SCRBB_TOP = HALF_NOTEHEAD_H - NOTATION_CURSOR_H - 1;
+const SCRBB_CENTER = (-SCRBB_W / 2) - SCRBB_GAP;
+const SCRBB_LEFT = -SCRBB_W - SCRBB_GAP;
+const SCRBBCIRC_R = SCRBB_W - 4;
+const SCRBBCIRC_TOP_CY = SCRBB_TOP + 5;
+const SCRBBCIRC_BOTTOM_CY = -SCRBBCIRC_R;
+const SCRBB_TRAVEL_DIST = SCRBBCIRC_BOTTOM_CY - SCRBBCIRC_TOP_CY;
+const SCRBB_BOUNCE_WEIGHT = 3;
+const SCRBB_BOUNCE_WEIGHT_HALF = SCRBB_BOUNCE_WEIGHT / 2;
+//##endef Scrolling Cursor BBs Variables
+
+//##ef Player Tokens
+let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
+//##endef Player Tokens
+
+//##ef Signs Variables
+const SIGN_W = TEMPO_FRET_W - 10;
+const SIGN_H = 150;
+const HALF_SIGN_H = SIGN_H / 2;
+let signsByPlrByTrack = [];
+const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = Math.round(NUM_TEMPO_FRETS_TO_FILL / 10);
+//##endef Signs Variables
+
+//##ef Unison Signs Variables
+let unisonSignsByTrack = [];
+let unisonOffSignsByTrack = [];
+//##endef Unison Signs Variables
+
+//##ef Unison Token Variables
+let unisonToken;
+//##endef Unison Token Variables
+
+//##ef Pitch Sets Variables
+
+
+//###ef Pitch Sets Dictionary
+let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
+
+let pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
+    path: pitchSetsPath + 'e4_e5.svg',
+    lbl: 'e4_e5',
+    num: 0,
+    w: 42,
+    h: 45
   },
   {
-    path: "/pieces/sf004/notationSVGs/qtr_rest.svg",
-    lbl: 'qtr_rest'
+    path: pitchSetsPath + 'e4_e5_b4.svg',
+    lbl: 'e4_e5_b4',
+    num: 1,
+    w: 42,
+    h: 45
+  },
+  {
+    path: pitchSetsPath + 'e4_e5_b4cluster.svg',
+    lbl: 'e4_e5_b4cluster',
+    num: 2,
+    w: 42,
+    h: 45
+  },
+  {
+    path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
+    lbl: 'e4cluster_e5cluster_b4cluster',
+    num: 3,
+    w: 45,
+    h: 59
   }
 ];
-// #endef END notationSvgPaths_labels
+//###endef Pitch Sets Dictionary
+
+pitchSetsObj = {};
+const NUM_PITCHSETS = Object.keys(pitchSetsDictionary).length;
+pitchSetsObj['svgs'] = new Array(NUM_PITCHSETS);
+
+let findPsContWidthHeight = function() {
+  let whObj = {};
+  let tw = 0;
+  let th = 0;
+  pitchSetsDictionary.forEach((psObj, i) => {
+    if (psObj.w > tw) tw = psObj.w;
+    if (psObj.h > th) th = psObj.h;
+  });
+  whObj['w'] = tw;
+  whObj['h'] = th;
+  return whObj;
+}
+
+const PITCH_SETS_W = 49;
+const PITCH_SETS_H = 63;
+const PITCH_SETS_GAP = 2;
+const PITCH_SETS_TOP = RHYTHMIC_NOTATION_CANVAS_TOP;
+const PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L - PITCH_SETS_W - PITCH_SETS_GAP;
+const PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
+const PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
 
 
-// #endef END Global Vars
+//##endef Pitch Sets Variables
+
+//##ef Articulations Variables
+let articulationsPath = "/pieces/sf004/notationSVGs/articulations/";
+let articulationsObj = { //{path:,amt:,num:,w:,h:}
+  marcato: {
+    path: articulationsPath + 'marcato.svg',
+    amt: (TOTAL_NUM_BEATS * 5),
+    num: 0,
+    w: 8.3,
+    h: 9.13
+  }
+  // sf: { //Only use Marcato
+  //   path: articulationsPath + 'sf.svg',
+  //   amt: TOTAL_NUM_BEATS,
+  //   num: 0,
+  //   w: 16.46,
+  //   h: 17.18
+  // }
+};
+let articulationsSet = new Array(Object.keys(articulationsObj).length);
+//Make Articulation Positioning Dictionary
+// Make a set per motive, that has numPartials length; numPartials from motiveInfoSet
+let articulationPosByMotive = [];
+motiveInfoSet.forEach((motiveObj, motiveIx) => {
+  let t_mNum = motiveObj.num;
+  if (t_mNum > -1) { //do not include rest which has num -1
+    articulationPosByMotive.push(new Array(motiveObj.numPartials)); //populate with array len = numPartials
+  } //  if (t_mNum > -1) { //do not include rest which has num -1
+});
+articulationPosByMotive.forEach((partialSet, mNum) => {
+
+  switch (mNum) {
+
+    case 0: //quarter
+      partialSet[0] = 0;
+      break;
+
+    case 1: //dot8thR_16th
+      partialSet[0] = (BEAT_LENGTH_PX / 3.85) * 3;
+      break;
+
+    case 2: //eighthR_8th
+      partialSet[0] = BEAT_LENGTH_PX / 2;
+      break;
+
+    case 3: //triplet
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 3) * ix;
+      }
+      break;
+
+    case 4: //quadruplet
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4.15) * ix;
+      }
+      break;
+
+    case 5: //eighthR_two16ths
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4) * (ix + 2);
+      }
+      break;
+
+    case 6: //two16th_8thR
+      for (let ix = 0; ix < partialSet.length; ix++) {
+        partialSet[ix] = (BEAT_LENGTH_PX / 4) * ix;
+      }
+      break;
+
+  } // switch t_mNum
+});
+//##endef END Articulations Variables
+
+//#ef Animation Engine Variables
+let cumulativeChangeBtwnFrames_MS = 0;
+let epochTimeOfLastFrame_MS;
+let animationEngineIsRunning = true;
+//#endef END Animation Engine Variables
+
+//#ef Control Panel Vars
+const CTRLPANEL_W = 89;
+const CTRLPANEL_H = 200;
+const CTRLPANEL_BTN_W = 60;
+const CTRLPANEL_BTN_H = 35;
+const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
+const CTRLPANEL_MARGIN = 7;
+//#endef END Control Panel Vars
 
 //#ef SOCKET IO
-
 let ioConnection;
 
 if (window.location.hostname == 'localhost') {
@@ -75,94 +437,84 @@ if (window.location.hostname == 'localhost') {
   ioConnection = io.connect(window.location.hostname);
 }
 const SOCKET = ioConnection;
-
 //#endef > END SOCKET IO
 
-//#ef TimeSync
-
+//#ef TIMESYNC
 const TS = timesync.create({
   server: '/timesync',
   interval: 1000
 });
+//#endef TIMESYNC
 
-//#endef TimeSync END
 
-// #ef INIT
+//#endef GLOBAL VARIABLES
+
+//#ef INIT
+
 
 function init() {
 
   processUrlArgs();
 
-  scoreData = generateScoreData();
-  console.log(scoreData);
+  //#ef Load Initial Score Data From Public Folder
+  let tRequest = new XMLHttpRequest();
+  let scoreDataFileNameToLoad =  SCORE_DATA_FILE_TO_LOAD == "" ? '/scoreData/sf004-2021-9-10-20-1-48.txt' : '/scoreData/' + SCORE_DATA_FILE_TO_LOAD;
+  tRequest.open('GET', scoreDataFileNameToLoad, true); //This is the default file for the score data. This is served with the public folder when the app is run
+  tRequest.responseType = 'text';
 
-  calculateScore();
+  tRequest.onload = () => {
+    scoreData = JSON.parse(tRequest.response);
+    console.log('Score loaded: ' + scoreDataFileNameToLoad);
+    console.log(scoreData);
+    runAfterScoreDataIsLoaded();
+  }
+  tRequest.onerror = function() {
+    console.log("** An error occurred");
+  };
 
-  makeScoreDataManager();
+  tRequest.send();
+  //#endef Load Initial Score Data From Public Folder //Run above in tRequest.onload = () => { function
 
-  makeWorldPanel();
+  function runAfterScoreDataIsLoaded() {
+    makeScoreDataManager();
+    makeWorldPanel();
+    makeThreeJsScene();
+    makeRunway();
+    makeTracks();
+    makeGoFrets();
+    makeTempoFrets();
+    makeBouncingBalls();
+    makeStaffNotation();
+    makeScrollingTempoCursors();
+    makeScrollingCursorBbs();
+    makePlayerTokens();
+    makeSigns();
+    makeUnisonSigns();
+    makeUnisonToken();
+    makePitchSets();
+    makeArticulations();
+    makeControlPanel();
 
-  makeThreeJsScene();
 
-  makeRunway();
+    RENDERER.render(SCENE, CAMERA);
+  }
 
-  makeTracks();
+} // function init() END
 
-  makeGoFrets();
 
-  makeTempoFrets();
+//#endef INIT
 
-  makeBouncingBalls();
+//#ef PROCESS URL ARGS
 
-  makeRhythmicNotation();
 
-  makeScrollingCursors();
 
-  makePlayerTokens();
-
-  // playerTokens[3][3].svg.setAttributeNS(null, 'display', 'yes');
-  // playerTokens[3][3].txt.setAttributeNS(null, 'display', 'yes');
-  //
-  // playerTokens[4][3].svg.setAttributeNS(null, 'display', 'yes');
-  // playerTokens[4][3].txt.setAttributeNS(null, 'display', 'yes');
-  // playerTokens[4][3].txt.setAttributeNS(null, 'x', '100px');
-  // let td = describeArc(100, beatCoords[0].y - NOTATION_CURSOR_H - 16, 15, 90, 270)
-  //
-  // playerTokens[4][3].svg.setAttributeNS(null,'d',td);
-
-  makeSigns();
-
-  makePitchSets();
-
-  makeArticulations();
-
-  makeUnisonSigns();
-
-  makeUnisonToken();
-
-  makeScrollingBBs();
-
-  RENDERER.render(SCENE, CAMERA);
-
-  makeControlPanel();
-
-} // function init() end
-
-// #endef END INIT
-
-// #ef URL Args
-
-let PIECE_ID;
-let partsToRun = [];
-// let partsToRun = [0, 1, 2, 3, 4];
-let TOTAL_NUM_PARTS_TO_RUN;
 
 function processUrlArgs() {
 
   let urlArgs = getUrlArgs();
 
   PIECE_ID = urlArgs.id;
-
+  SCORE_DATA_FILE_TO_LOAD = urlArgs.sdfile;
   // partsToRun
   let partsToRunStrArray = urlArgs.parts.split(';');
   partsToRunStrArray.forEach((partNumAsStr) => {
@@ -173,20 +525,38 @@ function processUrlArgs() {
 
 }
 
-// #endef END URL Args
 
-// #ef Generate Score Data
+//#endef PROCESS URL ARGS
+
+//#ef GENERATE SCORE DATA
+function generateScoreData() {
 
 
-let scoreData;
+  //##ef GENERATE SCORE DATA - VARIABLES
+  let scoreDataObject = {};
+  scoreDataObject['tempos'] = [];
+  scoreDataObject['tempoFretsLoopLengthInFrames_perTempo'] = [];
+  scoreDataObject['goFrames_perTempo'] = [];
+  scoreDataObject['tempoFretLocations_perTempo'] = [];
+  scoreDataObject['goFretsState_perTempo'] = [];
+  scoreDataObject['leadIn_tempoFretLocations_perTempo'] = [];
+  scoreDataObject['bbYpos_perTempo'] = [];
+  scoreDataObject['leadIn_bbYpos_perTempo'] = [];
+  scoreDataObject['scrollingCsrCoords_perTempo'] = [];
+  scoreDataObject['tempoChanges_perPlayer'] = [];
+  scoreDataObject['tempoFlagLocs_perPlayer'] = [];
+  scoreDataObject['leadIn_tempoFlagLocs_perPlayer'] = [];
+  scoreDataObject['playerTokenTempoNum_perPlayer'] = [];
+  scoreDataObject['unisons'] = [];
+  scoreDataObject['unisonFlagLocs'] = [];
+  scoreDataObject['leadIn_unisonFlagLocs'] = [];
+  scoreDataObject['unisonPlayerTokenTempoNum'] = [];
+  scoreDataObject['motiveSet'] = [];
+  scoreDataObject['pitchSets'] = [];
+  scoreDataObject['psChgIndicator'] = [];
+  //##endef GENERATE SCORE DATA - VARIABLES
 
-let generateScoreData = function() {
-
-  let tempScoreData = {};
-
-  //##ef Tempos
-
-  let tempos = [];
+  //##ef Generate Tempos
 
   // Generate 5 Tempos
   let baseTempo = choose([85, 91, 77]);
@@ -194,48 +564,277 @@ let generateScoreData = function() {
   let tempoRangeVarianceMax = 0.007;
 
   let tTempo = baseTempo;
-  for (let i = 0; i < 5; i++) {
+  for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
     tTempo += rrand(tempoRangeVarianceMin, tempoRangeVarianceMax) * tTempo;
-    tempos.push(tTempo);
+    scoreDataObject.tempos.push(tTempo);
   }
 
-  tempScoreData['tempos'] = tempos;
+  //##endef Generate Tempos
 
-  //##endef Tempos
+  //##ef CALCULATIONS PER TEMPO
+  scoreDataObject.tempos.forEach((tempo) => {
 
-  //##ef Tempo Changes Per Player
 
-  let tempoChangeFrameNum_perPlayer = [];
+    //##ef Calculate Loop Length & Go Frames
+    // make about 11 minutes worth of beats divisible by 16(TOTAL_NUM_BEATS) for scrolling cursor coordination
+    let framesPerBeat = FRAMERATE / (tempo / 60);
+    let beatsPerCycle = Math.round(tempo * 11);
+    while ((beatsPerCycle % TOTAL_NUM_BEATS) != 0) { //keep adding beats until the cycle is divisible by TOTAL_NUM_BEATS
+      beatsPerCycle++;
+      if (beatsPerCycle > 99999) break;
+    }
 
+    // MAKE A SET OF GO FRAMES FOR THIS CYCLE
+    let goFrames_thisTempo = [];
+    for (let beatIx = 0; beatIx < beatsPerCycle; beatIx++) {
+      goFrames_thisTempo.push(Math.round(framesPerBeat * beatIx));
+    }
+
+    // CALCULATE LENGTH OF LOOP FOR THIS TEMPO IN FRAMES
+    // The end of the loop will be the the last go frame in this cycle
+    let tempoFretsLoopLengthInFrames_thisTempo = goFrames_thisTempo[goFrames_thisTempo.length - 1];
+    scoreDataObject.tempoFretsLoopLengthInFrames_perTempo.push(tempoFretsLoopLengthInFrames_thisTempo); //store in object variable
+
+    // Remove last frame to assure accurate loop; last frame should be a go frame, this makes 0 of the next cycle the actual next go frame
+    // goFrames_thisTempo.pop();
+
+    scoreDataObject.goFrames_perTempo.push(goFrames_thisTempo);
+    //##endef Calculate Loop Length & Go Frames
+
+    //##ef Calculate Tempo Fret Locations Per Frame
+
+    //###ef Tempo Fret Main Cycle
+    let tempoFretLocs_thisTempo = [];
+
+    //Add RUNWAY_LENGTH_FRAMES worth of goframes to end of goframes set so that there is a smooth transition
+    let goFrames_thisTempo_plus = deepCopy(goFrames_thisTempo);
+    goFrames_thisTempo.forEach((goFrm) => {
+      if (goFrm <= RUNWAY_LENGTH_FRAMES && goFrm > 0) { // Find set of go frames from first to the go frame at end of runway at the start of piece; add these to end so that you have a full runway of tempo frets before you loop; >0 because if you include first go frame you will double up
+        goFrames_thisTempo_plus.push(goFrm + tempoFretsLoopLengthInFrames_thisTempo);
+      }
+    });
+
+    //for every frame in this tempo's loop, look to see if a tf is on scene
+    for (let currFrameNumber = 0; currFrameNumber < tempoFretsLoopLengthInFrames_thisTempo; currFrameNumber++) {
+
+      let zlocOfFretsOnSceneSet = [];
+
+      goFrames_thisTempo_plus.forEach((goFrame) => { //look at each go frame to see if it is on scene
+        //Look at each go frame for every frame in cycle
+        //only include go frames that are on scene
+        if (goFrame >= (currFrameNumber - 1) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
+
+          let framesUntilGo = goFrame - currFrameNumber; //Guarantee that each goFrame will have a 0/GO_Z fret location
+          let pxUntilGo = framesUntilGo * PX_PER_FRAME;
+          let fretLocation = GO_Z - pxUntilGo;
+          zlocOfFretsOnSceneSet.push(fretLocation);
+
+        } // if (goFrame >= (currFrameNumber - 30) && goFrame < (RUNWAY_LENGTH_FRAMES + currFrameNumber)) { //(currFrameNumber-30)-add a few frames so tf doesn't disappear too abruptly, it falls out of view anyway
+      }); // goFrames_thisTempo_plus.forEach((goFrame) => { //look at each go frame to see if it is on scene END
+
+      tempoFretLocs_thisTempo.push(zlocOfFretsOnSceneSet);
+
+    } //for (let currFrameNumber = 0; currFrameNumber < tempoFretsLoopLengthInFrames_thisTempo; currFrameNumber++) END
+
+    scoreDataObject.tempoFretLocations_perTempo.push(tempoFretLocs_thisTempo);
+
+    //###endef Tempo Fret Main Cycle
+
+    //###ef Tempo Fret Lead In
+    let tempoFretLocs_leadIn_thisTempo = [];
+
+    // Only Need Runway Length of Go Frames
+    let goFramesForLeadIn = [];
+    goFrames_thisTempo.forEach((goFrm) => {
+      if (goFrm <= RUNWAY_LENGTH_FRAMES) {
+        goFramesForLeadIn.push(goFrm);
+      }
+    });
+
+    //for every frame in this tempo's loop, look to see if a tf is on scene
+    for (let currFrameNumber = 0; currFrameNumber < RUNWAY_LENGTH_FRAMES; currFrameNumber++) {
+
+      let zlocOfLeadInFretsSet = [];
+
+      goFramesForLeadIn.forEach((goFrame) => {
+
+        let framesUntilGo = goFrame - currFrameNumber + RUNWAY_LENGTH_FRAMES;
+        let pxUntilGo = framesUntilGo * PX_PER_FRAME;
+        let fretLocation = GO_Z - pxUntilGo;
+        zlocOfLeadInFretsSet.push(fretLocation);
+
+      }); // goFramesForLeadIn.forEach((goFrame) =>{ END
+
+      tempoFretLocs_leadIn_thisTempo.push(zlocOfLeadInFretsSet);
+
+    } // for (let currFrameNumber = 0; currFrameNumber < RUNWAY_LENGTH_FRAMES; currFrameNumber++) END
+
+    scoreDataObject.leadIn_tempoFretLocations_perTempo.push(tempoFretLocs_leadIn_thisTempo);
+    //###endef Tempo Fret Lead In
+
+    //##endef Calculate Tempo Fret Locations Per Frame
+
+    //##ef Calculate Go Frets Blink
+
+
+    let goFretsState_thisTempo = [];
+    for (let i = 0; i < tempoFretsLoopLengthInFrames_thisTempo; i++) { //populate initially with 0
+      goFretsState_thisTempo.push(0);
+    }
+    let goFrmBlinkDurInFrames = 14; //num of frames to hold go frame go
+
+    goFrames_thisTempo.forEach((goFrameNumber) => {
+
+      let lastFrame = goFrameNumber + goFrmBlinkDurInFrames;
+
+      for (let frmIx = goFrameNumber; frmIx < lastFrame; frmIx++) {
+        goFretsState_thisTempo[frmIx] = 1;
+      }
+
+    }); // goFrames_thisTempo.forEach((goFrameNumber) => END
+
+    scoreDataObject.goFretsState_perTempo.push(goFretsState_thisTempo);
+
+
+    //##endef Calculate Go Frets Blink
+
+    //##ef Calculate BBs
+
+
+    //##ef Main Cycle
+    let bbYpos_thisTempo = [];
+    let bbLeadIn = [];
+
+    goFrames_thisTempo.forEach((goFrm, goFrmIx) => { //goFrames_thisTempo contains the frame number of each go frame
+
+      if (goFrmIx > 0) { //start on second goFrmIx so you can compare to previous index
+
+        let previousGoFrame = goFrames_thisTempo[goFrmIx - 1];
+        let thisBeatDurInFrames = goFrm - previousGoFrame; //because of necessary rounding beats last various amounts of frames usually with in 1 frame difference
+        let ascentPct = 0.35; //looks best when descent is longer than ascent
+        let descentPct = 1 - ascentPct;
+        let numFramesUp = Math.floor(ascentPct * thisBeatDurInFrames);
+        let numFramesDown = Math.ceil(descentPct * thisBeatDurInFrames);
+
+        let ascentFactor = 0.2;
+        let descentFactor = 2.8;
+
+        let ascentPlot = plot(function(x) { //see Function library; exponential curve
+          return Math.pow(x, ascentFactor);
+        }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
+
+        ascentPlot.forEach((ascentPos) => {
+
+          let tBbY = BBCIRC_TOP_CY + ascentPos.y; //calculate the absolute y position of bb
+          bbYpos_thisTempo.push(Math.round(tBbY)); //populate bbYpos_thisTempo array with bby position for every frame
+
+          //save first bounce for lead-in
+          if (goFrmIx == 1) {
+            bbLeadIn.push(tBbY);
+          }
+
+        }); // ascentPlot.forEach((ascentPos) => END
+
+        let descentPlot = plot(function(x) {
+          return Math.pow(x, descentFactor);
+        }, [0, 1, 0, 1], numFramesDown, BB_TRAVEL_DIST);
+
+        descentPlot.forEach((descentPos) => {
+
+          let tBbY = BBCIRC_BOTTOM_CY - descentPos.y;
+          bbYpos_thisTempo.push(Math.round(tBbY));
+
+          //save first bounce for lead-in
+          if (goFrmIx == 1) {
+            bbLeadIn.push(tBbY);
+          }
+
+        }); // descentPlot.forEach((descentPos) => END
+
+      } // if(goFrmIx>0) END
+
+    }); // goFrames_thisTempo.forEach((goFrm, goFrmIx) => END
+
+    scoreDataObject.bbYpos_perTempo.push(bbYpos_thisTempo);
+    //##endef Main Cycle
+
+    //##ef Lead In
+    let leadIn_bbYpos_thisTempo = [];
+    //make 1 ascent just before first beat
+    bbLeadIn.forEach((bbYpos) => { //leadInAscent is already reversed so first index is lowest bbYpos
+      leadIn_bbYpos_thisTempo.push(bbYpos);
+    });
+
+    scoreDataObject.leadIn_bbYpos_perTempo.push(leadIn_bbYpos_thisTempo);
+    //##endef Lead In
+
+
+    //##endef Calculate BBs
+
+    //##ef Calculate Scrolling Cursors
+    //look at every go frame, starting at 1; calc num frames since last go frame; map the distance between two beat coordinates
+    let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
+    let currBeatNum_InLoop = 0;
+    goFrames_thisTempo.forEach((goFrameNumber, ix) => {
+      if (ix > 0) { //start on ix=1 so you can compare to previous frame
+
+        let distFrames = goFrameNumber - goFrames_thisTempo[ix - 1];
+        let incInPx = BEAT_LENGTH_PX / distFrames;
+
+        for (let i = 0; i < distFrames; i++) {
+          let tCoordsObj = {}; //{x:,y1:,y2:}
+          tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + (i * incInPx); // increment x for each frame between downbeats
+          tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
+          tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
+          scrollingCsrCoords_thisTempo.push(tCoordsObj);
+        } // for (let i = 0; i < distFrames; i++) END
+
+        currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS;
+
+      } // if (ix > 0) { //start on ix=1 so you can look back END
+    }); // goFrames_thisTempo.forEach((goFrameNumber, ix) => END
+
+    scoreDataObject.scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
+    //##endef Calculate Scrolling Cursors
+
+
+  }); // scoreDataObject.tempos.forEach((tempo) => { END
+  //##endef CALCULATIONS PER TEMPO
+
+  //##ef CALCULATIONS PER PLAYER
   for (let plrNum = 0; plrNum < NUM_PLAYERS; plrNum++) {
 
 
-    //##ef Generate time containers within which a certian rate of tempo change will take place
+    //##ef Tempo Changes
+
+
+    //##ef Calculate Which Frames to Change Tempo
     // 7 containers in a palindrome long-shorter-shorter-shorter-Mirror
     let tempoChgTimeCont = generatePalindromeTimeContainers({
       numContainersOneWay: 4,
       startCont_minMax: [90, 110],
       pctChg_minMax: [-0.25, -0.31]
     });
-    //##endef Generate time containers within which a certian speed of tempo will take place
-
-    //##ef Generate Set of when tempo changes are to occur in Frames
     // duration with tempo changes will be in this pattern: short - medium - long
     // in conjunction with time containers. so 1st tc from short array, next tc from medium array etc...
-    let shortTempoChgDursSec = [4, 4, 5, 7];
-    let mediumTempoChgDursSec = [9, 9, 11, 13];
-    let longTempoChgDursSec = [14, 14, 16, 18];
+    let tempoChanges_thisPlayer = []; //{tempo:,frameNum}
+    let shortTempoChgDursSec = [9, 9, 11, 13];
+    let mediumTempoChgDursSec = [14, 14, 16, 18];
+    let longTempoChgDursSec = [21, 23, 33, 28, 37];
+    let tTempoSet = [0, 1, 2, 3, 4];
 
-    let tempoChangeFrames_thisPlayer = [];
     let tTimeElapsed = 0;
-    tempoChangeFrames_thisPlayer.push(0); // so there is a starting tempo
+    let firstLastTempoChange = choose(tTempoSet); //need first and last tempo in cycle to be the same so loop works
+    tempoChanges_thisPlayer.push({
+      frameNum: 0,
+      tempo: firstLastTempoChange
+    }); // so there is a starting tempo
     let chgDurSetNum = 0;
     let timeContainerRemainder = 0;
 
     tempoChgTimeCont.forEach((timeContDur) => { //each new time container
 
       chgDurSetNum = (chgDurSetNum + 1) % 3; //loop change duration sets
-
       let timeElapsed_thisTC = timeContainerRemainder; //this will be 0 or a negative number
 
       do { //loop through each time container; add time from the appropriate set of
@@ -261,64 +860,168 @@ let generateScoreData = function() {
         timeElapsed_thisTC += tTimeInc; //add time from the appropriate set until this time container is full
         tTimeElapsed += tTimeInc //add this increment to overall time
         let timeElapsedAsFrames = Math.round(tTimeElapsed * FRAMERATE); //convert to frames
-        tempoChangeFrames_thisPlayer.push(timeElapsedAsFrames); //add to this players array of frames to change tempo
+
+        let tNewTempo_frmNum_obj = {};
+
+        //decide which tempo; cycle through them all
+        if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
+        let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
+        let tNewTempo = tTempoSet[tTempoIx];
+        tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
+
+        tNewTempo_frmNum_obj['tempo'] = tNewTempo;
+        tNewTempo_frmNum_obj['frameNum'] = timeElapsedAsFrames;
+        tempoChanges_thisPlayer.push(tNewTempo_frmNum_obj);
 
       } while (timeElapsed_thisTC <= timeContDur);
 
       timeContainerRemainder = timeElapsed_thisTC - timeContDur; //a negative number pass on remainder so pattern of tempo change durations remains consistant
 
-    }); //tempoChgTimeCont.forEach((timeContDur) => END
+    }); // tempoChgTimeCont.forEach((timeContDur) => { //each new time container END
+    tempoChanges_thisPlayer[tempoChanges_thisPlayer.length - 1].tempo = firstLastTempoChange; //replace last tempo change in cycle with the same as first for looping consistancy
+    scoreDataObject.tempoChanges_perPlayer.push(tempoChanges_thisPlayer);
+    //##endef Calculate Which Frames to Change Tempo
+
+    //##ef Tempo Change Flags
 
 
-    //##endef Generate Set of when tempo changes are to occur in beats
+    let tempoFlagLocs_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
+    for (let i = 0; i < 100000; i++) tempoFlagLocs_thisPlr.push([]); // populate with -1 to replace later
+    let leadIn_tempoFlagLocs_thisPlr = []; //make a set of lead in frames
+    for (let i = 0; i < RUNWAY_LENGTH_FRAMES; i++) leadIn_tempoFlagLocs_thisPlr.push([]);
 
-    tempoChangeFrameNum_perPlayer.push(tempoChangeFrames_thisPlayer);
+    let tempoChg_signPos_thisPlayer = [];
+
+    // For each tempo change flag, calculating where it will be for each frame between end of runway and gofret
+    tempoChanges_thisPlayer.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
+
+      let tempoNum = tempoFrmNumObj.tempo;
+      let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret
+
+      for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+
+        let tempoNum_zPos_obj = {};
+        let frameNum = goFrmNum - i; //RUNWAY_LENGTH_FRAMES to 0
+
+        if (frameNum >= 0) { //so you don't go to negative array index
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i) + GO_Z;
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          tempoFlagLocs_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame; there is a set of tempo flag locations for each frame cause there could be several tempo flags on scene that frame
+
+          //pop off last frame for looping
+          if (tempChgIx == (tempoChanges_thisPlayer.length - 1)) { //last tempo change with tempo num and frame num for this player
+            if (i == 0) { // last frame of this cycle
+              tempoFlagLocs_thisPlr.splice(frameNum); // truncate array to end of loop; was 100,000 long; frameNum instead of frameNum-1 will lob off last frame so it is clean loop, otherwise it goes to z=0 and the first frame of loop is also z=0
+            }
+          } //   if (tempChgIx == (tempoChanges_thisPlayer.length - 1)) END
+
+        } // if (frameNum >= 0) END
+        //
+        else { //for lead-in
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          let zLoc = Math.round(-PX_PER_FRAME * i) + GO_Z;
+          tempoNum_zPos_obj['zLoc'] = zLoc;
+          leadIn_tempoFlagLocs_thisPlr[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in lead in array for this frame; frameNum will be negative
+
+        } //else END
+
+      } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
+
+      //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
+      if (tempChgIx < tempoChanges_thisPlayer.length - 1) { //because we are referencing the next frame
+        let tDurFrames = tempoChanges_thisPlayer[tempChgIx + 1].frameNum - goFrmNum; //until the next tempo change flag reaches the go fret
+        for (let i = 1; i < tDurFrames; i++) { //i=1 because flag is already there for 1 frame at gofret
+
+          let tempoNum_zPos_obj = {};
+
+          tempoNum_zPos_obj['tempoNum'] = tempoNum;
+          tempoNum_zPos_obj['zLoc'] = GO_Z;
+          let tFrameNum = goFrmNum + i;
+          tempoFlagLocs_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
+
+        } // for (let i = 1; i < tDurFrames; i++) END
+      }
+
+    }); // tempoChanges_thisPlayer.forEach((tempoFrmNumObj) => END
+
+    scoreDataObject.tempoFlagLocs_perPlayer.push(tempoFlagLocs_thisPlr);
+    scoreDataObject.leadIn_tempoFlagLocs_perPlayer.push(leadIn_tempoFlagLocs_thisPlr);
+
+
+    //##endef Tempo Change Flags
+
+    //##ef Player Tokens
+
+
+    //An Array length = to tempoFlagLocs_thisPlr, that contains the current tempo for this player for this frame
+    //In Update look up that frame's scrolling cursor location for the right tempo listed here; incorporate toplevel var so player token can see all scrolling cursor locations for that frame
+    let playerTokenTempoNum_thisPlr = new Array(tempoFlagLocs_thisPlr.length).fill(-1);
+
+    tempoChanges_thisPlayer.forEach((tempoChgObj, tchgIx) => {
+      if (tchgIx > 0) { //so we can use previous index
+
+        let thisTempo = tempoChgObj.tempo;
+        let thisFrameNum = tempoChgObj.frameNum;
+        let lastTempo = tempoChanges_thisPlayer[tchgIx - 1].tempo;
+        let lastFrameNum = tempoChanges_thisPlayer[tchgIx - 1].frameNum;
+        let tNumToFill = thisFrameNum - lastFrameNum;
+
+        for (let i = 0; i < tNumToFill; i++) {
+          playerTokenTempoNum_thisPlr[lastFrameNum + i] = lastTempo;
+        }
+
+      } // if (tchgIx > 0) END
+    }); // tempoChanges_thisPlayer.forEach((tempoChgObj, tchgIx) => END
+
+    scoreDataObject.playerTokenTempoNum_perPlayer.push(playerTokenTempoNum_thisPlr);
+
+
+    //##endef Player Tokens
+
+
+    //##endef Tempo Changes
+
 
   } // for(let plrNum=0;plrNum<NUM_PLAYERS;plrNum++) => END
+  //##endef CALCULATIONS PER PLAYER
 
-  tempScoreData['tempoChanges'] = tempoChangeFrameNum_perPlayer;
+  //##ef CALCULATIONS FOR UNISONS
 
 
-  //##endef Tempo Changes Per Player
+  //##ef Calculate frame number and duration of unisons
 
-  //##ef Unison Tempo Changes
-  //TOO MANY UNISONS REVISE THIS
   let unisonTempoChangeObjs = [];
-  let unisonDurSet = [4, 4, 3, 3, 7, 9];
+  let unisonDurSet = [8, 8, 5, 5, 12, 15];
   let unisonTime = 0;
-
+  // Choose a unison duration then a gap from obj below; Repeat gap ranges using numIter below
   let unison_gapRange_numIterations = [{
-      gapRange: [21, 23],
-      numIter: 1
-    },
-    {
       gapRange: [38, 41],
       numIter: 2
     },
     {
       gapRange: [34, 36],
-      numIter: 3
+      numIter: 1
     },
     {
       gapRange: [60, 65],
-      numIter: 1
+      numIter: 3
     },
     {
       gapRange: [34, 36],
-      numIter: 3
+      numIter: 1
     },
     {
       gapRange: [38, 41],
       numIter: 2
-    },
-    {
-      gapRange: [21, 23],
-      numIter: 1
     }
   ];
 
+  let firstLastUnisonTempo; // so first and last tempo are the same for the loop
 
-  unison_gapRange_numIterations.forEach((gapIterDict) => {
+  unison_gapRange_numIterations.forEach((gapIterDict, gapIx) => {
 
     let numIter = gapIterDict.numIter;
     let tTempoSet = [0, 1, 2, 3, 4];
@@ -338,768 +1041,40 @@ let generateScoreData = function() {
       let tNewTempo = tTempoSet[tTempoIx];
       tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
       tChgObj['tempo'] = tNewTempo;
+      if (gapIx == 0 && iterIx == 0) firstLastUnisonTempo = tNewTempo;
 
       let timeToNextUnison = rrand(gapIterDict.gapRange[0], gapIterDict.gapRange[1]);
       unisonTime += timeToNextUnison;
 
-      unisonTempoChangeObjs.push(tChgObj);
+      scoreDataObject.unisons.push(tChgObj);
 
-    }
+    } // for (let iterIx = 0; iterIx < numIter; iterIx++) END
 
   }); //unison_gapRange_numIterations.forEach((gapIterDict) => END
 
+  scoreDataObject.unisons[scoreDataObject.unisons.length - 1].tempo = firstLastUnisonTempo;
 
-  tempScoreData['unisons'] = unisonTempoChangeObjs;
+  //##endef Calculate frame number and duration of unisons
 
-  //##endef Unison Tempo Changes
-
-  //##ef Notation Motives
-
-
-  //Time Containers & amount of rests
-  // 11 containers in a palindrome short-longer-longer ... longest-mirror
-  let restsTimeContainers = generatePalindromeTimeContainers({
-    numContainersOneWay: 6,
-    startCont_minMax: [5, 7],
-    pctChg_minMax: [0.27, 0.36]
-  });
-  //find out total time
-  let restsLoopTotalTime = 0;
-  restsTimeContainers.forEach((tTime) => {
-    restsLoopTotalTime += tTime;
-  });
-  // Overall loop length will be x times restsLoopTotalTime
-  let numRestsLoop = 7;
-  let maxNumRests = 13;
-  let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
-  for (let i = 0; i < 100000; i++) {
-    if ((restsByFrameSetLength % maxNumRests) == 0) {
-      break;
-    } else {
-      restsByFrameSetLength++;
-    }
-  }
-
-  // Figure out which frames will add/subtract rest
-  let restsByFrame = [];
-  let tCumFrmCt_rests = 0;
-  let addMinusRestsCt = 0;
-  let restType = 0;
-  let restSetInc = 0;
-  for (let i = 0; i < restsByFrameSetLength; i++) {
-    let tOb = {};
-    let sec = restsTimeContainers[restSetInc];
-    let incInFrms = Math.round(sec * FRAMERATE);
-    tCumFrmCt_rests += incInFrms;
-    tOb['frame'] = tCumFrmCt_rests;
-    if (addMinusRestsCt == 0) restType = (restType + 1) % 2
-    tOb['restType'] = restType;
-    restSetInc = (restSetInc + 1) % restsTimeContainers.length;
-    addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
-    restsByFrame.push(tOb);
-  }
-  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame + 1; //plus 1 because restsByFrame.frame will be index num and length needs to be one more as ix starts at 0
-
-  //For motives, do a choose for dur between changes
-  //Make a set as long as restsTimeContainers
-  //cycle through all the motives - Make function
-  let motiveNumberSet = numberedSetFromSize({
-    sz: (notationSvgPaths_labels.length - 1)
-  });
-  let orderedMotiveNumSet = chooseAndCycle({
-    loopSet: motiveNumberSet,
-    num: 5000
-  });
-  let dursBtwnMotiveChgSet = [5, 7, 3, 6, 11, 13, 8, 9, 17];
-  //Make big set of motive change objects: {motiveNum:, time:}
-  let motiveChangeTimesObjSet = [];
-  let cumMotiveChgTime = 0;
-
-  for (let i = 0; i < 100000; i++) {
-
-    let tObj = {};
-    cumMotiveChgTime += choose(dursBtwnMotiveChgSet);
-    let chgFrmNum = Math.round(cumMotiveChgTime * FRAMERATE);
-    tObj['motiveNum'] = orderedMotiveNumSet[i];
-    tObj['frame'] = chgFrmNum;
-    motiveChangeTimesObjSet.push(tObj);
-
-    if (cumMotiveChgTime > (restsLoopTotalTime * numRestsLoop)) break;
-
-  } // for (let i = 0; i < 100000; i++) END
-
-  //Make a frame by frame set with all the rests and motive changes state of all 8 beats each frame
-  // take the time of last entry of motiveChangeTimesObjSet as the length of final looping set - convert to frames
-
-  //fill all frames with all quarters then replace
-  //##ef Insert Rests
-  let motiveChgByFrameSet = [];
-  for (let i = 0; i < motiveSetByFrame_length; i++) {
-    motiveChgByFrameSet.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-  }
-  let motiveChgByFrameSet_currSet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-
-  for (var restIx = 1; restIx < restsByFrame.length; restIx++) {
-
-    let restObj = restsByFrame[restIx - 1];
-    let restFrame = restObj.frame;
-    let restType = restObj.restType;
-    let next_restObj = restsByFrame[restIx];
-    let next_restFrame = next_restObj.frame;
-    let next_restType = next_restObj.restType;
-
-    if (restType == 1) { //add rest
-
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
-
-        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
-
-        if (tNotesSet[tChoice] != -1) {
-
-          tNotesSet[tChoice] = -1; //add a rest
-
-          //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
-
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if (tchgFrmNum == frmIx) {
-
-                for (let j = 0; j < 100; j++) {
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix] != -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
-
-
-              }
-
-            });
-
-            //Work in motiveChangeTimesObjSet
-            let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
-          }
-
-          // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
-
-          break;
-
-        } //   if (tNotesSet[noteIx] != -1) END
-
-      } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
-
-
-
-
-    if (restType == 0) { //add rest
-
-      let tNotesSet = deepCopy(motiveChgByFrameSet_currSet);
-
-      for (var i = 0; i < 1000; i++) { // this is to avoid infinite while loop
-
-        let tChoice = chooseIndex(tNotesSet); //randomly choose a notation item so that the rests do not appear in order
-
-        if (tNotesSet[tChoice] == -1) {
-
-          tNotesSet[tChoice] = 0; //use motiveChangeTimesObjSet here
-
-          //copy new array over range
-          for (let frmIx = restFrame; frmIx < next_restFrame; frmIx++) {
-
-            motiveChangeTimesObjSet.forEach((mObj) => {
-              let tchgFrmNum = mObj.frame;
-              let tmNum = mObj.motiveNum;
-              if (tchgFrmNum == frmIx) {
-
-                for (let j = 0; j < 100; j++) {
-                  let tix = chooseIndex(tNotesSet);
-                  if (tNotesSet[tix] != -1) {
-                    tNotesSet[tix] = tmNum;
-                    break;
-                  }
-                }
-
-
-              }
-
-            });
-
-
-            let tSet = deepCopy(tNotesSet);
-            motiveChgByFrameSet[frmIx] = tSet;
-          }
-
-          // Update curr set
-          motiveChgByFrameSet_currSet = deepCopy(tNotesSet);
-
-          break;
-
-        } //   if (tNotesSet[noteIx] != -1) END
-
-      } //   for (var i = 0; i < 1000; i++) END
-
-    } // if (restType == 1) { END
-
-
-
-  } // for (var restIx = 1; restIx < restsByFrame.length; restIx++) END
-  tempScoreData['motiveSet'] = motiveChgByFrameSet;
-
-  //##endef Insert Rests
-
-
-  //##endef Notation Motives
-
-  return tempScoreData;
-
-} //generateScoreData = function() END
-
-
-// #endef END Generate Score Data
-
-// #ef Calculate Score
-
-
-// #ef Calculate Score Vars
-
-
-//##ef Tempo Frets
-let tempoFretLocs_eachFrame_perTempo = [];
-let goFrameCycles_perTempo = [];
-let tempoFrets_leadInFrames_perTempo = [];
-//##endef Tempo Frets
-
-//##ef Go Frames
-let goFramesCycle_perTempo = []; //cycle length from tempo frames
-let goFrames_leadInFrames_perTempo = []
-//##endef Go Frames
-
-//##ef BBs
-let bbYpos_perTempo = [];
-let bbYpos_leadIn_perTempo = [];
-//##endef BBs
-
-//#ef Scrolling Cursors
-let scrollingCsrCoords_perTempo = [];
-//#endef Scrolling Cursors
-
-//#ef Tempo Change Flags
-let tempoFlagLocsByFrame_perPlr = [];
-let leadIn_tempoFlagLocsByFrame_perPlr = [];
-//#endef Tempo Change Flags
-
-//#ef Player Tokens
-let playerTokenLocationByFrame_perPlr = [];
-//#endef Player Tokens
-
-//#ef Unisons
-let setOfUnisonFlagLocByFrame = [];
-let leadInSet_unisonFlagLocByFrame = [];
-let unisonPlrTokenLocByFrame;
-//#endef Unisons
-
-
-// #endef END Calculate Score Vars
-
-let calculateScore = function() {
-
-  //#ef Calculations Per Tempo
-
-
-  scoreData.tempos.forEach((tTempo, thisTempoIx) => {
-
-    // #ef Tempo Frets
-
-
-    //##ef Comments
-    // There will be an array of tempo fret locations for each tempo
-    // The array will contain an array of Tempo Fret locations for each frame
-    // The array can loop and is tempoLoopLengthBeats beats long, can change below
-    //##endef Comments
-
-    //##ef Tempo Fret Vars
-    let beatsPerSec = tTempo / 60;
-    let pxPerBeat_pxBtwnFrets = PX_PER_SEC / beatsPerSec;
-    let framesPerBeat = pxPerBeat_pxBtwnFrets / PX_PER_FRAME;
-    let tempoLoopLengthBeats = TOTAL_NUM_BEATS * 10;
-    let tfSetCycle = Math.ceil(framesPerBeat); // num of frames that need to pass to travel one beat worth of distance
-    let thisTempoLoop_numFrames = Math.round(framesPerBeat * tempoLoopLengthBeats); // number equal to tempoLoopLengthBeats beats worth of frames this will be the number of frames in the cycle
-    let maxLocsToCalc = thisTempoLoop_numFrames * tfSetCycle; //the maximum number of tempo fret locations to calculate so that there will be enough locations in the last frame of the cycle
-    //##endef Tempo Fret Vars
-
-    //##ef LEAD IN FRAMES
-
-    let maxTfsOnRunway = RUNWAY_L / pxPerBeat_pxBtwnFrets;
-    let tfLocsSet = []; //one set of tempo fret locations from location lead in start
-
-    // Make set of tflocations for each frame of lead in
-    for (let tfLocIx = 0; tfLocIx < maxTfsOnRunway; tfLocIx++) { // Make set of tflocations for each frame of lead in
-      tfLocsSet.push((pxPerBeat_pxBtwnFrets * -tfLocIx) - (LEAD_IN_FRAMES * PX_PER_FRAME));
-    }
-
-    let thisTempos_leadInFramesTfLocs_perFrame = [];
-
-    for (let frmIx = 0; frmIx < LEAD_IN_FRAMES; frmIx++) { //for each lead in frame
-
-      let thisFrameLocs = []; //set of locations for this frame
-
-      tfLocsSet.forEach((loc) => { //take basic set from 0 and add 1 frame worth of distance
-        thisFrameLocs.push(Math.round(loc + (PX_PER_FRAME * frmIx)));
-      });
-
-      thisTempos_leadInFramesTfLocs_perFrame.push(thisFrameLocs); //set of frames for this tempo
-
-    } // for (let frmIx = 0; frmIx < LEAD_IN_FRAMES; frmIx++) END
-
-    tempoFrets_leadInFrames_perTempo.push(thisTempos_leadInFramesTfLocs_perFrame); //push this tempos frames to overall array with all tempos
-
-    //##endef LEAD IN FRAMES
-
-    //##ef Tempo Frets Loop
-    let tFrameCt = 0;
-    let pxAdv = 0; // cumulitive frames*PX_PER_FRAME
-
-    let thisTemposTfLocByFrameCycle = []; //array of frames for this tempo
-
-    for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) { //total num of frames in the cycle
-
-      let tfLocByFrame = []; //set of locations for one frame
-
-      for (let locIx = 0; locIx < maxLocsToCalc; locIx++) { //need to calculate many locations to fill cycle
-
-        let tfLoc = (locIx * -pxPerBeat_pxBtwnFrets) + pxAdv; //advance each TF each frame
-
-
-        // if (tfLoc <= pxPerBeat_pxBtwnFrets) { // does not include tfs that have already passed the go fret by more than one beat
-        if (tfLoc <= 0) { // does not include tfs that have already passed the go fret
-
-          tfLocByFrame.push(Math.round(tfLoc));
-
-        }
-        if (tfLoc < -RUNWAY_L) break; // can stop loop if tf is not on the runway yet
-
-
-      } //  ffor (let locIx = 0; locIx < maxLocsToCalc; locIx++)  END
-
-      tFrameCt++;
-      pxAdv = tFrameCt * PX_PER_FRAME;
-      thisTemposTfLocByFrameCycle.push(tfLocByFrame)
-
-    } //or (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) END
-
-    tempoFretLocs_eachFrame_perTempo.push(thisTemposTfLocByFrameCycle);
-    //##endef Tempo Frets Loop
-
-
-    // #endef END Tempo Frets
-
-    // #ef Go Frames
-
-    //##ef Lead In
-
-    let thisTempo_leadIn_goFrames = [];
-
-    for (let frmIx = 0; frmIx < LEAD_IN_FRAMES; frmIx++) {
-
-      thisTempo_leadIn_goFrames.push(0);
-
-    } // for (let frmIx = 0; frmIx < LEAD_IN_FRAMES; frmIx++) END
-
-    goFrames_leadInFrames_perTempo.push(thisTempo_leadIn_goFrames);
-
-    //##endef Lead In
-
-    //##ef CALCULATE GO FRAMES
-
-    let setOfGoFrames = []; // set of each frame number that is a go frame
-    let maxNumGoFrames = (thisTempoLoop_numFrames / framesPerBeat) + 100; // to set a limit on below loop
-
-    for (let frmIx = 0; frmIx < maxNumGoFrames; frmIx++) { //Find which frames are goframes
-
-      let goFrameNum = Math.ceil(frmIx * framesPerBeat); //round up; it is the next whole frame that goes
-
-      if (goFrameNum >= thisTempoLoop_numFrames) break; //end loop here; you'll only need the num of goframes for this tempos frame loop
-
-      setOfGoFrames.push(goFrameNum);
-
-    } //  for (let frmIx = 0; frmIx < maxNumGoFrames; frmIx++) END
-    goFramesCycle_perTempo.push(setOfGoFrames);
-
-    //##endef CALCULATE GO FRAMES
-
-    //##ef Make Go Frames Cycle
-    let thisTemposGoFrames = [];
-
-    for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++) { //Make a goframe state for each frame in cycle
-
-      let goFrmState = 0;
-
-      for (let goFrmNumIx = 0; goFrmNumIx < setOfGoFrames.length; goFrmNumIx++) { //compare to goFrame num set
-
-        let goFrmNum = setOfGoFrames[goFrmNumIx];
-
-        if (goFrmNum == frmIx) {
-          goFrmState = 1;
-          break;
-        }
-
-      }
-
-      thisTemposGoFrames.push(goFrmState);
-
-    } // for (let frmIx = 0; frmIx < thisTempoLoop_numFrames; frmIx++)  END
-
-    //##endef Make Go Frames Cycle
-
-    //##ef Go Frames Blink
-    let thisTemposGoFrames_blink = deepCopy(thisTemposGoFrames);
-
-    let goFrmBlink = 14; //num of frames to hold go frame go
-
-    for (let frmIx = 0; frmIx < thisTemposGoFrames.length; frmIx++) { // find go frames and make the subsequent goFrmBlink amt of frames go frames as well
-
-      let frmState = thisTemposGoFrames[frmIx];
-
-      if (frmState == 1) {
-
-        for (let i = 1; i < goFrmBlink; i++) { //set the next few frames as go
-
-          if ((frmIx + i) < thisTemposGoFrames.length) { //so you don't go past last frame in array
-
-            thisTemposGoFrames_blink[frmIx + i] = 1; //make next few frames goframe on
-
-          }
-
-        } //  for (let i = 1; i < goFrmBlink; i++) END
-
-        frmIx = frmIx + goFrmBlink; //move loop on past the frames you made into go frames
-
-      } //  if (frmState == 1) END
-
-    } //for (let frmIx = 0; frmIx < thisTemposGoFrames.length; frmIx++) END
-
-    goFrameCycles_perTempo.push(thisTemposGoFrames_blink);
-
-    //##endef Go Frames Blink
-
-    // #endef END Go Frames
-
-    // #ef BBs
-
-    //##ef Calc BBs
-
-    let bbYpos_thisTempo = [];
-    let leadInDescent = [];
-
-    setOfGoFrames.forEach((goFrm, goFrmIx) => { //setOfGoFrames contains the frame number of each go frame
-
-      if (goFrmIx > 0) { //start on second so you can use previous index
-
-        let previousGoFrame = setOfGoFrames[goFrmIx - 1];
-        let thisBeatDurInFrames = goFrm - previousGoFrame; //because of necessary rounding beats last various amounts of frames usually with in 1 frame difference
-        let ascentPct = 0.35; //looks best when descent is longer than ascent
-        let descentPct = 1 - ascentPct;
-        let numFramesUp = Math.floor(ascentPct * thisBeatDurInFrames);
-        let numFramesDown = Math.ceil(descentPct * thisBeatDurInFrames);
-
-        let ascentFactor = 0.2;
-        let descentFactor = 2.8;
-
-        let ascentPlot = plot(function(x) {
-          return Math.pow(x, ascentFactor);
-        }, [0, 1, 0, 1], numFramesUp, BB_TRAVEL_DIST); //will create an object with numFramesUp length (x) .y is what you want
-
-        ascentPlot.forEach((ascentPos) => {
-
-          let tBbY = BBCIRC_TOP_CY + ascentPos.y; //calculate the absolute y position of bb
-          bbYpos_thisTempo.push(Math.round(tBbY)); //populate bbYpos_thisTempo array with bby position for every frame
-
-          //save first bounce for lead-in
-          if (goFrmIx == 1) {
-            leadInDescent.push(tBbY);
-          }
-
-        });
-
-        let descentPlot = plot(function(x) {
-          return Math.pow(x, descentFactor);
-        }, [0, 1, 0, 1], numFramesDown, BB_TRAVEL_DIST);
-
-        descentPlot.forEach((descentPos) => {
-
-          let tBbY = BBCIRC_BOTTOM_CY - descentPos.y;
-          bbYpos_thisTempo.push(Math.round(tBbY));
-
-          //save first bounce for lead-in
-          if (goFrmIx == 1) {
-            leadInDescent.push(tBbY);
-          }
-
-        });
-
-      } // if(goFrmIx>0) END
-
-    }); // setOfGoFrames.forEach((goFrm, goFrmIx) => END
-
-    //##endef Calc BBs
-
-    //##ef Lead In - BBs
-
-    //Make a lead in set of bbYpos_leadIn_thisTempo with thisTempo_leadIn_goFrames length & all BBCIRC_BOTTOM_CY
-    let bbYpos_leadIn_thisTempo = [];
-    thisTempo_leadIn_goFrames.forEach((item, i) => {
-      bbYpos_leadIn_thisTempo.push(BBCIRC_BOTTOM_CY);
-    });
-
-    //make 1 descent just before first beat
-    leadInDescent.forEach((bbYpos, dIx) => { //leadInDescent is already reversed so first index is lowest bbYpos
-      let startIx = bbYpos_leadIn_thisTempo.length - 1 - leadInDescent.length;
-      let thisIx = startIx + dIx;
-      bbYpos_leadIn_thisTempo[thisIx] = bbYpos;
-    });
-
-
-    //##endef Lead In - BBs
-
-
-    bbYpos_perTempo.push(bbYpos_thisTempo);
-    bbYpos_leadIn_perTempo.push(bbYpos_leadIn_thisTempo);
-
-
-    // #endef END BBs
-
-    // #ef Scrolling Cursors
-
-    let scrollingCsrCoords_thisTempo = []; //[obj:{x:,y1:,y2:}]
-    let currBeatNum_InLoop = 0;
-    let incWithinBeat_eachFrame = 0; //how much to add to x between goframes/beats
-
-    thisTemposGoFrames.forEach((goFrmState, frmIx) => { //use go frames array so that all tempo elements are coordinated by go frame
-
-      let tCoordsObj = {}; //{x:,y1:,y2:}
-      let notationPxPerFrame_thisTempo = BEAT_L_PX / framesPerBeat; //how many pixels to advance per frame for this tempo
-
-      if (goFrmState == 1) { //what happens on goframes; go frames will coordinate all so cursors will be on beat each goframe
-
-        if (frmIx > 0) currBeatNum_InLoop = (currBeatNum_InLoop + 1) % TOTAL_NUM_BEATS; //increment beat in notation loop; don't increment first beat
-
-        // store coordinates for this beat
-        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x; //look up x coordinate for this beat
-        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
-
-        incWithinBeat_eachFrame = 0; //reset the x incrementer between beats
-
-      } // if (goFrmState == 1) END
-      //
-      else { // What happens between go frames
-
-        incWithinBeat_eachFrame += notationPxPerFrame_thisTempo; //increment cursor 1 frame worth of beat
-        tCoordsObj['x'] = beatCoords[currBeatNum_InLoop].x + incWithinBeat_eachFrame;
-        tCoordsObj['y1'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-        tCoordsObj['y2'] = beatCoords[currBeatNum_InLoop].y + HALF_NOTEHEAD_H;
-
-      } // else { // What happens between go frames END
-
-      scrollingCsrCoords_thisTempo.push(tCoordsObj);
-
-    }); // thisTemposGoFrames.forEach((goFrmState, frmIx) => END
-
-    scrollingCsrCoords_perTempo.push(scrollingCsrCoords_thisTempo);
-
-    //#endef Scrolling Cursors
-
-    //#ef Calc Tempo Changes
-
-
-
-    //#endef Calc Tempo Changes
-
-    //#ef Player Tokens
-
-
-
-    //#endef Player Tokens
-
-  }); // scoreData.tempos.forEach((tTempo) => END
-
-
-  //#endef Calculations Per Tempo
-
-  //#ef Calculations Per Player
-
-
-  scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => {
-
-
-    //#ef Tempo Change Flags
-
-
-    let tempoFlagLocsByFrame_thisPlr = []; // 1 index per frame {tempo:,frameNum:}
-    for (let i = 0; i < 100000; i++) tempoFlagLocsByFrame_thisPlr.push([]); // populate with -1 to replace later
-    let leadIn_tempoFlagLocsByFrame_thisPlr = []; //make a set of lead in frames
-    for (let i = 0; i < (RUNWAY_L_IN_NUMFRAMES - 1); i++) leadIn_tempoFlagLocsByFrame_thisPlr.push([]);
-
-    //##ef Choose Tempo for each tempo change
-
-    // scoreData.tempoChanges or here tempoChgFrameNumSet lists which framenumber to change tempo on for this player
-    // This section will decide which tempo to use
-    let tempoChangesByFrameNum_thisPlr = []; //{tempo:,frameNum}
-    let tTempoSet = [0, 1, 2, 3, 4];
-
-    tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => {
-
-      let tNewTempo_frmNum_obj = {};
-
-      //decide which tempo; cycle through them all
-      if (tTempoSet.length == 0) tTempoSet = [0, 1, 2, 3, 4]; //when all used up replenish
-      let tTempoIx = chooseIndex(tTempoSet); //select the index number from the remaining tempo set
-      let tNewTempo = tTempoSet[tTempoIx];
-      tTempoSet.splice(tTempoIx, 1); //remove this tempo from set
-
-      tNewTempo_frmNum_obj['tempo'] = tNewTempo;
-      tNewTempo_frmNum_obj['frameNum'] = frmToChgTempo;
-      tempoChangesByFrameNum_thisPlr.push(tNewTempo_frmNum_obj);
-
-    }); // tempoChgFrameNumSet.forEach((frmToChgTempo, setIx) => END
-
-    //##endef Choose Tempo for each tempo change
-
-    //##ef Determine Sign Z Position for each tempo change for each frame - this player
-
-
-    let tempoChg_signPos_thisPlayer = [];
-
-    tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frameNum:}
-
-      let tempoNum = tempoFrmNumObj.tempo;
-      let goFrmNum = tempoFrmNumObj.frameNum; //this is the frame num where the sign is at the go fret
-
-      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
-
-        let tempoNum_zPos_obj = {};
-        let frameNum = goFrmNum - i; //
-
-        if (frameNum >= 0) { //so you don't go to negative array index
-
-          tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          let zLoc = Math.round(-PX_PER_FRAME * i);
-          tempoNum_zPos_obj['zLoc'] = zLoc;
-          tempoFlagLocsByFrame_thisPlr[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
-
-          //pop off last frame for looping
-          if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) { //last tempo change with tempo num and frame num for this player
-            if (i == 0) { // last frame of this cycle
-
-              tempoFlagLocsByFrame_thisPlr.splice(frameNum); // truncate array to end of loop; was 100,000 long; frameNum instead of frameNum-1 will lob off last frame so it is clean loop, otherwise it goes to z=0 and the first frame of loop is also z=0
-
-            }
-          } //   if (tempChgIx == (tempoChangesByFrameNum_thisPlr.length - 1)) END
-
-        } // if (frameNum >= 0) END
-        //
-        else { //for lead-in
-
-          tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          let zLoc = Math.round(-PX_PER_FRAME * i);
-          tempoNum_zPos_obj['zLoc'] = zLoc;
-          leadIn_tempoFlagLocsByFrame_thisPlr[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
-
-        } //else END
-
-      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
-
-      //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
-      if (tempChgIx < tempoChangesByFrameNum_thisPlr.length - 1) {
-        let tDurFrames = tempoChangesByFrameNum_thisPlr[tempChgIx + 1].frameNum - goFrmNum;
-        for (let i = 1; i < tDurFrames; i++) {
-
-          let tempoNum_zPos_obj = {};
-
-          tempoNum_zPos_obj['tempoNum'] = tempoNum;
-          tempoNum_zPos_obj['zLoc'] = 0;
-          let tFrameNum = goFrmNum + i;
-          tempoFlagLocsByFrame_thisPlr[tFrameNum].push(tempoNum_zPos_obj);
-
-        } // for (let i = 1; i < tDurFrames; i++) END
-      }
-
-    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoFrmNumObj) => END
-
-    //##endef  Determine Sign Z Position for each tempo change for each frame - this player
-
-    tempoFlagLocsByFrame_perPlr.push(tempoFlagLocsByFrame_thisPlr);
-    leadIn_tempoFlagLocsByFrame_perPlr.push(leadIn_tempoFlagLocsByFrame_thisPlr);
-
-
-    //#endef Tempo Change Flags
-
-    //#ef Player Tokens
-
-
-    //An Array length = to playerTokenLocationByFrame, that contains the current tempo for this player for this frame
-    //In Update look up that frame's scrolling cursor location for the right tempo listed here
-    let playerTokenLocationByFrame_thisPlr = new Array(tempoFlagLocsByFrame_thisPlr.length).fill(-1);
-
-    tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => {
-      if (tchgIx > 0) { //cause we are looking backwards
-
-        let thisTempo = tempoChgObj.tempo;
-        let thisFrameNum = tempoChgObj.frameNum;
-        let lastTempo = tempoChangesByFrameNum_thisPlr[tchgIx - 1].tempo;
-        let lastFrameNum = tempoChangesByFrameNum_thisPlr[tchgIx - 1].frameNum;
-        let tNumToFill = thisFrameNum - lastFrameNum;
-
-        for (let i = 0; i < tNumToFill; i++) {
-          playerTokenLocationByFrame_thisPlr[lastFrameNum + i] = lastTempo;
-        }
-
-      } // if (tchgIx > 0) END
-    }); // tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => END
-
-    playerTokenLocationByFrame_perPlr.push(playerTokenLocationByFrame_thisPlr);
-
-    //#endef Player Tokens
-
-
-  }); // scoreData.tempoChanges.forEach((tempoChgFrameNumSet, plrIx) => END
-
-
-  //#endef Calculations Per Player
-
-  //#ef Calculations for Unisons
-
-
-  //#ef Unison Flags
+  //##ef Unison Flags
 
   //Make loop size array to store unison state for each frame in loop
-  let lastFrameInUnisonLoop = scoreData.unisons[scoreData.unisons.length - 1].frame + scoreData.unisons[scoreData.unisons.length - 1].durFrames;
+  //For Each Unison Flag, find all frames that it is on scene and store in scoreDataObject.unisonFlagLocs
+  let lastFrameInUnisonLoop = scoreDataObject.unisons[scoreDataObject.unisons.length - 1].frame + scoreDataObject.unisons[scoreDataObject.unisons.length - 1].durFrames;
   for (let i = 0; i < lastFrameInUnisonLoop; i++) {
-    setOfUnisonFlagLocByFrame.push([]);
+    scoreDataObject.unisonFlagLocs.push([]);
   }
-
-  for (let i = 0; i < (RUNWAY_L_IN_NUMFRAMES - 1); i++) leadInSet_unisonFlagLocByFrame.push([]);
-
+  for (let i = 0; i < RUNWAY_LENGTH_FRAMES; i++) scoreDataObject.leadIn_unisonFlagLocs.push([]);
 
   let tempoChg_signPos_thisPlayer = [];
 
-  scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
+  scoreDataObject.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
 
     let tempoNum = tempoFrmNumObj.tempo;
     let goFrmNum = tempoFrmNumObj.frame; //this is the frame num where the sign is at the go fret
     let tDurFrames = tempoFrmNumObj.durFrames;
 
-    for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+    for (let i = (RUNWAY_LENGTH_FRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
 
       let tempoNum_zPos_obj = {};
       let frameNum = goFrmNum - i; //
@@ -1110,21 +1085,21 @@ let calculateScore = function() {
         let zLoc = Math.round(-PX_PER_FRAME * i);
         tempoNum_zPos_obj['zLoc'] = zLoc;
         tempoNum_zPos_obj['end'] = false;
-        setOfUnisonFlagLocByFrame[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+        scoreDataObject.unisonFlagLocs[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
       } // if (frameNum >= 0) END
       //
-      else { //for lead-in
+      else { //for lead-in  if frameNum < 0
 
         tempoNum_zPos_obj['tempoNum'] = tempoNum;
         let zLoc = Math.round(-PX_PER_FRAME * i);
         tempoNum_zPos_obj['zLoc'] = zLoc;
         tempoNum_zPos_obj['end'] = false;
-        leadInSet_unisonFlagLocByFrame[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+        scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
       } //else END
 
-    } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+    } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
 
     //MAKE ANOTHER LOOP HERE FOR DUR TO HOLD FLAG AT GO FRET
     for (let i = 1; i < tDurFrames; i++) {
@@ -1135,7 +1110,7 @@ let calculateScore = function() {
       tempoNum_zPos_obj['zLoc'] = 0;
       tempoNum_zPos_obj['end'] = false;
       let tFrameNum = goFrmNum + i;
-      setOfUnisonFlagLocByFrame[tFrameNum].push(tempoNum_zPos_obj);
+      scoreDataObject.unisonFlagLocs[tFrameNum].push(tempoNum_zPos_obj);
 
     } // for (let i = 1; i < tDurFrames; i++) END
 
@@ -1143,15 +1118,15 @@ let calculateScore = function() {
 
 
   // FOR SET OF UNISON OFF FLAGS
-  scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
+  scoreDataObject.unisons.forEach((tempoFrmNumObj, tempChgIx) => { //{tempo:,frame:, durFrames:}
 
-    if (tempChgIx < scoreData.unisons.length - 1) {
+    if (tempChgIx < scoreDataObject.unisons.length - 1) {
 
       let tempoNum = tempoFrmNumObj.tempo;
       let goFrmNum = tempoFrmNumObj.frame + tempoFrmNumObj.durFrames; //this is the frame num where the sign is at the go fret
       let tDurFrames = tempoFrmNumObj.durFrames;
 
-      for (let i = (RUNWAY_L_IN_NUMFRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
+      for (let i = (RUNWAY_LENGTH_FRAMES - 1); i >= 0; i--) { //Need to add a zLocation for every frame the sign is on the runway; count backwards so the soonist frame is the furtherest back position on runway and the last frame is 0-zpos
 
         let tempoNum_zPos_obj = {};
         let frameNum = goFrmNum - i; //
@@ -1162,7 +1137,7 @@ let calculateScore = function() {
           let zLoc = Math.round(-PX_PER_FRAME * i);
           tempoNum_zPos_obj['zLoc'] = zLoc;
           tempoNum_zPos_obj['end'] = true;
-          setOfUnisonFlagLocByFrame[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+          scoreDataObject.unisonFlagLocs[frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
         } // if (frameNum >= 0) END
         //
@@ -1172,66 +1147,626 @@ let calculateScore = function() {
           let zLoc = Math.round(-PX_PER_FRAME * i);
           tempoNum_zPos_obj['zLoc'] = zLoc;
           tempoNum_zPos_obj['end'] = true;
-          leadInSet_unisonFlagLocByFrame[RUNWAY_L_IN_NUMFRAMES - 1 + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
+          scoreDataObject.leadIn_unisonFlagLocs[RUNWAY_LENGTH_FRAMES + frameNum].push(tempoNum_zPos_obj); //replace the index in main array for this frame
 
         } //else END
 
-      } // for (let i = RUNWAY_L_IN_NUMFRAMES; i >= 0; i--) END
+      } // for (let i = RUNWAY_LENGTH_FRAMES; i >= 0; i--) END
     }
 
   }); // scoreData.unisons.forEach((tempoFrmNumObj, tempChgIx) => END
 
-  //#endef Unison Flags
+  //##endef Unison Flags
 
-  //#ef Unison Player Token
+  //##ef Unison Player Tokens
 
-  //#ef Unison Player Tokens
+  scoreDataObject.unisonPlayerTokenTempoNum = new Array(scoreDataObject.unisonFlagLocs.length).fill(-1);
 
-  unisonPlrTokenLocByFrame = new Array(setOfUnisonFlagLocByFrame.length).fill(-1);
-
-  scoreData.unisons.forEach((tempoChgObj, tchgIx) => {
+  scoreDataObject.unisons.forEach((tempoChgObj, tchgIx) => {
 
     let thisTempo = tempoChgObj.tempo;
     let thisFrameNum = tempoChgObj.frame;
     let tNumToFill = tempoChgObj.durFrames;
 
     for (let i = 0; i < tNumToFill; i++) {
-      unisonPlrTokenLocByFrame[thisFrameNum + i] = thisTempo;
+      scoreDataObject.unisonPlayerTokenTempoNum[thisFrameNum + i] = thisTempo;
     }
 
   }); // tempoChangesByFrameNum_thisPlr.forEach((tempoChgObj, tchgIx) => END
 
 
-  //#endef Unison Player Tokens
-
-  //#endef Unison Player Token
+  //##endef Unison Player Tokens
 
 
-  //#endef Calculations for Unisons
+  //##endef CALCULATIONS FOR UNISONS
+
+  //##ef CALCULATIONS FOR NOTATION
+
+
+  //###ef CALCULATE WHEN(FRAME) TO ADD/SUBTRACT RESTS
+  //Time Containers & amount of rests
+  // 11 containers in a palindrome short-longer-longer ... longest-mirror
+  let restsTimeContainers = generatePalindromeTimeContainers({
+    numContainersOneWay: 6,
+    startCont_minMax: [5, 7],
+    pctChg_minMax: [0.27, 0.36]
+  });
+
+  //Find out total time
+  let restsLoopTotalTime = 0;
+  restsTimeContainers.forEach((tTime) => {
+    restsLoopTotalTime += tTime;
+  });
+
+  // Going to loop this set of time containers a few times to get an overall motive loop length
+  // Overall loop length will be x times restsLoopTotalTime
+  let numRestsLoop = 7;
+  let maxNumRests = 13;
+  let restsByFrameSetLength = restsTimeContainers.length * numRestsLoop;
+  //Probably overly complex way to make sure restsByFrameSetLength is divisible by maxNumRests so that when looped you remove the same number of rests as you add
+  for (let i = 0; i < 100000; i++) {
+    if ((restsByFrameSetLength % maxNumRests) == 0) {
+      break;
+    } else {
+      restsByFrameSetLength++;
+    }
+  }
+
+  // Figure out which frames will add or subtract a rest
+  let restsByFrame = [];
+  let tCumFrmCt_rests = 0;
+  let addMinusRestsCt = 0;
+  let restType = 0;
+  let restSetInc = 0;
+  for (let i = 0; i < restsByFrameSetLength; i++) {
+    let tOb = {};
+    //advance the amount of frames in restsTimeContainers
+    let sec = restsTimeContainers[restSetInc];
+    let incInFrms = Math.round(sec * FRAMERATE);
+    tCumFrmCt_rests += incInFrms;
+    tOb['frame'] = tCumFrmCt_rests;
+    if (addMinusRestsCt == 0) restType = (restType + 1) % 2 //toggle rest type if we have moved from removing rests or adding rests or visa versa
+    tOb['restType'] = restType;
+    restSetInc = (restSetInc + 1) % restsTimeContainers.length;
+    addMinusRestsCt = (addMinusRestsCt + 1) % maxNumRests;
+    restsByFrame.push(tOb);
+  }
+
+  let motiveSetByFrame_length = restsByFrame[restsByFrame.length - 1].frame + 1; //plus 1 because restsByFrame.frame will be index num and length needs to be one more as ix starts at 0
+  //###endef CALCULATE WHEN TO ADD/SUBTRACT RESTS
+  //RESULTS:
+  //<<restsByFrame{frame:,restType}>> A set of objects that tell you the frame to change the rest and the restType-add or subtract rest
+  // <<motiveSetByFrame_length>> Calculate the overall length of the looping set that will contain rests, motives and articulations
+
+  //###ef CALCULATE WHEN(FRAME) TO CHANGE MOTIVES
+  //For motives, do a choose for dur between changes
+  //Make a set as long as motiveSetByFrame_length
+  //cycle through all the motives
+
+  //Make an array of counting numbers that each represent a different motive from motiveInfoSet
+  let motiveNumberSet = numberedSetFromSize({
+    sz: (motiveInfoSet.length - 1)
+  });
+  //Make a large set <<orderedMotiveNumSet>> of scrambled motives; This adds one of each motive then scrambles then adds again, looping
+  let orderedMotiveNumSet = chooseAndCycle({
+    loopSet: motiveNumberSet,
+    num: 5000
+  });
+
+  //Duration between motive changes
+  let dursBtwnMotiveChgSet = [5, 7, 3, 6, 11, 13, 8, 9, 17];
+
+  //Make big set of motive change objects: {motiveNum:, time:}
+  let motiveChangeTimesObjSet = [];
+  let chgFrmNum = Math.round(choose(dursBtwnMotiveChgSet) * FRAMERATE);
+  let orderedMotiveNumSetIx = 0;
+  while (chgFrmNum < motiveSetByFrame_length) { //Avoid while infinite loops see break at end of this loop
+    let tObj = {};
+    tObj['motiveNum'] = orderedMotiveNumSet[orderedMotiveNumSetIx];
+    orderedMotiveNumSetIx++;
+    tObj['frame'] = chgFrmNum;
+    motiveChangeTimesObjSet.push(tObj);
+    let timeToNextMotiveChg = choose(dursBtwnMotiveChgSet);
+    chgFrmNum = chgFrmNum + Math.round(timeToNextMotiveChg * FRAMERATE);
+  } // for (let i = 0; i < 100000; i++) END
+  //###endef CALCULATE WHEN(FRAME) TO CHANGE MOTIVES
+  //RESULTS:
+  //<<motiveChangeTimesObjSet{motiveNum:,frame:}>> A set of objects that tell you what frame to change motive and which motive to change into
+
+  //###ef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
+  // For motiveSetByFrame_length frames long, decide what frame to add or subtract an articulation
+  // later, when adding rests, you will look at this set and see if an articulation was added/subtracted
+  // and see how many motives are on, compare to a maximum density or 0 for min density then add or subtract an articulation or do nothing
+  let articulationChgByFrame = [];
+  let articulationGap = Math.round(rrand(7, 16));
+  let articulationGapFrames = articulationGap * FRAMERATE;
+  // next 3 var for knowing whether to add or subtract an articulation
+  let articulationCounter = 0;
+  let numArtToAddSub = 9; //add for numArtToAddSub then subtract for numArtToAddSub
+  let addSubtractArtType = 1;
+  //////////
+
+  do { //Build set of articulation changes and which frame articulationChgByFrame[{frame:,type:}]
+
+    let artObj = {};
+
+    artObj['frame'] = articulationGapFrames;
+    articulationGapFrames = articulationGapFrames + (Math.round(rrand(7, 16)) * FRAMERATE);
+    artObj['type'] = addSubtractArtType;
+    articulationChgByFrame.push(artObj); //add to main array
+    articulationCounter = (articulationCounter + 1) % numArtToAddSub; //update counter
+    if (articulationCounter == 0) addSubtractArtType = (addSubtractArtType + 1) % 2; //when counter reaches reset/0 then toggle addSubtractArtType
+
+  } while (articulationGapFrames < motiveSetByFrame_length);
+  //###endef CALCULATE WHEN(FRAME) TO CHANGE ARTICULATIONS
+  //RESULTS:
+  //<<articulationChgByFrame{type:,frame:}>> - A set of objects that tell whether to add or subtract an articulation and which frame
+
+  //###ef POPULATE MASTER SET TO REPLACE LATER
+  //Fill all frames with a set of 16 beats of all quarters and no articulations then replace later
+  let motiveChgByFrameSet = []; //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
+  let tMotiveObj = { //empty set
+    motiveNum: 0, //start with all quarters
+    articulations: []
+  }
+  for (let i = 0; i < motiveSetByFrame_length; i++) {
+    motiveChgByFrameSet.push([tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj]);
+  }
+  //This set will be altered then copied over each frame between rest changes
+  let motiveChgByFrameSet_currSet = [tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj, tMotiveObj];
+  //###endef POPULATE MASTER SET TO REPLACE LATER
+  //RESULTS:
+  //<<motiveChgByFrameSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+  //<<motiveChgByFrameSet_currSet{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}>>
+
+  //###ef CALCULATE FRAME BY FRAME SET
+
+
+  let previous_motiveChgByFrameSet = deepCopy(motiveChgByFrameSet[0]); //First frame's set of 16 beats of motive objects as initilization
+
+  for (let frmIx = 0; frmIx < motiveSetByFrame_length; frmIx++) {
+
+    //Start with the previous frame's set of motives per beat
+    let motiveSet_thisFrame = deepCopy(previous_motiveChgByFrameSet);
+
+    //##ef RESTS
+    //Look through restsByFrame set <<restsByFrame[{frame:,restType:(0-subtract,1-add)}]>>
+    for (let restIx = 0; restIx < restsByFrame.length; restIx++) {
+      if (restsByFrame[restIx].frame == frmIx) { //Is there a rest change on this frame in the restsByFrame set?
+
+        let addOrSubtractRest = restsByFrame[restIx].restType; // =0 to remove rest; =1 to add rest
+
+        //###ef REMOVE REST
+        if (addOrSubtractRest == 0) { //remove rest
+
+          //Make a set of beats-with-rests
+          let beatsWithRests = []; //collect all beat numbers with rests
+
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum == -1) beatsWithRests.push(beatNum); //motiveNum: -1 indicates rest
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with rests and remove and update motiveSet_thisFrame
+          if (beatsWithRests.length > 0) { //if there are any beats with rests
+            let beatWithRestToRemove = choose(beatsWithRests);
+            //Replace this beat with an object with motiveNum:0 (quarter-note) and no articulations
+            motiveSet_thisFrame[beatWithRestToRemove] = {
+              motiveNum: 0,
+              articulations: []
+            }; // motiveSet_thisFrame[beatWithRestToRemove] = {
+          } //  if(t_beatsWithRests.length>0)
+
+        } // if(addOrSubtractRest == 0){ //remove rest
+        //###endef REMOVE REST
+
+        //###ef ADD REST
+        else if (addOrSubtractRest == 1) { //add rest
+
+          //Make a set of beats-with-motives
+          let beatsWithMotives = []; //collect all beat numbers with motives
+
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum != -1) beatsWithMotives.push(beatNum); //motiveNum: !=-1 indicates motive
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with motives and remove and update motiveSet_thisFrame
+          if (beatsWithMotives.length > 0) { //if there are any beats with motives
+            let beatWithMotiveToRemove = choose(beatsWithMotives);
+            //Replace this beat with an object with motiveNum: -1 (rest) and no articulations
+            motiveSet_thisFrame[beatWithMotiveToRemove] = {
+              motiveNum: -1,
+              articulations: []
+            }; // motiveSet_thisFrame[beatWithMotiveToRemove] = {
+          } // if (beatsWithMotives.length > 0)
+
+        } //else if(addOrSubtractRest == 1){ //add rest
+        //###endef ADD REST
+
+      } // if(restsByFrame.frame == frmIx){ //There is a rest change on this frame
+    } // for(let restIx=0;restIx<restsByFrame.length;restIx++)
+    //##endef RESTS
+
+    //##ef MOTIVES
+    //Look through motiveChangeTimesObjSet <<motiveChangeTimesObjSet{motiveNum:,frame:}>>
+    for (let motiveChgSetIx = 0; motiveChgSetIx < motiveChangeTimesObjSet.length; motiveChgSetIx++) {
+      if (motiveChangeTimesObjSet[motiveChgSetIx].frame == frmIx) { //Is there a motive change on this frame
+
+        let newMotiveNum = motiveChangeTimesObjSet[motiveChgSetIx].motiveNum; //This is the motive number to replace one in the set
+
+        //Make a set of beats-with-motives
+        let beatsWithMotives = []; //collect all beat numbers with motives
+
+        //Look through motiveSet_thisFrame and see which beats have motives, if it is a motive, add beatNum to beatsWithMotives set
+        for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+          if (motiveSet_thisFrame[beatNum].motiveNum != -1) beatsWithMotives.push(beatNum); //motiveNum: !=-1 indicates motive
+        } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+        //Choose randomly from the set of beats with motives and update with new motive number and update motiveSet_thisFrame
+        if (beatsWithMotives.length > 0) { //if there are any beats with motives
+          let beatWithMotiveToChg = choose(beatsWithMotives);
+          //Replace this beat with an object with motiveNum: -1 (rest) and no articulations
+          motiveSet_thisFrame[beatWithMotiveToChg] = {
+            motiveNum: newMotiveNum,
+            articulations: []
+          }; // motiveSet_thisFrame[beatWithMotiveToChg] = {
+        } // if (beatsWithMotives.length > 0) //if there are any beats with motives
+
+      } // if (motiveChangeTimesObjSet[motiveChgSetIx].frame == frmIx) { //Is there a motive change on this frame
+    } // for (let motiveChgSetIx = 0; motiveChgSetIx < motiveChangeTimesObjSet.length; motiveChgSetIx++)
+    //##endef MOTIVES
+
+    //##ef ARTICULATIONS
+    //Look through articulationChgByFrame set <<articulationChgByFrame{type:(0-subtract,1-add),frame:}>>
+    for (let artSetIx = 0; artSetIx < articulationChgByFrame.length; artSetIx++) {
+      if (articulationChgByFrame[artSetIx].frame == frmIx) { //Is there an articulation change on this frame
+
+        let addOrSubtractArt = articulationChgByFrame[artSetIx].type; // =0 to remove articulation; =1 to add articulation
+
+        //###ef REMOVE ARTICULATION
+        if (addOrSubtractArt == 0) { //remove articulation
+
+          //Make a set of beats-with-articulations
+          let beatsWithArticulations = []; //collect all beat numbers with articulations
+
+          //Look through motiveSet_thisFrame and see which beats have motives with articulations, randomly choose one of these beats, remove articulation from that beat
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            if (motiveSet_thisFrame[beatNum].motiveNum != -1) { //is a motive
+              if (motiveSet_thisFrame[beatNum].articulations.length > 0) { //this motive on this beat has articulations
+
+                beatsWithArticulations.push(beatNum); // add beat number to beatsWithArticulations set
+
+              } // if (motiveSet_thisFrame[beatNum].articulations.length > 0) { //this motive on this beat has articulations
+            } // if (motiveSet_thisFrame[beatNum].motiveNum != -1) { //is a motive
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+
+          //Choose randomly from the set of beats with articulations, then choose randomly from the articulations set, then remove articulation
+          if (beatsWithArticulations.length > 0) { //if there are beats with articulations
+            let beatWithArtsToRemove = choose(beatsWithArticulations);
+            //Remove one of the articulations in this beat's articulation set
+            let indexOfarticulationToRemoveFromThisMotive = chooseIndex(motiveSet_thisFrame[beatWithArtsToRemove].articulations); //choose an index to remove from the array of articulations
+            motiveSet_thisFrame[beatWithArtsToRemove].articulations.splice(indexOfarticulationToRemoveFromThisMotive, 1); //remove
+          } // if (beatsWithArticulations.length > 0) { //if there are beats with articulations
+
+        } // if (addOrSubtractArt == 0) { //remove articulation
+        //###endef REMOVE ARTICULATION
+
+        //###ef ADD ARTICULATION
+        else if (addOrSubtractArt == 1) { //add articulation
+
+          //Make a set of beats-with-motives
+          let beats_availPartials_toAddArt = []; //[{beatNum:, motiveNum:, partial:}] //partial is already chosen before adding to set
+
+          //Look through motiveSet_thisFrame and see which beats have motives, and look at these motive's articulations set to see if any partials are available to add an articulation
+          for (let beatNum = 0; beatNum < motiveSet_thisFrame.length; beatNum++) {
+            let motiveNumThisBeat = motiveSet_thisFrame[beatNum].motiveNum;
+            if (motiveNumThisBeat != -1) { //this beat has a motive
+
+              //Look up total number of partials for the motive at this beat
+              let totalNumPartialsThisMotive = 0;
+              motiveInfoSet.forEach((motiveInfoObj) => { //motiveInfoSet [{path:, lbl:, num:, w:, h:, numPartials:}]
+                if (motiveInfoObj.num == motiveNumThisBeat) {
+                  totalNumPartialsThisMotive = motiveInfoObj.numPartials;
+                } // motiveInfoSet.forEach((motiveInfoObj) =>
+              }); //motiveInfoSet.forEach((motiveInfoObj) => { //motiveInfoSet [{path:, lbl:, num:, w:, h:, numPartials:}]
+
+              //Find out if there any available partials without articulations already in this beat's motive
+              let availPartialsSet = numberedSetFromSize({ //create an array of 0,1,2,3... for number of available partials
+                sz: totalNumPartialsThisMotive
+              });
+              motiveSet_thisFrame[beatNum].articulations.forEach((artObj, i) => { //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
+                const takenPartialIx = availPartialsSet.indexOf(artObj.partialNum); //find the index of the partialNum that already has an articulation
+                availPartialsSet.splice(takenPartialIx, 1); //remove this index from the availPartialsSet
+              }); //motiveSet_thisFrame[beatNum].articulations.forEach((artObj, i) => { //{motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}]}
+
+              //If there are available partials for this motive on this beat, add to beats_availPartials_toAddArt
+              if (availPartialsSet.length > 0) {
+                tObj = {};
+                tObj['beatNum'] = beatNum;
+                tObj['motiveNum'] = motiveNumThisBeat;
+                //Choose a random partial to update here
+                let partialToUse = choose(availPartialsSet);
+                tObj['partial'] = partialToUse;
+                beats_availPartials_toAddArt.push(tObj);
+              } //if (availPartialsSet.length > 0)
+
+            } //if (motiveSet_thisFrame[beatNum].motiveNum != -1)
+          } // for(let beatNum=0;beatNum<motiveSet_thisFrame.length;beatNum++)
+          //RESULTS:<<beats_availPartials_toAddArt[{beatNum:,partial:}]>>
+
+          //Choose randomly from the set of beats_availPartials_toAddArt, add an articulation to the motive at that beat
+          if (beats_availPartials_toAddArt.length > 0) { //if there are any beats with motives with available partials to add an articulation
+            let beats_availPartials_obj = choose(beats_availPartials_toAddArt);
+            let beatToAddArticulation = beats_availPartials_obj.beatNum;
+            let motiveNumToAddArticulation = beats_availPartials_obj.motiveNum;
+            let partialToAddArticulation = beats_availPartials_obj.partial;
+            //look up x/y location for this articulation
+            let tX = beatCoords[beatToAddArticulation].x + articulationPosByMotive[motiveNumToAddArticulation][partialToAddArticulation];
+            let tY = beatCoords[beatToAddArticulation].y;
+            //Add to this beat's motive's articulation array
+            motiveSet_thisFrame[beatToAddArticulation].articulations.push({
+              articulationType: 0,
+              x: tX,
+              y: tY,
+              partialNum: partialToAddArticulation
+            }); // motiveSet_thisFrame[beatToAddArticulation].articulations.push
+          } // if (beats_availPartials_toAddArt.length > 0) { //if there are any beats with motives with available partials to add an articulation
+
+        } // else if (addOrSubtractArt == 1) { //add articulation
+        //###endef ADD ARTICULATION
+
+      } // if (articulationChgByFrame[artSetIx].frame == frmIx) { //Is there an articulation change on this frame
+    } // for (let artSetIx = 0; artSetIx < articulationChgByFrame.length; artSetIx++) {
+    //##endef ARTICULATIONS
+
+
+    //##ef THIS FRAME'S UPDATES BEFORE MOVING ON TO NEXT FRAME
+    //Copy set of motives per beat for this frame to master set
+    motiveChgByFrameSet[frmIx] = deepCopy(motiveSet_thisFrame);
+    //Update previous_motiveChgByFrameSet for next frame
+    previous_motiveChgByFrameSet = deepCopy(motiveSet_thisFrame);
+    //##endef THIS FRAME'S UPDATES BEFORE MOVING ON TO NEXT FRAME
+
+  } // for(let frmIx=0;frmIx<motiveSetByFrame_length;frmIx++) //End of big frame by frame loop
+
+
+  //###endef CALCULATE FRAME BY FRAME SET
+
+
+  scoreDataObject.motiveSet = motiveChgByFrameSet; //This is the final set
+
+
+  //##endef CALCULATIONS FOR NOTATION
+
+  //##ef CALCULATIONS FOR PITCH SETS
+
+  let availablePitchSetNumbers = []; //make a numbered Set of all available pitch sets
+  for (let i = 0; i < pitchSetsDictionary.length; i++) availablePitchSetNumbers.push(i);
+  let setOfPitchSetNumbers = cycleThroughSet_palindrome(availablePitchSetNumbers, 99); //create a long list of pitch set numbers in a palindrome
+  // Decide which frames to change pitch sets, add to main array
+  let pitchSetChangesByFrame = [];
+  let psChangeIndicatorStateByFrame = []; //0=off;1=on
+  for (let i = 0; i < motiveChgByFrameSet.length; i++) psChangeIndicatorStateByFrame.push(0); //populate w/zeros
+  let nextFrameToChangePs = 0;
+  let currPsIx = 0;
+  let currPs = 0;
+  for (let fIx = 0; fIx < motiveChgByFrameSet.length; fIx++) {
+    if (fIx == nextFrameToChangePs) { //if this is a change frame, update the currPs and update all the iterators
+      currPs = setOfPitchSetNumbers[currPsIx];
+      for (let i = 0; i < 90; i++) psChangeIndicatorStateByFrame[fIx + i] = 1; //update the ps change indicator set
+      //UPDATE
+      currPsIx++;
+      nextFrameToChangePs = nextFrameToChangePs + (rrandInt(24, 37) * FRAMERATE); //change pitch sets every 24-37 seconds
+    }
+    pitchSetChangesByFrame.push(currPs);
+  }
+  scoreDataObject.pitchSets = pitchSetChangesByFrame;
+  scoreDataObject.psChgIndicator = psChangeIndicatorStateByFrame;
+
+
+  //##endef CALCULATIONS FOR PITCH SETS
 
 
 
-} // let calculateScore = function()
+  return scoreDataObject;
+} // function generateScoreData() END
+//#endef GENERATE SCORE DATA
+
+//#ef SCORE DATA MANAGER
 
 
-// #endef END Calculate Score
+function makeScoreDataManager() {
+  // #ef Score Data Manager Panel
+
+  let scoreDataManagerW = 300;
+  let scoreDataManagerH = 500;
+
+  let scoreDataManagerPanel = mkPanel({
+    w: scoreDataManagerW,
+    h: scoreDataManagerH,
+    title: 'Score Data Manager',
+    ipos: 'right-bottom',
+    offsetX: '0px',
+    offsetY: '0px',
+    autopos: 'none',
+    headerSize: 'xs',
+    onwindowresize: true,
+    contentOverflow: 'hidden',
+    clr: 'black',
+    onsmallified: function() {
+      scoreDataManagerPanel.reposition({
+        my: 'right-bottom',
+        at: 'right-bottom',
+        offsetY: this.h
+      })
+    },
+    onunsmallified: function() {
+      scoreDataManagerPanel.reposition({
+        my: 'right-bottom',
+        at: 'right-bottom',
+        offsetY: this.offsetY
+      })
+    }
+  });
+
+  // #endef END Score Data Manager Panel
+
+  // #ef Generate New Score Data Button
+
+  let generateNewScoreDataButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 15,
+    left: 15,
+    label: 'Generate New Score Data',
+    fontSize: 16,
+    action: function() {
+
+      scoreData = generateScoreData();
+      console.log(scoreData);
+
+    } // action: function() END
+  }); // let generateNewScoreDataButton = mkButton( END
+
+  // #endef END Generate New Score Data Button
+
+  // #ef Save Score Data Button
+
+  let saveScoreDataButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: scoreDataManagerH - 70,
+    left: 15,
+    label: 'Save Current Score Data',
+    fontSize: 16,
+    action: function() {
+      console.log(scoreData);
+      let scoreDataString = JSON.stringify(scoreData);
+      let scoreDataFileName = generateFileNameWdate('sf004');
+      downloadStrToHD(scoreDataString, scoreDataFileName, 'text/plain');
+    }
+  });
+
+  // #endef END Save Score Data Button
+
+  // #ef Load Score Data From File Button
+
+  let loadScoreDataFromFileButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 80,
+    left: 15,
+    label: 'Load Score Data From File',
+    fontSize: 16,
+    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
+    action: function() {
+      let inputDOM_finderDialogBox = document.createElement('input');
+      inputDOM_finderDialogBox.type = 'file';
+      inputDOM_finderDialogBox.onchange = inputEventFromFinderDialogBox => {
+        //target=input type='file'; files=FileList
+        let file = inputEventFromFinderDialogBox.target.files[0];
+        let reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+          let fileTextContent = readerEvent.target.result;
+          scoreData = JSON.parse(fileTextContent); //turn loaded string from file into a javascript dictionary/object
+          console.log(scoreData);
+        }
+      }
+      inputDOM_finderDialogBox.click();
+    }
+  });
+
+  // #endef END Load Score Data Button
+
+  //#ef Load Score Data from Server Button
+
+  let loadScoreDataFromServerButton = mkButton({
+    canvas: scoreDataManagerPanel.content,
+    w: scoreDataManagerW - 44,
+    h: 44,
+    top: 145,
+    left: 15,
+    label: 'Load Score Data From Server',
+    fontSize: 16,
+    action: function() { // Step 1: send msg to server to request list of names of score data files stored on the server
+      SOCKET.emit('sf004_loadPieceFromServer', {
+        pieceId: PIECE_ID
+      });
+    }
+  });
+
+  // Step 2: Server responds with list of file names
+  SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) {
+
+    let requestingId = data.pieceId;
+
+    if (requestingId == PIECE_ID) {
+
+      let arrayOfFileNamesFromServer = data.availableScoreDataFiles; // data from SOCKET msg
+      let arrayOfMenuItems_lbl_action = [];
+
+      arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) => {
+
+        let temp_label_func_Obj = {};
+
+        if (scoreDataFileNameFromServer != '.DS_Store') { //eliminate the ever present Macintosh hidden file .DS_Store
+
+          temp_label_func_Obj['label'] = scoreDataFileNameFromServer;
+
+          // Step 3: When menu item is chosen, this func loads score data to scoreData variable
+          temp_label_func_Obj['action'] = function() {
+
+            let tRequest = new XMLHttpRequest();
+            tRequest.open('GET', '/scoreData/' + scoreDataFileNameFromServer, true);
+            tRequest.responseType = 'text';
+
+            tRequest.onload = () => {
+              scoreData = JSON.parse(tRequest.response);
+              console.log(scoreData);
+            }
+            tRequest.onerror = function() {
+              console.log("** An error occurred");
+            };
+
+            tRequest.send();
+          } //temp_label_func_Obj['action'] = function() END
+
+          arrayOfMenuItems_lbl_action.push(temp_label_func_Obj);
+
+        } //if (scoreDataFileNameFromServer != '.DS_Store') end
+
+      }); // arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) END
+
+      // Make Drop Down Menu
+      let loadScoreDataFromServerMenu = mkMenu({
+        canvas: scoreDataManagerPanel.content,
+        w: scoreDataManagerW - 48,
+        h: 220,
+        top: 207,
+        left: 25,
+        menuLbl_ActionArray: arrayOfMenuItems_lbl_action
+      });
+      loadScoreDataFromServerMenu.classList.toggle("show");
+
+    } //if (requestingId == PIECE_ID) end
+
+  }); // SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) end
+
+  //#endef END Load Score Data from Server Button
+
+  scoreDataManagerPanel.smallify();
+} // function makeScoreDataManager() END
 
 
-//#endef RUNTIME
+//#endef END SCORE DATA MANAGER
 
-// #ef WORLD
+//#ef BUILD WORLD
 
 
-// #ef World Panel
-
-// #ef World Panel Variables
-let worldPanel;
-const CANVAS_L_R_MARGINS = 35;
-const CANVAS_MARGIN = 7;
-const CANVAS_W = 692 + (CANVAS_L_R_MARGINS * 2) + (CANVAS_MARGIN * 2);
-const CANVAS_H = 578;
-const CANVAS_CENTER = CANVAS_W / 2;
-// #endef END World Panel Variables
+//##ef Make World Panel
 
 function makeWorldPanel() {
 
@@ -1243,63 +1778,33 @@ function makeWorldPanel() {
     clr: clr_blueGrey
   });
 
-}
+} // function makeWorldPanel() END
 
-// #endef END World Panel
+//##endef Make World Panel
 
-// #ef ThreeJS Scene
+//##ef Make ThreeJS Scene
 
-// #ef ThreeJS Scene Variables
-
-const RENDERER_W = 340;
-const RENDERER_H = 180;
-const RENDERER_TOP = CANVAS_MARGIN;
-const RENDERER_DIV_LEFT = CANVAS_CENTER - (RENDERER_W / 2);
-let SCENE, CAMERA, SUN, SUN2, RENDERER_DIV, RENDERER;
-let materialColors = [];
-for (let matlClrIx = 0; matlClrIx < TEMPO_COLORS.length; matlClrIx++) {
-  let tMatlClr = new THREE.MeshLambertMaterial({
-    color: TEMPO_COLORS[matlClrIx]
-  });
-  materialColors.push(tMatlClr);
-}
-let matl_yellow = new THREE.MeshLambertMaterial({
-  color: 'yellow'
-});
-// const CAM_Y = 216; // Up and down; lower number is closer to runway, zooming in
-const CAM_Y = 150;
-// const CAM_Z = -59; // z is along length of runway; higher number moves back, lower number moves forward
-const CAM_Z = 21;
-// const CAM_ROTATION_X = -68; // -90 directly above looking down
-const CAM_ROTATION_X = -45; // -90 directly above looking down
-
-// #endef END ThreeJS Scene Variables
 
 function makeThreeJsScene() {
 
   SCENE = new THREE.Scene();
 
-  // #ef Camera
-
+  //###ef Camera
   CAMERA = new THREE.PerspectiveCamera(75, RENDERER_W / RENDERER_H, 1, 3000);
   CAMERA.position.set(0, CAM_Y, CAM_Z);
   CAMERA.rotation.x = rads(CAM_ROTATION_X);
+  //###endef END Camera
 
-  // #endef END Camera
-
-  // #ef Lights
-
+  //###ef Lights
   SUN = new THREE.DirectionalLight(0xFFFFFF, 1.2);
   SUN.position.set(100, 600, 175);
   SCENE.add(SUN);
   SUN2 = new THREE.DirectionalLight(0x40A040, 0.6);
   SUN2.position.set(-100, 350, 200);
   SCENE.add(SUN2);
+  //###endef END Lights
 
-  // #endef END Lights
-
-  // #ef RENDERER_DIV & RENDERER
-
+  //###ef Renderer
   RENDERER_DIV = mkDivCanvas({
     w: RENDERER_W,
     h: RENDERER_H,
@@ -1312,28 +1817,15 @@ function makeThreeJsScene() {
   RENDERER = new THREE.WebGLRenderer();
   RENDERER.setSize(RENDERER_W, RENDERER_H);
   RENDERER_DIV.appendChild(RENDERER.domElement);
-
-  // #endef END RENDERER_DIV & RENDERER
+  //###endef Renderer
 
 } // function makeThreeJsScene() end
 
-// #endef END ThreeJs Scene
 
-// #ef Runway
+//##endef Make ThreeJS Scene
 
+//##ef Make Runway
 
-// #ef Runway Variables
-
-const RUNWAY_W = RENDERER_W;
-const RUNWAY_H = RENDERER_H;
-const RUNWAY_L = 1000;
-const HALF_RUNWAY_W = RUNWAY_W / 2;
-const HALF_RUNWAY_LENGTH = RUNWAY_L / 2;
-const RUNWAY_L_IN_NUMFRAMES = Math.round(RUNWAY_L / PX_PER_FRAME);
-
-// #endef END Runway Variables
-
-// #ef makeRunway
 
 function makeRunway() {
 
@@ -1354,28 +1846,11 @@ function makeRunway() {
 
 } //makeRunway() end
 
-// #endef END makeRunway
 
+//##endef Make Runway
 
-// #endef END Runway
+//##ef Make Tracks
 
-// #ef Tracks
-
-// #ef Tracks Variables
-
-const NUM_TRACKS = NUM_TEMPOS;
-const TRACK_DIAMETER = 8;
-const HALF_TRACK_DIAMETER = TRACK_DIAMETER / 2;
-const TRACK_GAP = RUNWAY_W / NUM_TRACKS;
-const HALF_TRACK_GAP = TRACK_GAP / 2;
-let xPosOfTracks = [];
-for (let trIx = 0; trIx < NUM_TRACKS; trIx++) {
-  xPosOfTracks.push(-HALF_RUNWAY_W + (TRACK_GAP * trIx) + HALF_TRACK_GAP);
-}
-
-// #endef END Tracks Variables
-
-// #ef makeTracks
 
 function makeTracks() {
 
@@ -1396,37 +1871,21 @@ function makeTracks() {
 
     SCENE.add(newTrack);
 
-  });
+  }); // xPosOfTracks.forEach((trXpos) => END
 
-} //makeTracks() end
+} // makeTracks() END
 
-// #endef END makeTracks
 
-// #endef END Tracks
+//##endef Make Tracks
 
-// #ef Go Frets
+//##ef Make Go Frets
 
-// #ef GoFrets Variables
-
-let goFrets = [];
-let goFretsGo = [];
-const GO_FRET_W = 54;
-const GO_FRET_H = 11;
-const HALF_GO_FRET_H = GO_FRET_H / 2;
-const GO_FRET_L = 13;
-const HALF_GO_FRET_L = GO_FRET_L / 2;
-const GO_Z = -HALF_GO_FRET_L;
-const GO_FRET_Y = HALF_TRACK_DIAMETER;
-
-// #endef END GoFrets Variables
-
-// #ef makeGoFrets
 
 function makeGoFrets() {
 
+  //Make set of go frets: goFrets[]; Make set of GO indicators: goFretsGo[]
   let goFretGeometry = new THREE.BoxBufferGeometry(GO_FRET_W, GO_FRET_H, GO_FRET_L);
   let goFretGoGeometry = new THREE.BoxBufferGeometry(GO_FRET_W + 2, GO_FRET_H + 2, GO_FRET_L + 2);
-
 
   xPosOfTracks.forEach((trXpos, trIx) => {
 
@@ -1453,103 +1912,12 @@ function makeGoFrets() {
 
   }); //xPosOfTracks.forEach((trXpos) END
 
-
 } //makeGoFrets() end
-// #endef End makeGoFrets
 
-// #ef wipeGoFrets
-function wipeGoFrets() {
-  goFrets.forEach((goFret, fretIx) => {
-    goFret.visible = false;
-    goFretsGo[fretIx].visible = false;
-  });
-}
-// #endef END wipeGoFrets
 
-// #ef updateGoFrets
+//##endef Make Go Frets
 
-function updateGoFrets() {
-
-  if (FRAMECOUNT < LEAD_IN_FRAMES) {
-
-    goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = FRAMECOUNT % goFrmSet.length; // module loops the set of frames
-
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-
-          goFrets[tempoIx].visible = true;
-          goFretsGo[tempoIx].visible = false;
-
-          break;
-
-        case 1:
-
-          goFrets[tempoIx].visible = false;
-          goFretsGo[tempoIx].visible = true;
-
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
-  else {
-
-    goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = (FRAMECOUNT - LEAD_IN_FRAMES) % goFrmSet.length;
-
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-
-          goFrets[tempoIx].visible = true;
-          goFretsGo[tempoIx].visible = false;
-
-          break;
-
-        case 1:
-
-          goFrets[tempoIx].visible = false;
-          goFretsGo[tempoIx].visible = true;
-
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } //else END
-
-} // function updateGoFrets() END
-
-// #endef END updateGoFrets
-
-// #endef END Go Frets
-
-// #ef Tempo Frets
-
-// #ef Tempo Frets Variables
-
-let tempoFretsPerTrack = [];
-const TEMPO_FRET_W = GO_FRET_W - 2;
-const TEMPO_FRET_H = GO_FRET_H - 2;
-const TEMPO_FRET_L = GO_FRET_L - 5;
-const TEMPO_FRET_Y = HALF_TRACK_DIAMETER;
-const NUM_TEMPO_FRETS_TO_FILL = RUNWAY_L / TEMPO_FRET_L;
-
-// #endef END Tempo Frets Variables
-
-// #ef makeTempoFrets
-
+//##ef Make Tempo Frets
 function makeTempoFrets() {
 
   let tempoFretGeometry = new THREE.BoxBufferGeometry(TEMPO_FRET_W, TEMPO_FRET_H, TEMPO_FRET_L);
@@ -1577,96 +1945,10 @@ function makeTempoFrets() {
 
   }); //xPosOfTracks.forEach((trXpos) END
 
-
 } //makeTempoFrets() end
+//##endef Make Tempo Frets
 
-// #endef END makeTempoFrets
-
-// #ef wipeTempoFrets
-function wipeTempoFrets() {
-  tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
-    arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
-      tTempoFret.visible = false;
-    });
-  });
-}
-// #endef END wipeTempoFrets
-
-// #ef updateTempoFrets
-
-function updateTempoFrets() {
-
-  // ##ef Loop for Lead In FRAMES
-  if (FRAMECOUNT < LEAD_IN_FRAMES) { //LEAD_IN_FRAMES-1 cause loops start on 0 and go to length-1
-
-    tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
-
-      let tfSetIx = FRAMECOUNT;
-
-      thisTempo_tfSet[tfSetIx].forEach((tfLoc, tfIx) => { //each tf location for this tempo
-
-        tempoFretsPerTrack[tempoIx][tfIx].position.z = GO_Z + tfLoc; //tempoFretsPerTrack is set of tfs already created by tempo
-        tempoFretsPerTrack[tempoIx][tfIx].visible = true;
-
-      }); // tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
-
-    }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
-
-  } // if (FRAMECOUNT < LEAD_IN_FRAMES) END
-  // ##endef Loop for Lead In FRAMES
-
-  //##ef Loop for Regular TF Cycles
-  else {
-
-    // TEMPO FRETS TEMPO thisTempoLoop_numFrames
-    tempoFretLocs_eachFrame_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let tempoFretLocationsSetNum = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfTempoFretLocsByFrame.length; //adjust frame count for lead in frames and modulo for cycle length
-
-      setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => { //this goes through the set of tfs that were created at init, only draws the necessary ones and positions them
-
-        tempoFretsPerTrack[tempoIx][tfIx].position.z = GO_Z + loc;
-        tempoFretsPerTrack[tempoIx][tfIx].visible = true;
-
-      }); //tempoFretLocs_eachFrame_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => END
-
-    }); // tempoFretLocs_eachFrame_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => END
-
-  } //else END
-
-  //##endef Loop for Regular TF Cycles
-
-} //function updateTempoFrets()  END
-
-
-// #endef END updateTempoFrets
-
-// #endef END Tempo Frets
-
-// #ef Bouncing Balls
-
-
-// #ef BouncingBalls Variables
-
-let bbSet = [];
-for (let trIx = 0; trIx < NUM_TRACKS; trIx++) bbSet.push({});
-const BB_W = 51;
-const BB_H = 90;
-const BB_TOP = RENDERER_TOP + RENDERER_H;
-const BB_CENTER = BB_W / 2;
-const BB_PAD_LEFT = 10;
-const BB_GAP = 16;
-const BBCIRC_R = 13;
-const BBCIRC_TOP_CY = BBCIRC_R + 3;
-const BBCIRC_BOTTOM_CY = BB_H - BBCIRC_R;
-const BB_TRAVEL_DIST = BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY;
-const BB_BOUNCE_WEIGHT = 6;
-const HALF_BB_BOUNCE_WEIGHT = BB_BOUNCE_WEIGHT / 2;
-
-// #endef END BouncingBalls Variables
-
-// #ef makeBouncingBalls
-
+//##ef Make BBs
 function makeBouncingBalls() {
 
   for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) {
@@ -1691,7 +1973,7 @@ function makeBouncingBalls() {
     bbSet[bbIx]['bbCirc'] = mkSvgCircle({
       svgContainer: bbSet[bbIx].svgCont,
       cx: BB_CENTER,
-      cy: BBCIRC_TOP_CY,
+      cy: BBCIRC_BOTTOM_CY,
       r: BBCIRC_R,
       fill: TEMPO_COLORS[bbIx],
       stroke: 'white',
@@ -1719,7 +2001,6 @@ function makeBouncingBalls() {
     });
     bbSet[bbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
 
-
     bbSet[bbIx]['offIndicator'] = mkSvgRect({
       svgContainer: bbSet[bbIx].svgCont,
       x: 0,
@@ -1730,215 +2011,17 @@ function makeBouncingBalls() {
     });
     bbSet[bbIx].offIndicator.setAttributeNS(null, 'display', 'none');
 
-
   } //for (let bbIx = 0; bbIx < NUM_TRACKS; bbIx++) END
 
-
 } //makeBouncingBalls() end
+//##endef Make BBs
 
-// #endef END makeBouncingBalls
+//##ef Make Staff Notation
 
-// #ef wipeBbComplex
 
-function wipeBbComplex() {
+function makeStaffNotation() {
 
-  bbSet.forEach((tbb) => {
-
-    // tbb.bbCirc.setAttributeNS(null, 'display', 'none');
-    tbb.bbBouncePadOff.setAttributeNS(null, 'display', 'none');
-    tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-    // tbb.offIndicator.setAttributeNS(null, 'display', 'yes');
-
-  });
-
-}
-
-// #endef END wipeBbComplex
-
-// #ef updateBbBouncePad
-
-function updateBbBouncePad() {
-
-  if (FRAMECOUNT < LEAD_IN_FRAMES) {
-
-    goFrames_leadInFrames_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = FRAMECOUNT % goFrmSet.length; // module loops the set of frames
-
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'yes');
-
-          break;
-
-        case 1:
-
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
-          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'none');
-
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
-  else {
-
-    goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      let goFrmSetIx = (FRAMECOUNT - LEAD_IN_FRAMES) % goFrmSet.length;
-
-      let goFrmState = goFrmSet[goFrmSetIx];
-
-      switch (goFrmState) {
-
-        case 0:
-
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
-          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'yes');
-
-          break;
-
-        case 1:
-
-          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
-          bbSet[tempoIx].bbBouncePadOff.setAttributeNS(null, 'display', 'none');
-
-          break;
-
-      } //switch (goFrmState) END
-
-    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
-
-  } //else END
-
-} // function updateBbBouncePad() END
-
-// #endef END updateBbBouncePad
-
-// #ef updateBBs
-
-function updateBBs() {
-
-  //##ef Lead In - BBs
-  if (FRAMECOUNT < LEAD_IN_FRAMES) {
-
-    bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
-
-      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', leadInSet[FRAMECOUNT]);
-
-    }); //   bbYpos_leadIn_perTempo.forEach((leadInSet, tempoIx) =>  END
-
-  } //  if (FRAMECOUNT < LEAD_IN_FRAMES) END
-  //##endef Lead In - bbs
-
-  //##ef Animate BBs
-  else {
-
-    bbYpos_perTempo.forEach((bbYposSet, tempoIx) => { // Loop: set of goFrames
-
-      let bbYposSetIx = (FRAMECOUNT - LEAD_IN_FRAMES) % bbYposSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-      let tBbCy = bbYposSet[bbYposSetIx];
-      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', tBbCy);
-      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'display', 'yes');
-
-    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
-
-  } //else END
-
-  //##endef Animate BBs
-
-
-} // function updateBbBouncePad() END
-
-// #endef END updateBBs
-
-
-// #endef END BouncingBalls
-
-// #ef Rhythmic Notation
-
-
-// #ef rhythmicNotation Variables
-
-let rhythmicNotationObj = {};
-let notationImageObjectSet = {};
-
-const BEAT_L_PX = 85;
-const TOP_STAFF_LINE_Y = 113;
-const VERT_DIST_BTWN_STAVES = 133;
-const VERT_DIST_BTWN_STAFF_LINES = 8;
-const FIRST_BEAT_L = 12;
-const LAST_BEAT_W = BEAT_L_PX - FIRST_BEAT_L;
-const NUM_BEATS_PER_STAFFLINE = 8;
-const LAST_BEAT_NUM_IN_LINE = NUM_BEATS_PER_STAFFLINE - 1;
-const STAFF_BTM_MARGIN = 40;
-const NUM_STAFFLINES = 2;
-const TOTAL_NUM_BEATS = NUM_BEATS_PER_STAFFLINE * NUM_STAFFLINES;
-const NOTEHEAD_W = 10;
-const NOTEHEAD_H = 8;
-const HALF_NOTEHEAD_H = NOTEHEAD_H / 2;
-const RHYTHMIC_NOTATION_CANVAS_W = FIRST_BEAT_L + (BEAT_L_PX * NUM_BEATS_PER_STAFFLINE) + FIRST_BEAT_L; //canvas longer to display notation but cursors will only travel duration of beat thus not to the end of the canvas
-const RHYTHMIC_NOTATION_CANVAS_H = TOP_STAFF_LINE_Y + ((NUM_STAFFLINES - 1) * VERT_DIST_BTWN_STAVES) + STAFF_BTM_MARGIN;
-const RHYTHMIC_NOTATION_CANVAS_TOP = CANVAS_MARGIN + RENDERER_H + BB_H + CANVAS_MARGIN;
-const RHYTHMIC_NOTATION_CANVAS_L = CANVAS_MARGIN + CANVAS_L_R_MARGINS;
-const NOTATION_CURSOR_H = 83;
-
-let motivesByBeat = [];
-let motiveDict = {
-  '-1': 'qtr_rest',
-  '0': 'quarter',
-  '1': 'dot8thR_16th',
-  '2': 'eighthR_8th',
-  '3': 'eighthR_two16ths',
-  '4': 'quadruplet',
-  '5': 'quintuplet',
-  '6': 'triplet',
-  '7': 'two16th_8thR'
-}
-for (let beatIx = 0; beatIx < TOTAL_NUM_BEATS; beatIx++) {
-  motivesByBeat.push({});
-}
-
-// #ef Beat Coordinates
-let beatXLocations = [];
-for (let beatLocIx = 0; beatLocIx < NUM_BEATS_PER_STAFFLINE; beatLocIx++) {
-  beatXLocations.push(FIRST_BEAT_L + (beatLocIx * BEAT_L_PX));
-}
-
-let beatCoords = [];
-for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
-  for (let beatPerStaffIx = 0; beatPerStaffIx < NUM_BEATS_PER_STAFFLINE; beatPerStaffIx++) {
-    let tCoordObj = {};
-    tCoordObj['x'] = FIRST_BEAT_L + (beatPerStaffIx * BEAT_L_PX);
-    tCoordObj['y'] = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES) + HALF_NOTEHEAD_H;
-    beatCoords.push(tCoordObj);
-  }
-}
-
-// #endef Beat Coordinates
-
-
-// #ef dynamicsAccents_paths_labels
-let dynamicsAccents_paths_labels = [{
-  path: "/pieces/sf004/notationSVGs/dynamics_accents/sf.svg",
-  lbl: 'sf'
-}];
-// #endef END dynamicsAccents_paths_labels
-
-// #endef END rhythmicNotation Variables
-
-function makeRhythmicNotation() {
-
-  // #ef DIV/SVG Container
-
+  //##ef DIV & SVG Containers
   rhythmicNotationObj['div'] = mkDiv({
     canvas: worldPanel.content,
     w: RHYTHMIC_NOTATION_CANVAS_W,
@@ -1947,7 +2030,6 @@ function makeRhythmicNotation() {
     left: RHYTHMIC_NOTATION_CANVAS_L,
     bgClr: 'white'
   });
-
   rhythmicNotationObj['svgCont'] = mkSVGcontainer({
     canvas: rhythmicNotationObj.div,
     w: RHYTHMIC_NOTATION_CANVAS_W,
@@ -1955,10 +2037,9 @@ function makeRhythmicNotation() {
     x: 0,
     y: 0
   });
+  //##endef DIV & SVG Containers
 
-  // #endef END DIV/SVG Container
-
-  // #ef StaffLines
+  //##ef Staff Lines
   let rhythmicNotationStaffLines = [];
   for (let staffIx = 0; staffIx < NUM_STAFFLINES; staffIx++) {
     let tStaffY = TOP_STAFF_LINE_Y + (staffIx * VERT_DIST_BTWN_STAVES);
@@ -1974,237 +2055,104 @@ function makeRhythmicNotation() {
     rhythmicNotationStaffLines.push(tLine);
   }
   rhythmicNotationObj['staffLines'] = rhythmicNotationStaffLines;
-  // #endef END Staff Lines
+  //##endef Staff Lines
 
-  // #ef Draw Initial Notation
-
+  //##ef Draw Initial Notation
   // Make all motives and make display:none; Display All Quarters
-  function makeMotives() { // This function runs in loop below, after await so all image sizes are loaded
+  //make an SVG for each motive at each beat
+  beatCoords.forEach((beatCoordsObj, beatIx) => { //each beat loop
 
-    //make an SVG for each motive at each beat
-    beatCoords.forEach((beatCoordsObj, beatIx) => { //each beat loop
+    let tx = beatCoordsObj.x;
+    let ty = beatCoordsObj.y;
 
-      let tx = beatCoordsObj.x;
-      let ty = beatCoordsObj.y;
+    // motiveInfoSet = [{ // {path:, lbl:, num:, w:, h:, numPartials:}//used to be notationSvgPaths_labels
+    motiveInfoSet.forEach((motiveObj) => { //each motive loop
 
-      notationSvgPaths_labels.forEach((pathLblObj) => { //each motive loop
+      let tLabel = motiveObj.lbl;
+      let motiveNum = motiveObj.num;
+      let tDisp = motiveObj.num == 0 ? 'yes' : 'none'; //initial notation displayed
+      // let tDisp = motiveObj.num == 3 ? 'yes' : 'none'; //initial notation displayed
 
-        let tLabel = pathLblObj.lbl;
-        let tDisp = tLabel == 'quarter' ? 'yes' : 'none'; //initial notation displayed
-        // let tDisp = tLabel == 'triplet' ? 'yes' : 'none';
+      // Create HTML SVG image
+      let tSvgImage = document.createElementNS(SVG_NS, "image");
+      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/motives/' + tLabel + '.svg');
+      tSvgImage.setAttributeNS(null, "y", ty - motiveObj.h);
+      tSvgImage.setAttributeNS(null, "x", tx);
+      tSvgImage.setAttributeNS(null, "visibility", 'visible');
+      tSvgImage.setAttributeNS(null, "display", tDisp);
+      rhythmicNotationObj.svgCont.appendChild(tSvgImage);
 
-        // Create HTML SVG image
-        let tSvgImage = document.createElementNS(SVG_NS, "image");
-        tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', '/pieces/sf004/notationSVGs/' + tLabel + '.svg');
-        tSvgImage.setAttributeNS(null, "y", ty - notationImageObjectSet[tLabel].height);
-        tSvgImage.setAttributeNS(null, "x", tx);
-        tSvgImage.setAttributeNS(null, "visibility", 'visible');
-        tSvgImage.setAttributeNS(null, "display", tDisp);
-        rhythmicNotationObj.svgCont.appendChild(tSvgImage);
+      motivesByBeat[beatIx][motiveNum] = tSvgImage;
 
-        motivesByBeat[beatIx][tLabel] = tSvgImage;
+    }); //notationSvgPaths_labels.forEach((motiveObj)  END
 
-      }); //notationSvgPaths_labels.forEach((pathLblObj)  END
+  }); //beatCoords.forEach((beatCoordsObj) END
+  //##endef END Draw Initial Notation
 
-    }); //beatCoords.forEach((beatCoordsObj) END
+} // makeStaffNotation() END
 
 
-  } //function makeMotives() END
+//##endef Make Staff Notation
 
-  // MAIN LOOP HERE: Load Notation SVGs to get image height/width for positioning
-  notationSvgPaths_labels.forEach((pathLblObj, i) => {
+//##ef Make Scrolling Tempo Cursors
 
-    let tpath = pathLblObj.path;
 
-    (async () => { //generic async wrapper to avoid error
-
-      let timg = await run_getImage(tpath); // Runs wrapper which runs getImage everything below this await waits for response
-      notationImageObjectSet[pathLblObj.lbl] = timg;
-
-      if (i == (notationSvgPaths_labels.length - 1)) { //does not run makeMotives until all images are loaded
-
-        makeMotives();
-
-      }
-
-    })();
-
-  }); //notationSvgPaths_labels.forEach((pathLblObj, i) end
-
-  // #endef END Draw Initial Notation
-
-} //makeRhythmicNotation() end
-
-// #ef Notation Scrolling Cursors
-
-let tempoCursors = [];
-
-function makeScrollingCursors() {
+function makeScrollingTempoCursors() {
 
   for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) {
 
     let tLine = mkSvgLine({
       svgContainer: rhythmicNotationObj.svgCont,
-      x1: beatCoords[0].x,
-      y1: beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
-      x2: beatCoords[0].x,
-      y2: beatCoords[0].y + HALF_NOTEHEAD_H, //beatCoords[0].y is 3rd staff line
+      x1: 0,
+      y1: HALF_NOTEHEAD_H - NOTATION_CURSOR_H,
+      x2: 0,
+      y2: HALF_NOTEHEAD_H,
       stroke: TEMPO_COLORS[tempoCsrIx],
-      strokeW: 3
+      strokeW: NOTATION_CURSOR_STROKE_W
     });
     tLine.setAttributeNS(null, 'stroke-linecap', 'round');
     tLine.setAttributeNS(null, 'display', 'none');
+    // tLine.setAttributeNS(null, 'transform', "translate(" + beatCoords[4].x.toString() + "," + beatCoords[4].y.toString() + ")");
     tempoCursors.push(tLine);
 
   } //for (let tempoCsrIx = 0; tempoCsrIx < NUM_TEMPOS; tempoCsrIx++) END
-
-}
-
-// #ef wipeTempoCsrs
-
-function wipeTempoCsrs() {
-
-  tempoCursors.forEach((tempoCsr) => {
-
-    tempoCsr.setAttributeNS(null, 'display', 'none');
-
-  });
+  // tempoCursors[0].setAttributeNS(null, 'display', 'yes');
+  // tempoCursors[0].setAttributeNS(null, 'transform', 'translate(' + beatCoords[3].x.toString() + ',' + beatCoords[3].y.toString() + ')');
+} // function makeScrollingTempoCursors() END
 
 
-}
+//##endef Make Scrolling Tempo Cursors
 
-// #endef END wipeTempoCsrs
-
-// #endef END Notation Scrolling Cursors
-
-// #ef Make Scrolling BB
+//##ef Make Scrolling Cursor BBs
 
 
-// #ef Scrolling BBs Variables
+function makeScrollingCursorBbs() {
+  // scrollingCsrBbsObjSet
+  for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) {
 
-let scr_bbSet = [];
-for (let i = 0; i < NUM_TEMPOS; i++) scr_bbSet.push({});
-const SCR_BB_W = 26;
-const SCR_BB_H = NOTATION_CURSOR_H;
-const SCR_BB_TOP = beatCoords[0].y + HALF_NOTEHEAD_H - NOTATION_CURSOR_H;
-const SCR_BB_CENTER = SCR_BB_W / 2;
-const SCR_BB_PAD_LEFT = 4;
-// const BB_GAP = 16;
-const SCR_BBCIRC_RADIUS = 6;
-const SCR_BBCIRC_TOP_CY = SCR_BBCIRC_RADIUS + 2;
-const SCR_BBCIRC_BOTTOM_CY = SCR_BB_H - SCR_BBCIRC_RADIUS;
-const SCR_BB_TRAVEL_DIST = SCR_BBCIRC_BOTTOM_CY - SCR_BBCIRC_TOP_CY;
-const SCR_BB_BOUNCE_WEIGHT = 6;
-const SCR_HALF_BB_BOUNCE_WEIGHT = SCR_BB_BOUNCE_WEIGHT / 2;
+    scrollingCsrBbsObjSet[csrBbIx]['ball'] = mkSvgCircle({
+      svgContainer: rhythmicNotationObj.svgCont,
+      cx: SCRBB_CENTER,
+      cy: SCRBBCIRC_TOP_CY,
+      r: SCRBBCIRC_R,
+      fill: TEMPO_COLORS[csrBbIx],
+      stroke: 'white',
+      strokeW: 0
+    });
 
-// #endef END Scrolling BBs Variables
+    scrollingCsrBbsObjSet[csrBbIx].ball.setAttributeNS(null, 'display', 'none');
 
-function makeScrollingBBs() {
+  } //for (let csrBbIx = 0; csrBbIx < NUM_TEMPOS; csrBbIx++) END
 
-  for (let scrBbIx = 0; scrBbIx < NUM_TEMPOS; scrBbIx++) {
-
-          bbSet[scrBbIx]['div'] = mkDiv({
-          canvas: rhythmicNotationObj.svgCont,
-          w: SCR_BB_W,
-          h: SCR_BB_H,
-          top: SCR_BB_TOP,
-          left:   beatCoords[0].x - SCR_BB_W,
-          bgClr: 'white'
-        });
-
-        bbSet[scrBbIx]['svgCont'] = mkSVGcontainer({
-          canvas: bbSet[scrBbIx].div,
-          w: SCR_BB_W,
-          h: SCR_BB_H,
-          x: 0,
-          y: 0
-        });
-
-        bbSet[scrBbIx]['bbCirc'] = mkSvgCircle({
-          svgContainer: bbSet[scrBbIx].svgCont,
-          cx: SCR_BB_CENTER,
-          cy: SCR_BBCIRC_TOP_CY,
-          r: SCR_BBCIRC_RADIUS,
-          fill: TEMPO_COLORS[scrBbIx],
-          stroke: 'white',
-          strokeW: 0
-        });
-
-        bbSet[scrBbIx]['bbBouncePadOff'] = mkSvgLine({
-          svgContainer: bbSet[scrBbIx].svgCont,
-          x1: 0,
-          y1: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
-          x2: SCR_BB_W,
-          y2: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
-          stroke: 'black',
-          strokeW: SCR_BB_BOUNCE_WEIGHT
-        });
-
-        bbSet[scrBbIx]['bbBouncePadOn'] = mkSvgLine({
-          svgContainer: bbSet[scrBbIx].svgCont,
-          x1: 0,
-          y1: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
-          x2: SCR_BB_W,
-          y2: SCR_BB_H - SCR_HALF_BB_BOUNCE_WEIGHT,
-          stroke: 'yellow',
-          strokeW: SCR_BB_BOUNCE_WEIGHT + 2
-        });
-        bbSet[scrBbIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+} //function makeScrollingCursorBbs() END
 
 
-        bbSet[scrBbIx]['offIndicator'] = mkSvgRect({
-          svgContainer: bbSet[scrBbIx].svgCont,
-          x: 0,
-          y: 0,
-          w: SCR_BB_W,
-          h: SCR_BB_H,
-          fill: 'rgba(173, 173, 183, 0.9)',
-        });
-        bbSet[scrBbIx].offIndicator.setAttributeNS(null, 'display', 'none');
+//##endef Make Scrolling Cursor BBs
 
-  } //for (let scrBbIx = 0; scrBbIx < NUM_TEMPOS; scrBbIx++) END
-
-} // function makeScrollingBBs() END
-
-
-// #endef END Make Scrolling BB
-
-// #ef updateScrollingCsrs
-
-
-function updateScrollingCsrs() {
-
-  if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for scrolling cursors
-
-    scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
-
-      let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-      let tX = posObjSet[setIx].x;
-      let tY1 = posObjSet[setIx].y1;
-      let tY2 = posObjSet[setIx].y2;
-      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
-      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
-      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
-
-    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
-
-  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
-
-} // function updateScrollingCsrs() END
-
-
-// #endef END updateScrollingCsrs
-
-// #ef Make Player Tokens
-
-let playerTokens = []; //tempo[ player[ {:svg,:text} ] ]
-
+//##ef Make Player Tokens
+//Make number-of-players worth of tokens for each tempo
 function makePlayerTokens() {
-
-  //circle, triangle, diamond, watermellon, square,
+  //circle, triangle, diamond, watermellon, square
   for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) {
 
     let tPlrSet = [];
@@ -2220,123 +2168,11 @@ function makePlayerTokens() {
     playerTokens.push(tPlrSet);
 
   } //for (let tempoIx = 0; tempoIx < NUM_TEMPOS; tempoIx++) END
-
 } //function makePlayerTokens() end
+//##endef Make Player Tokens
 
-//#endef Make Player Tokens
+//##ef Make Signs
 
-// #ef wipePlayerTokens
-
-function wipePlayerTokens() {
-
-  playerTokens.forEach((thisTemposPlrTokens) => {
-    thisTemposPlrTokens.forEach((plrTknObj) => {
-
-
-      plrTknObj.svg.setAttributeNS(null, 'display', 'none');
-      plrTknObj.txt.setAttributeNS(null, 'display', 'none');
-
-
-
-    });
-  });
-
-}
-
-// #endef END wipePlayerTokens
-
-//#ef Update Player Tokens
-
-
-function updatePlayerTokens() {
-
-  playerTokenLocationByFrame_perPlr.forEach((playerTokenLocationByFrame, plrIx) => { //{tempoNum}
-    if (partsToRun.includes(plrIx)) {
-
-      if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for player Tokens
-
-
-        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-        let tTempoNum = playerTokenLocationByFrame[setIx];
-        let tPlrTokenObj = playerTokens[tTempoNum][plrIx];
-        let coordLookUpIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scrollingCsrCoords_perTempo[tTempoNum].length;
-        let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
-        let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
-
-        tPlrTokenObj.move(tBaseX, tBaseY);
-        tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
-        tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
-        tPlrTokenObj.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
-
-
-      } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
-
-    } // function updatePlayerTokens() END
-  });
-
-}
-
-
-// #endef END Update Player Tokens
-
-// #ef wipeRhythmicNotation
-
-function wipeRhythmicNotation() {
-
-  motivesByBeat.forEach((thisBeatsMotiveDic) => {
-
-    for (let key in thisBeatsMotiveDic) {
-
-      let tMotive = thisBeatsMotiveDic[key];
-      tMotive.setAttributeNS(null, 'display', 'none');
-
-    }
-
-  });
-
-}
-
-// #endef END wipeRhythmicNotation
-
-//#ef Update Notation
-
-
-function updateNotation() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scoreData.motiveSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-    scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-      motivesByBeat[beatNum][motiveDict[motiveNum]].setAttributeNS(null, "display", 'yes');
-
-    }); //   motiveChgByFrameSet[setIx].forEach((motiveNum, beatNum) => END
-
-  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-
-} // function updateNotation() END
-
-
-//#endef Update Notation
-
-
-// #endef END Rhythmic Notation
-
-// #ef Signs
-
-
-// #ef Signs Variables
-
-const SIGN_W = TEMPO_FRET_W - 10;
-const SIGN_H = 150;
-const HALF_SIGN_H = SIGN_H / 2;
-let signsByPlrByTrack = [];
-const NUM_AVAILABLE_SIGN_MESHES_PER_TRACK = Math.round(NUM_TEMPO_FRETS_TO_FILL / 10);
-
-// #endef END Signs Variables
-
-// #ef makeSigns
 
 function makeSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
 
@@ -2381,103 +2217,11 @@ function makeSigns() { //Make a collection of possible signs to use each frame; 
 
 } //makeSigns() end
 
-// #endef END makeSigns
 
-// #ef wipeSigns
+//##endef Make Signs
 
-function wipeSigns() {
+//##ef Make Unison Signs
 
-  signsByPlrByTrack.forEach((arrayOfSignsForThisPlayer) => {
-    arrayOfSignsForThisPlayer.forEach((arrayOfSignsForOneTrack) => {
-      arrayOfSignsForOneTrack.forEach((tSign) => {
-        tSign.visible = false;
-      });
-    });
-  });
-
-}
-
-// #endef END wipeSigns
-
-// #ef updateSigns
-
-
-function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  tempoFlagLocsByFrame_perPlr.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
-    if (partsToRun.includes(plrIx)) {
-
-      //##ef Lead In
-      if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length)) {
-
-        let setIx = leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length - LEAD_IN_FRAMES + FRAMECOUNT;
-        if (leadIn_tempoFlagLocsByFrame_perPlr[plrIx][setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-          leadIn_tempoFlagLocsByFrame_perPlr[plrIx][setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
-
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
-
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-
-      } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-      //##endef Lead
-
-
-      //##ef Loop After Lead In
-      else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-        let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % tempoFlagLocsByFrame_thisPlr.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-        if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-          tempoFlagLocsByFrame_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-            let tempo_trackNum = signObj.tempoNum;
-            let zLoc = signObj.zLoc;
-            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
-
-            tSign.position.z = GO_Z + zLoc;
-            tSign.position.x = xPosOfTracks[tempo_trackNum];
-            tSign.visible = true;
-
-          }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-        } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-      } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-      //##endef Loop After Lead In
-
-
-
-
-
-    } // if (partsToRun.includes(plrIx) END
-
-  }); // tempoFlagLocsByFrame_perPlr.forEach((posObjSet, tempoIx) =>  END
-
-} // function updateSigns() END
-
-
-// #endef END updateSigns
-
-
-// #endef END Signs
-
-//#ef Unisons
-
-
-
-//#ef Make Unison Signs
-
-
-let unisonSignsByTrack = [];
-let unisonOffSignsByTrack = [];
 
 function makeUnisonSigns() { //Make a collection of possible signs to use each frame; different color each track; a collection for each player
 
@@ -2544,198 +2288,28 @@ function makeUnisonSigns() { //Make a collection of possible signs to use each f
 } //makeUnisonSigns() end
 
 
-//#endef Make Unison Signs
+//##endef Make Unison Signs
 
-//#ef Make Unison Tokens
+//##ef Make Unison Tokens
 
-
-let unisonToken;
 
 function makeUnisonToken() {
-
   unisonToken = mkPlrTkns(rhythmicNotationObj.svgCont, 5);
 
+  // unisonToken.svg.setAttributeNS(null, "display", 'yes');
+  // unisonToken.txt.setAttributeNS(null, "display", 'yes');
+  // unisonToken.move(beatCoords[11].x, beatCoords[11].y)
 }
 
 
-//#endef Make Unison Tokens
+//##endef Make Unison Tokens
 
-//#ef Wipe Unison Signs
+//##ef Make Pitch Sets
 
-function wipeUnisonSigns() {
-
-  unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-    arrayOfSignsForOneTrack.forEach((tSign) => {
-      tSign.visible = false;
-    });
-  });
-
-  unisonOffSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
-    arrayOfSignsForOneTrack.forEach((tSign) => {
-      tSign.visible = false;
-    });
-  });
-
-}
-
-//#endef Wipe Unison Signs
-
-//#ef Wipe Unison Tokens
-
-function wipeUnisonToken() {
-
-  unisonToken.svg.setAttributeNS(null, 'display', 'none');
-  unisonToken.txt.setAttributeNS(null, 'display', 'none');
-
-}
-
-//#endef Wipe Unison Tokens
-
-//#ef Update Unison Signs
-
-function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
-
-  //##ef Lead In
-  if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= (LEAD_IN_FRAMES - leadInSet_unisonFlagLocByFrame.length)) {
-
-    let setIx = leadInSet_unisonFlagLocByFrame.length - LEAD_IN_FRAMES + FRAMECOUNT;
-    if (leadInSet_unisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-      leadInSet_unisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-        let tempo_trackNum = signObj.tempoNum;
-        let zLoc = signObj.zLoc;
-
-        let tSign;
-        if (signObj.end) {
-          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
-        } else {
-          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
-        }
-
-        tSign.position.z = GO_Z + zLoc;
-        tSign.position.x = xPosOfTracks[tempo_trackNum];
-        tSign.visible = true;
-
-      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-
-  } // if (FRAMECOUNT < LEAD_IN_FRAMES && FRAMECOUNT >= leadIn_tempoFlagLocsByFrame_perPlr[plrIx].length) END
-  //##endef Lead
-
-  //##ef Loop After Lead In
-  else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) {
-    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % setOfUnisonFlagLocByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
-
-    if (setOfUnisonFlagLocByFrame[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
-
-      setOfUnisonFlagLocByFrame[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
-
-        let tempo_trackNum = signObj.tempoNum;
-        let zLoc = signObj.zLoc;
-
-        let tSign;
-        if (signObj.end) {
-          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
-        } else {
-          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
-        }
-
-        tSign.position.z = GO_Z + zLoc;
-        tSign.position.x = xPosOfTracks[tempo_trackNum];
-        tSign.visible = true;
-
-      }); // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
-
-    } // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
-  } //else if (FRAMECOUNT > (LEAD_IN_FRAMES - 1)) END
-  //##endef Loop After Lead In
-
-} // function updateUnisonSigns() END
-
-//#endef Update Unison Signs
-
-//#ef Update Unison Tokens
-
-
-
-function updateUnisonPlayerToken() {
-
-  if (FRAMECOUNT > LEAD_IN_FRAMES) { //No lead in motion for player Tokens
-
-    let setIx = (FRAMECOUNT - LEAD_IN_FRAMES) % unisonPlrTokenLocByFrame.length;
-
-    if (unisonPlrTokenLocByFrame[setIx] != -1) {
-      let tTempoNum = unisonPlrTokenLocByFrame[setIx];
-      let coordLookUpIx = (FRAMECOUNT - LEAD_IN_FRAMES) % scrollingCsrCoords_perTempo[tTempoNum].length;
-      let tBaseX = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
-      let tBaseY = scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
-
-      unisonToken.move(tBaseX, tBaseY);
-      unisonToken.svg.setAttributeNS(null, "display", 'yes');
-      unisonToken.txt.setAttributeNS(null, "display", 'yes');
-      unisonToken.svg.setAttributeNS(null, "fill", TEMPO_COLORS[tTempoNum]);
-      unisonToken.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
-
-    }
-
-
-  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
-
-
-}
-
-
-//#endef Update Unison Tokens
-
-
-//#endef Unisons
-
-// #ef Pitch Sets
-
-// #ef Pitch Sets Variables
-
-pitchSetsObj = {};
-pitchSetsObj['svgs'] = {};
-pitchSetImgObjects = {};
-let PITCH_SETS_W = 120;
-let PITCH_SETS_H = 80;
-let PITCH_SETS_TOP = BB_TOP + BB_H - PITCH_SETS_H;
-let PITCH_SETS_LEFT = RHYTHMIC_NOTATION_CANVAS_L;
-let PITCH_SETS_CENTER_W = PITCH_SETS_W / 2;
-let PITCH_SETS_MIDDLE_H = PITCH_SETS_H / 2;
-
-// #ef pitchSetSvgs_path_lbl
-
-let pitchSetsPath = "/pieces/sf004/notationSVGs/pitchSets/";
-
-let pitchSetSvgs_path_lbl = [{
-    path: pitchSetsPath + 'e4_e5.svg',
-    lbl: 'e4_e5'
-  },
-  {
-    path: pitchSetsPath + 'e4_e5_b4.svg',
-    lbl: 'e4_e5_b4'
-  },
-  {
-    path: pitchSetsPath + 'e4_e5_b4cluster.svg',
-    lbl: 'e4_e5_b4cluster'
-  },
-  {
-    path: pitchSetsPath + 'e4cluster_e5cluster_b4cluster.svg',
-    lbl: 'e4cluster_e5cluster_b4cluster'
-  }
-];
-
-// #endef END pitchSetSvgs_path_lbl
-
-// #endef END Pitch Sets Variables
 
 function makePitchSets() {
 
-  // #ef DIV/SVG Container
-
+  //###ef DIV & SVG Containers
   pitchSetsObj['div'] = mkDiv({
     canvas: worldPanel.content,
     w: PITCH_SETS_W,
@@ -2744,7 +2318,6 @@ function makePitchSets() {
     left: PITCH_SETS_LEFT,
     bgClr: 'white'
   });
-
   pitchSetsObj['svgCont'] = mkSVGcontainer({
     canvas: pitchSetsObj.div,
     w: PITCH_SETS_W,
@@ -2752,60 +2325,33 @@ function makePitchSets() {
     x: 0,
     y: 0
   });
+  //###endef DIV & SVG Containers
 
-  // #endef END DIV/SVG Container
+  //###ef Make Pitch Set SVGs
+  pitchSetsDictionary.forEach((psObj) => { //each motive loop // pitchSetsDictionary = [{ // {path:,lbl:,num:,w:,h:}
 
-  // #ef Make Pitch Set SVGs
+    let tPsNum = psObj.num;
+    let tx = PITCH_SETS_CENTER_W - (psObj.w / 2);
+    let ty = PITCH_SETS_MIDDLE_H - (psObj.h / 2);
 
-  function makePitchSetSvgs() { // This function runs in loop below, after await so all image sizes are loaded
+    let tDisplay = tPsNum == 0 ? 'yes' : 'none';
+    // let tDisplay = tPsNum == 3 ? 'yes' : 'none';
 
-    pitchSetSvgs_path_lbl.forEach((pathLblObj) => { //each motive loop
+    // Create HTML SVG image
+    let tSvgImage = document.createElementNS(SVG_NS, "image");
+    tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', psObj.path);
+    tSvgImage.setAttributeNS(null, "x", tx);
+    tSvgImage.setAttributeNS(null, "y", ty);
+    tSvgImage.setAttributeNS(null, "visibility", 'visible');
+    tSvgImage.setAttributeNS(null, "display", tDisplay);
+    pitchSetsObj.svgCont.appendChild(tSvgImage);
 
-      let tLbl = pathLblObj.lbl;
-      let tx = PITCH_SETS_CENTER_W - (pitchSetImgObjects[tLbl].width / 2);
-      let ty = PITCH_SETS_MIDDLE_H - (pitchSetImgObjects[tLbl].height / 2);
+    pitchSetsObj.svgs[tPsNum] = tSvgImage;
 
-      let tDisplay = tLbl == 'e4_e5' ? 'yes' : 'none';
-      // let tDisplay = tLbl == 'e4cluster_e5cluster_b4cluster' ? 'yes' : 'none';
+  }); // pitchSetsDictionary.forEach((psObj) =>  END
+  //###endef END Make Pitch Set SVGs
 
-      // Create HTML SVG image
-      let tSvgImage = document.createElementNS(SVG_NS, "image");
-      tSvgImage.setAttributeNS(XLINK_NS, 'xlink:href', pathLblObj.path);
-      tSvgImage.setAttributeNS(null, "x", tx);
-      tSvgImage.setAttributeNS(null, "y", ty);
-      tSvgImage.setAttributeNS(null, "visibility", 'visible');
-      tSvgImage.setAttributeNS(null, "display", tDisplay);
-      pitchSetsObj.svgCont.appendChild(tSvgImage);
-
-      pitchSetsObj.svgs[tLbl] = tSvgImage;
-
-    }); // pitchSetSvgs_path_lbl.forEach((pathLblObj) =>  END
-
-  } //function makePitchSetSvgs() END
-
-
-  // MAIN LOOP HERE: Load Notation SVGs to get image height/width for positioning
-  pitchSetSvgs_path_lbl.forEach((pathLblObj, i) => {
-
-    let tPath = pathLblObj.path;
-
-    (async () => { //generic async wrapper to avoid error
-
-      let tImg = await run_getImage(tPath); // Runs wrapper which runs getImage everything below this await waits for response
-      pitchSetImgObjects[pathLblObj.lbl] = tImg;
-
-      if (i == (pitchSetSvgs_path_lbl.length - 1)) { // only run make function after last image is loaded
-        makePitchSetSvgs();
-      }
-
-    })();
-
-  }); // pitchSetSvgs_path_lbl.forEach((pathLblObj, i) => END
-
-  // #endef END Make Pitch Set SVGs
-
-  // #ef Pitch Set Change Indicator
-
+  //###ef Pitch Set Change Indicator
   pitchSetsObj['chgIndicator'] = mkSvgRect({
     svgContainer: pitchSetsObj.svgCont,
     x: 0,
@@ -2814,85 +2360,19 @@ function makePitchSets() {
     h: PITCH_SETS_H,
     fill: 'none',
     stroke: clr_neonMagenta,
-    strokeW: 8
+    strokeW: 13
   });
 
   pitchSetsObj['chgIndicator'].setAttributeNS(null, 'display', 'none');
+  //###endef END Pitch Set Change Indicator
 
-  // #endef END Pitch Set Change Indicator
+} // function makePitchSets() END
 
-}
 
-// #ef wipePitchSets
+//##endef Make Pitch Sets
 
-function wipePitchSets() {
-
-  pitchSetsObj.chgIndicator.setAttributeNS(null, 'display', 'none');
-
-  let tSvgsSet = pitchSetsObj['svgs'];
-
-  for (let key in tSvgsSet) {
-
-    let tPsSvg = tSvgsSet[key];
-    tPsSvg.setAttributeNS(null, 'display', 'none');
-
-  }
-
-}
-
-// #endef END wipePitchSets
-
-// #endef END Pitch Sets
-
-// #ef Articulations
-
-// #ef Articulations Variables
-
-let articulationsPath = "/pieces/sf004/notationSVGs/dynamics_accents/";
-
-let articulationsObj = {
-  marcato: {
-    path: articulationsPath + 'marcato.svg',
-    amt: (TOTAL_NUM_BEATS * 5)
-  },
-  sf: {
-    path: articulationsPath + 'sf.svg',
-    amt: TOTAL_NUM_BEATS
-  }
-};
-
-// #ef function posMarcato
-
-function posMarcato(beatNum, subdivision, partial) {
-
-  let tCoords = {};
-
-  switch (subdivision) {
-
-    case 3:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX) / 3) * (partial - 1));
-      break;
-
-    case 4:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 4) * (partial - 1));
-      break;
-
-    case 5:
-      tCoords['x'] = beatCoords[beatNum].x + 1 + (((BEAT_L_PX - 3) / 5) * (partial - 1));
-      break;
-
-  } // end switch
-
-  return tCoords;
-
-} // function posMarcato(beatNum, subdivision, partial) end
-
-// #endef END function posMarcato
-
-// #endef END Articulations Variables
-
+//##ef Make Articulations
 function makeArticulations() {
-
   for (let key in articulationsObj) {
 
     let artObj = articulationsObj[key];
@@ -2900,14 +2380,15 @@ function makeArticulations() {
     let tPath = artObj.path;
     let tLbl = key;
     let tAmt = artObj.amt;
+    let tNum = artObj.num;
     let tArtSet = [];
 
     for (let artIx = 0; artIx < tAmt; artIx++) { // create tAmt number of the same SVG
 
       let tArt = document.createElementNS(SVG_NS, "image");
       tArt.setAttributeNS(XLINK_NS, 'xlink:href', tPath);
-      tArt.setAttributeNS(null, "x", beatCoords[0].x);
-      tArt.setAttributeNS(null, "y", beatCoords[0].y + 2);
+      tArt.setAttributeNS(null, "x", 0);
+      tArt.setAttributeNS(null, "y", 2);
       tArt.setAttributeNS(null, "visibility", 'visible');
       tArt.setAttributeNS(null, "display", 'none');
       rhythmicNotationObj.svgCont.appendChild(tArt);
@@ -2916,383 +2397,711 @@ function makeArticulations() {
 
     } // for (let artIx = 0; artIx < tAmt; artIx++) END
 
-    articulationsObj[key]['imgSet'] = tArtSet;
+    articulationsSet[tNum] = tArtSet;
 
   } // for (let key in articulationsObj) END
 
-} // makeArticulations() END
+} //function makeArticulations()
+//##endef Make Articulations
 
-// #ef wipeArticulations
 
-function wipeArticulations() {
+//#endef BUILD WORLD
 
-  for (let key in articulationsObj) {
+//#ef WIPE/UPDATE/DRAW
 
-    let artImgSet = articulationsObj[key];
 
-    artImgSet.imgSet.forEach((tSvg) => {
+//##ef Tempo Frets WIPE/UPDATE/DRAW
 
-      tSvg.setAttributeNS(null, 'display', 'none');
+//###ef wipeTempoFrets
+function wipeTempoFrets() {
+  tempoFretsPerTrack.forEach((arrayOfTempoFretsForOneTrack) => {
+    arrayOfTempoFretsForOneTrack.forEach((tTempoFret) => {
+      tTempoFret.visible = false;
+    });
+  });
+}
+//###endef wipeTempoFrets
+
+//###ef updateTempoFrets
+function updateTempoFrets() {
+
+  //###ef Tempo Frets - Frame by Frame Animation Loop
+  if (FRAMECOUNT >= 0) {
+    scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let tempoFretLocationsSetNum = FRAMECOUNT % setOfTempoFretLocsByFrame.length; //adjust frame count for lead in frames and modulo for cycle length
+
+      setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => { //this goes through the set of tfs that were created at init, only draws the necessary ones and positions them
+
+        tempoFretsPerTrack[tempoIx][tfIx].position.z = loc;
+        tempoFretsPerTrack[tempoIx][tfIx].visible = true;
+
+      }); //setOfTempoFretLocsByFrame[tempoFretLocationsSetNum].forEach((loc, tfIx) => END
+
+    }); // scoreData.tempoFretLocations_perTempo.forEach((setOfTempoFretLocsByFrame, tempoIx) => END
+  } // if (FRAMECOUNT >= 0) END
+  //###endef Tempo Frets - Frame by Frame Animation Loop
+
+  //###ef Tempo Frets - Lead In Frames
+  if (FRAMECOUNT < 0) {
+
+    scoreData.leadIn_tempoFretLocations_perTempo.forEach((thisTempo_tfSet, tempoIx) => { // Set of Tempo Frets for each Tempo
+
+      if (-FRAMECOUNT <= thisTempo_tfSet.length) { //FRAMECOUNT is negative; only start lead in set if FRAMECOUNT = the length of lead in tf set for this tempo
+
+        let tfSetIx = thisTempo_tfSet.length + FRAMECOUNT; //count from FRAMECOUNT/thisTempo_tfSet.length and go backwards; ie the first index in set is the furtherest away
+
+        thisTempo_tfSet[tfSetIx].forEach((tfLoc, tfIx) => { //each tf location for this tempo
+
+          tempoFretsPerTrack[tempoIx][tfIx].position.z = tfLoc; //tempoFretsPerTrack is set of tfs already created by tempo
+          tempoFretsPerTrack[tempoIx][tfIx].visible = true;
+
+        }); // tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
+
+      }
+
+    }); //tempoFrets_leadInFrames_perTempo.forEach((thisTempo_tfSet, tempoIx) => END
+
+  } // if (FRAMECOUNT < 0) END
+  //###endef Tempo Frets - Lead In Frames
+
+} //function updateTempoFrets()  END
+//###endef updateTempoFrets
+
+//##endef Tempo Frets WIPE/UPDATE/DRAW
+
+//##ef GoFrets WIPE/UPDATE/DRAW
+
+//###ef wipeGoFrets
+function wipeGoFrets() {
+  goFrets.forEach((goFret, fretIx) => {
+    goFretsGo[fretIx].visible = false;
+  });
+}
+//###endef wipeGoFrets
+
+//###ef updateGoFrets
+function updateGoFrets() {
+  if (FRAMECOUNT >= 0) {
+
+    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+
+          goFrets[tempoIx].visible = true;
+          goFretsGo[tempoIx].visible = false;
+
+          break;
+
+        case 1:
+
+          goFrets[tempoIx].visible = false;
+          goFretsGo[tempoIx].visible = true;
+
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } // if (FRAMECOUNT >= 0) END
+} // function updateGoFrets() END
+//###endef updateGoFrets
+
+//##endef GoFrets WIPE/UPDATE/DRAW
+
+//##ef BBs WIPE/UPDATE/DRAW
+
+//###ef wipeBBs
+function wipeBBs() {
+  bbSet.forEach((tbb) => {
+    tbb.bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+  }); // bbSet.forEach((tbb) =>
+} // function wipeBbComplex()
+//###endef wipeBBs
+
+// #ef updateBBs
+function updateBBs() {
+
+  if (FRAMECOUNT >= 0) {
+    scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => { // Loop: set of goFrames
+
+      let bbYposSetIx = FRAMECOUNT % bbYposSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+      let tBbCy = bbYposSet[bbYposSetIx];
+
+      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', tBbCy);
+      bbSet[tempoIx].bbCirc.setAttributeNS(null, 'display', 'yes');
+
+    }); // scoreData.bbYpos_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT >= 0) END
+  //
+  else if (FRAMECOUNT < 0) {
+    scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) => {
+
+      if (-FRAMECOUNT <= leadInSet.length) {
+        let tfSetIx = leadInSet.length + FRAMECOUNT;
+        bbSet[tempoIx].bbCirc.setAttributeNS(null, 'cy', leadInSet[tfSetIx]);
+      } //  if (-FRAMECOUNT <= leadInSet.length)
+
+    }); // scoreData.leadIn_bbYpos_perTempo.forEach((leadInSet, tempoIx) =>  END
+  } // if (FRAMECOUNT >= 0) END
+
+} // function updateBBs() END
+//###endef updateBBs
+
+//###ef updateBbBouncePad
+function updateBbBouncePad() {
+  if (FRAMECOUNT >= 0) {
+
+    scoreData.goFretsState_perTempo.forEach((goFrmSet, tempoIx) => { // A set of locations for each frame for each tempo which loops
+
+      let goFrmSetIx = FRAMECOUNT % goFrmSet.length;
+      let goFrmState = goFrmSet[goFrmSetIx];
+
+      switch (goFrmState) {
+
+        case 0:
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'none');
+          break;
+
+        case 1:
+          bbSet[tempoIx].bbBouncePadOn.setAttributeNS(null, 'display', 'yes');
+          break;
+
+      } //switch (goFrmState) END
+
+    }); //goFrameCycles_perTempo.forEach((goFrmSet, tempoIx) => END
+
+  } // if (FRAMECOUNT >= 0) END
+} // function updateBbBouncePad() END
+//###endef updateBbBouncePad
+
+//##endef BBs WIPE/UPDATE/DRAW
+
+//##ef Scrolling Cursors WIPE/UPDATE/DRAW
+
+//###ef wipeTempoCsrs
+function wipeTempoCsrs() {
+  tempoCursors.forEach((tempoCsr) => {
+    tempoCsr.setAttributeNS(null, 'display', 'none');
+  });
+}
+//###endef END wipeTempoCsrs
+
+//###ef updateScrollingCsrs
+function updateScrollingCsrs() {
+  if (FRAMECOUNT > 0) { //No lead in motion for scrolling cursors
+    scoreData.scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
+
+      let setIx = FRAMECOUNT % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+      let tX = posObjSet[setIx].x;
+      let tY1 = posObjSet[setIx].y1;
+      let tY2 = posObjSet[setIx].y2;
+      tempoCursors[tempoIx].setAttributeNS(null, 'x1', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'x2', tX);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y1', tY1);
+      tempoCursors[tempoIx].setAttributeNS(null, 'y2', tY2);
+      tempoCursors[tempoIx].setAttributeNS(null, 'display', 'yes');
+
+    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+} // function updateScrollingCsrs() END
+//###endef updateScrollingCsrs
+
+//##endef Scrolling Cursors WIPE/UPDATE/DRAW
+
+//##ef Player Tokens WIPE/UPDATE/DRAW
+
+//###ef wipePlayerTokens
+function wipePlayerTokens() {
+  playerTokens.forEach((thisTemposPlrTokens) => {
+    thisTemposPlrTokens.forEach((plrTknObj) => {
+
+      plrTknObj.svg.setAttributeNS(null, 'display', 'none');
+      plrTknObj.txt.setAttributeNS(null, 'display', 'none');
 
     });
+  });
+}
+//###endef wipePlayerTokens
 
+//###ef Update Player Tokens
+function updatePlayerTokens() {
+  scoreData.playerTokenTempoNum_perPlayer.forEach((playerTokenLocationByFrame, plrIx) => { //{tempoNum}
+    if (partsToRun.includes(plrIx)) {
+      if (FRAMECOUNT > 0) {
+
+        let setIx = FRAMECOUNT % playerTokenLocationByFrame.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
+
+        let tTempoNum = playerTokenLocationByFrame[setIx];
+        let tPlrTokenObj = playerTokens[tTempoNum][plrIx];
+        let coordLookUpIx = FRAMECOUNT % scoreData.scrollingCsrCoords_perTempo[tTempoNum].length;
+        let tBaseX = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
+        let tBaseY = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
+
+        tPlrTokenObj.move(tBaseX, tBaseY);
+        tPlrTokenObj.svg.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.txt.setAttributeNS(null, "display", 'yes');
+        tPlrTokenObj.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
+
+      } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+    } // function updatePlayerTokens() END
+  });
+}
+//###endef Update Player Tokens
+
+//##endef Player Tokens WIPE/UPDATE/DRAW
+
+//##ef Signs WIPE/UPDATE/DRAW
+
+//###ef wipeSigns
+function wipeSigns() {
+  signsByPlrByTrack.forEach((arrayOfSignsForThisPlayer) => {
+    arrayOfSignsForThisPlayer.forEach((arrayOfSignsForOneTrack) => {
+      arrayOfSignsForOneTrack.forEach((tSign) => {
+        tSign.visible = false;
+      });
+    });
+  });
+}
+//###endef wipeSigns
+
+//###ef updateSigns
+function updateSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
+
+  if (FRAMECOUNT >= 0) {
+    scoreData.tempoFlagLocs_perPlayer.forEach((tempoFlagLocsByFrame_thisPlr, plrIx) => { //{tempoNum}
+      if (partsToRun.includes(plrIx)) {
+
+        let setIx = FRAMECOUNT % tempoFlagLocsByFrame_thisPlr.length;
+
+        if (tempoFlagLocsByFrame_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+
+          tempoFlagLocsByFrame_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+            let tempo_trackNum = signObj.tempoNum;
+            let zLoc = signObj.zLoc;
+            let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+            tSign.position.z = zLoc;
+            tSign.position.x = xPosOfTracks[tempo_trackNum];
+            tSign.visible = true;
+          });
+        } // tempoFlagLocsByFrame_thisPlr.forEach((setOfSignsThisFrame) => END
+      }
+    }); // if (tempoFlagLocsByFrame_thisPlr[setIx] != -1) END
+  } // if (FRAMECOUNT >= 0) END
+
+  //
+  else if (FRAMECOUNT < 0) { //lead in
+    scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) => { //{tempoNum}
+      if (partsToRun.includes(plrIx)) {
+
+        if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) {
+
+          let setIx = leadIn_tempoFlagLocs_thisPlr.length + FRAMECOUNT;
+
+          if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+            leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+              let tempo_trackNum = signObj.tempoNum;
+              let zLoc = signObj.zLoc;
+              let tSign = signsByPlrByTrack[plrIx][tempo_trackNum][flagIx]; //3d array- each player has a set of flags for each tempo/track
+
+              tSign.position.z = zLoc;
+              tSign.position.x = xPosOfTracks[tempo_trackNum];
+              tSign.visible = true;
+
+            }); // leadIn_tempoFlagLocs_thisPlr[setIx].forEach((signObj, flagIx) => END
+          } // if (leadIn_tempoFlagLocs_thisPlr[setIx].length > 0) END
+
+        } // if (-FRAMECOUNT <= leadIn_tempoFlagLocs_thisPlr.length) END
+
+      } // if (partsToRun.includes(plrIx))
+    }); // scoreData.leadIn_tempoFlagLocs_perPlayer.forEach((leadIn_tempoFlagLocs_thisPlr, plrIx) =>  END
+  } // else if (FRAMECOUNT < 0) END
+
+} // function updateSigns() END
+//###endef updateSigns
+
+//##endef Signs WIPE/UPDATE/DRAW
+
+//##ef Unison Signs WIPE/UPDATE/DRAW
+
+//###ef Wipe Unison Signs
+function wipeUnisonSigns() {
+  unisonSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
+  });
+  unisonOffSignsByTrack.forEach((arrayOfSignsForOneTrack) => {
+    arrayOfSignsForOneTrack.forEach((tSign) => {
+      tSign.visible = false;
+    });
+  });
+}
+//###endef Wipe Unison Signs
+
+//###ef Update Unison Signs
+function updateUnisonSigns() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
+
+  if (FRAMECOUNT >= 0) {
+
+    let setIx = FRAMECOUNT % scoreData.unisonFlagLocs.length;
+    if (scoreData.unisonFlagLocs[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+      scoreData.unisonFlagLocs[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+        let tempo_trackNum = signObj.tempoNum;
+        let zLoc = signObj.zLoc;
+
+        let tSign;
+        if (signObj.end) {
+          tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+        } else {
+          tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+        }
+
+        tSign.position.z = zLoc;
+        tSign.position.x = xPosOfTracks[tempo_trackNum];
+        tSign.visible = true;
+
+      }); // scoreData.unisonFlagLocs[setIx].forEach((signObj, flagIx) => END
+    } // if (scoreData.unisonFlagLocs[setIx].length > 0) END
+  } // if (FRAMECOUNT >= 0) END
+  //
+  else if (FRAMECOUNT < 0) {
+    if (-FRAMECOUNT <= scoreData.leadIn_unisonFlagLocs.length) {
+
+      let setIx = scoreData.leadIn_unisonFlagLocs.length + FRAMECOUNT;
+
+      if (scoreData.leadIn_unisonFlagLocs[setIx].length > 0) { //if there is a flag on scene,otherwise it will be an empty array
+        scoreData.leadIn_unisonFlagLocs[setIx].forEach((signObj, flagIx) => { //a set of objects of flags that are on scene {tempoNum:,zLoc:}
+
+          let tempo_trackNum = signObj.tempoNum;
+          let zLoc = signObj.zLoc;
+
+          let tSign;
+          if (signObj.end) {
+            tSign = unisonOffSignsByTrack[tempo_trackNum][flagIx];
+          } else {
+            tSign = unisonSignsByTrack[tempo_trackNum][flagIx];
+          }
+
+          tSign.position.z = zLoc;
+          tSign.position.x = xPosOfTracks[tempo_trackNum];
+          tSign.visible = true;
+
+        }); // scoreData.leadIn_unisonFlagLocs[setIx].forEach((signObj, flagIx) => END
+      } // if (scoreData.leadIn_unisonFlagLocs[setIx].length > 0) END
+
+    } // if (-FRAMECOUNT <= scoreData.leadIn_unisonFlagLocs.length)
+  } // else if (FRAMECOUNT < 0)  END
+
+} // function updateUnisonSigns() END
+//###endef Update Unison Signs
+
+//##endef Unison Signs WIPE/UPDATE/DRAW
+
+//##ef Unison Tokens WIPE/UPDATE/DRAW
+
+//###ef Wipe Unison Tokens
+function wipeUnisonToken() {
+  unisonToken.svg.setAttributeNS(null, 'display', 'none');
+  unisonToken.txt.setAttributeNS(null, 'display', 'none');
+}
+//###endef Wipe Unison Tokens
+
+//###ef Update Unison Tokens
+function updateUnisonToken() {
+  if (FRAMECOUNT >= 0) {
+
+    let setIx = FRAMECOUNT % scoreData.unisonPlayerTokenTempoNum.length;
+
+    if (scoreData.unisonPlayerTokenTempoNum[setIx] != -1) {
+
+      let tTempoNum = scoreData.unisonPlayerTokenTempoNum[setIx];
+      let coordLookUpIx = FRAMECOUNT % scoreData.scrollingCsrCoords_perTempo[tTempoNum].length;
+      let tBaseX = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].x;
+      let tBaseY = scoreData.scrollingCsrCoords_perTempo[tTempoNum][coordLookUpIx].y1;
+
+      unisonToken.move(tBaseX, tBaseY);
+      unisonToken.svg.setAttributeNS(null, "display", 'yes');
+      unisonToken.txt.setAttributeNS(null, "display", 'yes');
+      unisonToken.svg.setAttributeNS(null, "fill", TEMPO_COLORS[tTempoNum]);
+      unisonToken.svg.setAttributeNS(null, "stroke", TEMPO_COLORS[tTempoNum]);
+
+    } //if (scoreData.unisonPlayerTokenTempoNum[setIx] != -1)
+
+  } // if (FRAMECOUNT >=0) END
+} // function updateUnisonPlayerToken()
+//###endef Update Unison Tokens
+
+//##endef Unison Tokens WIPE/UPDATE/DRAW
+
+//##ef Notation WIPE/UPDATE/DRAW
+
+//###ef wipeRhythmicNotation
+function wipeRhythmicNotation() {
+  if (FRAMECOUNT >= 0) {
+    motivesByBeat.forEach((thisBeatsMotiveDic) => { //length=16[{key is motiveNum and stores image}]
+      for (let key in thisBeatsMotiveDic) {
+        let tMotive = thisBeatsMotiveDic[key];
+        tMotive.setAttributeNS(null, 'display', 'none');
+      }
+    });
   }
-
 }
+//###endef wipeRhythmicNotation
 
-// #endef END wipeArticulations
+//###ef Update Notation
+function updateNotation() { //FOR UPDATE, HAVE TO HAVE DIFFERENT SIZE LOOP FOR EACH PLAYER
+  if (FRAMECOUNT >= 0) {
 
-// #endef END Articulations
+    let setIx = FRAMECOUNT % scoreData.motiveSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames
 
+    scoreData.motiveSet[setIx].forEach((motiveObj, beatNum) => { //a set of objects that are on scene {motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}
 
-// #endef END WORLD
+      let t_motiveNum = motiveObj.motiveNum;
 
-// #ef ANIMATION
+      motivesByBeat[beatNum][t_motiveNum].setAttributeNS(null, "display", 'yes');
 
-//#ef Animation Engine
+    }); // scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => => END
 
-// #ef Animation Engine Variables
+  } // if (FRAMECOUNT >= 0) END
+} // function updateNotation() END
+//###endef Update Notation
 
-let cumulativeChangeBtwnFrames_MS = 0;
-let lastFrame_epoch;
-let animationEngineIsRunning = false;
+//##endef Notation WIPE/UPDATE/DRAW
 
-// #endef END Animation Engine Variables
+//##ef Articulations WIPE/UPDATE/DRAW
 
-//#ef Animation Engine
-
-function animationEngine(timestamp) {
-
-  let ts_Date = new Date(TS.now());
-  let ts_now_epoch = ts_Date.getTime();
-  cumulativeChangeBtwnFrames_MS += ts_now_epoch - lastFrame_epoch;
-  lastFrame_epoch = ts_now_epoch;
-
-  while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) {
-
-    pieceClock(ts_now_epoch);
-    wipe();
-    update();
-    draw();
-
-    cumulativeChangeBtwnFrames_MS -= MS_PER_FRAME;
-
-  } // while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) END
-
-  if (animationEngineIsRunning) requestAnimationFrame(animationEngine);
-
-} // function animationEngine(timestamp) END
-
-//#endef Animation Engine END
-
-//#ef Piece Clock
-
-function pieceClock(nowEpochTime) {
-
-  PIECE_TIME_MS = nowEpochTime - startTime_epoch - LEAD_IN_TIME_MS;
-  FRAMECOUNT++;
-
+//###ef wipeArticulations
+function wipeArticulations() {
+  articulationsSet.forEach((thisArtImgSet) => {
+    thisArtImgSet.forEach((tImg, i) => {
+      tImg.setAttributeNS(null, 'display', 'none');
+    });
+  });
 }
+//###endef wipeArticulations
 
-//#endef Piece Clock
+//###ef Update Articulations
+function updateArticulations() {
+  if (FRAMECOUNT >= 0) {
 
-// #ef Wipe
+    let setIx = FRAMECOUNT % scoreData.motiveSet.length;
+    let articulationsSetIxToUse = 0; //local counter to cycle through all available articulation images
+
+    scoreData.motiveSet[setIx].forEach((motiveObj, beatNum) => { //a set of 16 objects for each beat that are on scene {motiveNum:,articulations:[{articulationType:,x:,y:,partialNum:}
+
+      let t_motiveNum = motiveObj.motiveNum;
+
+      if (t_motiveNum != -1) { //-1 are rests
+        motiveObj.articulations.forEach((artObj) => { //{articulationType:,x:,y:,partialNum:}
+
+          let t_artType = artObj.articulationType;
+          let tX = artObj.x;
+          let tY = artObj.y;
+
+          if (t_artType != -1) {
+            articulationsSet[t_artType][articulationsSetIxToUse].setAttributeNS(null, 'transform', "translate(" + tX.toString() + "," + tY.toString() + ")");
+            articulationsSet[t_artType][articulationsSetIxToUse].setAttributeNS(null, "display", 'yes');
+            articulationsSetIxToUse++;
+          } //   if (t_artType != -1)
+
+        }); // motiveObj.forEach((artObj)
+
+      } //if (t_motiveNum != -1)
+
+    }); // scoreData.motiveSet[setIx].forEach((motiveNum, beatNum) => => END
+
+  } // if (FRAMECOUNT >= 0) END
+} // function updateArticulations() END
+//###endef Update Articulations
+
+//##endef Articulations WIPE/UPDATE/DRAW
+
+//##ef Pitch Sets WIPE/UPDATE/DRAW
+
+//###ef wipePitchSets
+function wipePitchSets() {
+  if (FRAMECOUNT >= 0) {
+    pitchSetsObj.svgs.forEach((thisPsImg) => {
+      thisPsImg.setAttributeNS(null, 'display', 'none');
+    });
+  }
+}
+//###endef wipePitchSets
+
+//###ef Update Pitch Sets
+function updatePitchSets() {
+  if (FRAMECOUNT >= 0) {
+    let setIx = FRAMECOUNT % scoreData.pitchSets.length;
+    pitchSetsObj.svgs[scoreData.pitchSets[setIx]].setAttributeNS(null, "display", 'yes');
+  } // if (FRAMECOUNT >= 0) END
+} // function updatePitchSets() END
+//###endef Update Pitch Sets
+
+//##endef Pitch Sets WIPE/UPDATE/DRAW
+
+//##ef Pitch Set Indicator WIPE/UPDATE/DRAW
+
+//###ef wipePitchSetIndicator
+function wipePitchSetIndicator() {
+  pitchSetsObj.chgIndicator.setAttributeNS(null, 'display', 'none');
+}
+//###endef wipePitchSetIndicator
+
+//###ef Update Pitch Set Indicator
+function updatePitchSetIndicator() {
+  if (FRAMECOUNT >= 0) {
+    let setIx = FRAMECOUNT % scoreData.psChgIndicator.length;
+    if (scoreData.psChgIndicator[setIx] == 1) pitchSetsObj.chgIndicator.setAttributeNS(null, "display", 'yes');
+  } // if (FRAMECOUNT >= 0) END
+} // function updatePitchSetIndicator() END
+//###endef Update Pitch Set Indicator
+
+//##endef Update Pitch Set Indicator WIPE/UPDATE/DRAW
+
+//##ef Scrolling BBs WIPE/UPDATE/DRAW
+
+//###ef wipeScrBBs
+function wipeScrBBs() {
+  scrollingCsrBbsObjSet.forEach((scrBbObj) => {
+    scrBbObj.ball.setAttributeNS(null, 'display', 'none');
+  }); // bbSet.forEach((tbb) =>
+} // function wipeBbComplex()
+//###endef wipeScrBBs
+
+//###ef updateScrollingBBs
+function updateScrollingBBs() {
+  if (FRAMECOUNT > 0) { //No lead in motion for scrolling cursors
+    scoreData.scrollingCsrCoords_perTempo.forEach((posObjSet, tempoIx) => { // Loop: set of goFrames
+
+      let setIx = FRAMECOUNT % posObjSet.length; //adjust current FRAMECOUNT to account for lead-in and loop this tempo's set of goFrames //scoreData.scrollingCsrCoords_perTempo & scoreData.bbYpos_perTempo arrays are same length so you can just one modulo
+      //From scrollingCsrCoords_perTempo:
+      let tX = posObjSet[setIx].x;
+      let tY1 = posObjSet[setIx].y1;
+      let tY2 = posObjSet[setIx].y2;
+      //From bbYpos_perTempo:
+      let tBbCy = scoreData.bbYpos_perTempo[tempoIx][setIx];
+
+      let tBbCy_norm = (tBbCy - BBCIRC_TOP_CY) / (BBCIRC_BOTTOM_CY - BBCIRC_TOP_CY); //BBCIRC_TOP_CY to BBCIRC_BOTTOM_CY is the distance of the larger bbs; normalize this distance and multiple by the length of the scrolling cursor
+      let scrBbY = tY2 - HALF_NOTEHEAD_H + (tBbCy_norm * NOTATION_CURSOR_H);
+      let scrBbX = tX + SCRBBCIRC_R + NOTATION_CURSOR_STROKE_W;
+      scrollingCsrBbsObjSet[tempoIx].ball.setAttributeNS(null, 'transform', "translate(" + scrBbX.toString() + "," + scrBbY.toString() + ")");
+      scrollingCsrBbsObjSet[tempoIx].ball.setAttributeNS(null, 'display', "yes");
+
+    }); //goFrameCycles_perTempo.forEach((bbYposSet, tempoIx) => END
+  } // if (FRAMECOUNT > LEAD_IN_FRAMES) END
+} // function updateScrollingCsrs() END
+//###endef updateScrollingBBs
+
+//##endef Scrolling BBs WIPE/UPDATE/DRAW
+
+
+
+//##ef Wipe Function
 function wipe() {
-
   wipeTempoFrets();
   wipeGoFrets();
-  wipeSigns();
-  wipeBbComplex();
-  wipePitchSets();
-  wipeRhythmicNotation();
+  wipeBBs();
   wipeTempoCsrs();
   wipePlayerTokens();
-  wipeArticulations();
+  wipeSigns();
   wipeUnisonSigns();
   wipeUnisonToken();
-
+  wipeRhythmicNotation();
+  wipeArticulations();
+  wipePitchSets();
+  wipePitchSetIndicator();
+  wipeScrBBs();
 } // function wipe() END
+//##endef Wipe Function
 
-// #endef END Wipe
-
-//#ef Update
-
+//##ef Update Function
 function update() {
-
   updateTempoFrets();
   updateGoFrets();
   updateBBs();
   updateBbBouncePad();
   updateScrollingCsrs();
-  updateSigns();
   updatePlayerTokens();
+  updateSigns();
   updateUnisonSigns();
-  updateUnisonPlayerToken();
+  updateUnisonToken();
   updateNotation();
-
+  updateArticulations();
+  updatePitchSets();
+  updatePitchSetIndicator();
+  updateScrollingBBs();
 }
+//##endef Update Function
 
-//#endef update END
-
-//#ef Draw
-
+//##ef Draw Function
 function draw() {
   RENDERER.render(SCENE, CAMERA);
 }
+//##endef Draw Function
 
-//#endef Draw END
 
-//#endef Animation Engine END
+//#endef WIPE/UPDATE/DRAW
 
-// #ef markStartTime_startAnimation
+//#ef ANIMATION
 
-let startTime_epoch = 0;
 
-// Broadcast Start Time when Start Button is pressed
-let markStartTime_startAnimation = function() {
+//##ef Animation Engine
+function animationEngine(timestamp) { //timestamp not used; timeSync server library used instead
 
-  let ts_Date = new Date(TS.now());
-  let t_startTime_epoch = ts_Date.getTime();
-  // Send start time to server to broadcast to rest of players
-  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
-    pieceId: PIECE_ID,
-    startTime_epoch: t_startTime_epoch
-  });
+  let ts_Date = new Date(TS.now()); //Date stamp object from TimeSync library
+  let tsNowEpochTime_MS = ts_Date.getTime();
+  cumulativeChangeBtwnFrames_MS += tsNowEpochTime_MS - epochTimeOfLastFrame_MS;
+  epochTimeOfLastFrame_MS = tsNowEpochTime_MS; //update epochTimeOfLastFrame_MS for next frame
 
-} // let markStartTime = function() END
+  while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) { //if too little change of clock time will wait until 1 animation frame's worth of MS before updating etc.; if too much change will update several times until caught up with clock time
 
-// Receive new start time from server broadcast and set startTime_epoch
-SOCKET.on('sf004_newStartTime_fromServer', function(data) {
+    if (cumulativeChangeBtwnFrames_MS > (MS_PER_FRAME * FRAMERATE)) cumulativeChangeBtwnFrames_MS = MS_PER_FRAME; //escape hatch if more than 1 second of frames has passed then just skip to next update according to clock
 
-  if (data.pieceId == PIECE_ID) {
-    startTime_epoch = data.startTime_epoch;
-    lastFrame_epoch = data.startTime_epoch;
-    animationEngineIsRunning = true;
-    requestAnimationFrame(animationEngine);
+    pieceClock(tsNowEpochTime_MS);
+    wipe();
+    update();
+    draw();
 
-  }
+    cumulativeChangeBtwnFrames_MS -= MS_PER_FRAME; //subtract from cumulativeChangeBtwnFrames_MS 1 frame worth of MS until while cond is satisified
 
-}); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
+  } // while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) END
 
-// #endef END markStartTime_startAnimation
+  if (animationEngineIsRunning) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
+  // if (FRAMECOUNT < 120) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
+} // function animationEngine(timestamp) END
+//##endef Animation Engine END
+
+//##ef Piece Clock
+function pieceClock(nowEpochTime) {
+
+  PIECE_TIME_MS = nowEpochTime - startTime_epochTime_MS - LEAD_IN_TIME_MS; //total MS transpired since peace begun, not including lead-in time
+  FRAMECOUNT = Math.round((PIECE_TIME_MS / 1000) * FRAMERATE); //Update FRAMECOUNT based on timeSync Time //if in lead-in FRAMECOUNT will be negative
+
+}
+//##endef Piece Clock
+
 
 //#endef ANIMATION
 
-// #ef PANELS
+//#ef CONTROL PANEL
 
 
-// #ef SCORE DATA MANAGER
-
-function makeScoreDataManager() {
-
-  // #ef Score Data Manager Panel
-
-  let scoreDataManagerW = 300;
-  let scoreDataManagerH = 500;
-
-  let scoreDataManagerPanel = mkPanel({
-    w: scoreDataManagerW,
-    h: scoreDataManagerH,
-    title: 'Score Data Manager',
-    ipos: 'right-bottom',
-    offsetX: '0px',
-    offsetY: '0px',
-    autopos: 'none',
-    headerSize: 'xs',
-    onwindowresize: true,
-    contentOverflow: 'hidden',
-    clr: 'black',
-    onsmallified: function() {
-      scoreDataManagerPanel.reposition({
-        my: 'right-bottom',
-        at: 'right-bottom',
-        offsetY: this.h
-      })
-    },
-    onunsmallified: function() {
-      scoreDataManagerPanel.reposition({
-        my: 'right-bottom',
-        at: 'right-bottom',
-        offsetY: this.offsetY
-      })
-    }
-  });
-
-  // #endef END Score Data Manager Panel
-
-
-  // #ef Generate New Score Data Button
-
-  let generateNewScoreDataButton = mkButton({
-    canvas: scoreDataManagerPanel.content,
-    w: scoreDataManagerW - 44,
-    h: 44,
-    top: 15,
-    left: 15,
-    label: 'Generate New Score Data',
-    fontSize: 16,
-    action: function() {
-      scoreData = generateScoreData();
-      console.log(scoreData);
-    }
-  });
-
-  // #endef END Generate New Score Data Button
-
-
-  // #ef Save Score Data Button
-
-  let saveScoreDataButton = mkButton({
-    canvas: scoreDataManagerPanel.content,
-    w: scoreDataManagerW - 44,
-    h: 44,
-    top: scoreDataManagerH - 70,
-    left: 15,
-    label: 'Save Current Score Data',
-    fontSize: 16,
-    action: function() {
-      let scoreDataString = JSON.stringify(scoreData);
-      let scoreDataFileName = generateFileNameWdate('sf004');
-      downloadStrToHD(scoreDataString, scoreDataFileName, 'text/plain');
-    }
-  });
-
-  // #endef END Save Score Data Button
-
-
-  // #ef Load Score Data From File Button
-
-  let loadScoreDataFromFileButton = mkButton({
-    canvas: scoreDataManagerPanel.content,
-    w: scoreDataManagerW - 44,
-    h: 44,
-    top: 80,
-    left: 15,
-    label: 'Load Score Data From File',
-    fontSize: 16,
-    //https://stackoverflow.com/questions/16215771/how-to-open-select-file-dialog-via-js
-    action: function() {
-      let inputDOM_finderDialogBox = document.createElement('input');
-      inputDOM_finderDialogBox.type = 'file';
-      inputDOM_finderDialogBox.onchange = inputEventFromFinderDialogBox => {
-        //target=input type='file'; files=FileList
-        let file = inputEventFromFinderDialogBox.target.files[0];
-        let reader = new FileReader();
-        reader.readAsText(file, 'UTF-8');
-        reader.onload = readerEvent => {
-          let fileTextContent = readerEvent.target.result;
-          scoreData = JSON.parse(fileTextContent); //turn loaded string from file into a javascript dictionary/object
-          console.log(scoreData);
-        }
-      }
-      inputDOM_finderDialogBox.click();
-    }
-  });
-
-  // #endef END Load Score Data Button
-
-
-  //#ef Load Score Data from Server Button
-
-  let loadScoreDataFromServerButton = mkButton({
-    canvas: scoreDataManagerPanel.content,
-    w: scoreDataManagerW - 44,
-    h: 44,
-    top: 145,
-    left: 15,
-    label: 'Load Score Data From Server',
-    fontSize: 16,
-    action: function() { // Step 1: send msg to server to request list of names of score data files stored on the server
-      SOCKET.emit('sf004_loadPieceFromServer', {
-        PIECE_ID: PIECE_ID
-      });
-    }
-  });
-
-  // Step 2: Server responds with list of file names
-  SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) {
-
-    let requestingId = data.PIECE_ID;
-
-    if (requestingId == PIECE_ID) {
-
-      let arrayOfFileNamesFromServer = data.availableScoreDataFiles; // data from SOCKET msg
-      let arrayOfMenuItems_lbl_action = [];
-
-      arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) => {
-
-        let temp_label_func_Obj = {};
-
-        if (scoreDataFileNameFromServer != '.DS_Store') { //eliminate the ever present Macintosh hidden file .DS_Store
-
-          temp_label_func_Obj['label'] = scoreDataFileNameFromServer;
-
-          // Step 3: When menu item is chosen, this func loads score data to scoreData variable
-          temp_label_func_Obj['action'] = function() {
-
-            let tRequest = new XMLHttpRequest();
-            tRequest.open('GET', '/scoreData/' + scoreDataFileNameFromServer, true);
-            tRequest.responseType = 'text';
-
-            tRequest.onload = () => {
-              scoreData = JSON.parse(tRequest.response);
-              console.log(scoreData);
-            }
-            tRequest.onerror = function() {
-              console.log("** An error occurred");
-            };
-
-            tRequest.send();
-          } //temp_label_func_Obj['action'] = function() END
-
-          arrayOfMenuItems_lbl_action.push(temp_label_func_Obj);
-
-        } //if (scoreDataFileNameFromServer != '.DS_Store') end
-
-      }); // arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) END
-
-      // Make Drop Down Menu
-      let loadScoreDataFromServerMenu = mkMenu({
-        canvas: scoreDataManagerPanel.content,
-        w: scoreDataManagerW - 48,
-        h: 220,
-        top: 207,
-        left: 25,
-        menuLbl_ActionArray: arrayOfMenuItems_lbl_action
-      });
-      loadScoreDataFromServerMenu.classList.toggle("show");
-
-    } //if (requestingId == PIECE_ID) end
-
-  }); // SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) end
-
-  //#endef END Load Score Data from Server Button
-
-
-  scoreDataManagerPanel.smallify();
-
-}
-
-// #endef END SCORE DATA MANAGER
-
-// #ef Control Panel
-
-// #ef Control Panel Vars
-
-const CTRLPANEL_W = 89;
-const CTRLPANEL_H = 200;
-const CTRLPANEL_BTN_W = 60;
-const CTRLPANEL_BTN_H = 35;
-const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
-const CTRLPANEL_MARGIN = 7;
-
-// #endef END Control Panel Vars
-
-
+//##ef Make Control Panel Function
 function makeControlPanel() {
 
-  // #ef Control Panel Panel
-
+  //###ef Control Panel Panel
   let controlPanelPanel = mkPanel({
     w: CTRLPANEL_W,
     h: CTRLPANEL_H,
@@ -3306,11 +3115,9 @@ function makeControlPanel() {
     contentOverflow: 'hidden',
     clr: 'black'
   });
+  //###endef Control Panel Panel
 
-  // #endef END Control Panel Panel
-
-  // #ef Start Piece Button
-
+  //###ef Start Piece Button
   let startButton = mkButton({
     canvas: controlPanelPanel.content,
     w: CTRLPANEL_BTN_W,
@@ -3323,12 +3130,53 @@ function makeControlPanel() {
       markStartTime_startAnimation();
     }
   });
-
-  // #endef END Start Piece Button
+  //###endef Start Piece Button
 
 } // function makeControlPanel() END
+//##endef Make Control Panel Function
 
-// #endef END Control Panel
+//##ef Start Piece Button Function & Socket
 
 
-// #endef PANELS
+// Broadcast Start Time when Start Button is pressed
+let markStartTime_startAnimation = function() {
+
+  let ts_Date = new Date(TS.now());
+  let t_startTime_epoch = ts_Date.getTime();
+
+  // Send start time to server to broadcast to rest of players
+  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
+    pieceId: PIECE_ID,
+    startTime_epochTime_MS: t_startTime_epoch
+  });
+
+} // let markStartTime = function() END
+
+// Receive new start time from server broadcast and set startTime_epochTime_MS
+SOCKET.on('sf004_newStartTime_fromServer', function(data) {
+
+  if (data.pieceId == PIECE_ID) {
+
+    startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with current epochTime
+    epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
+    animationEngineIsRunning = true; //unlock gate
+    requestAnimationFrame(animationEngine); //kick off animation
+
+  } //if (data.pieceId == PIECE_ID)
+
+}); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
+
+//##endef Start Piece function & socket
+
+
+//#endef CONTROL PANEL
+
+
+
+
+
+
+
+
+
+//

@@ -1,7 +1,6 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const XLINK_NS = 'http://www.w3.org/1999/xlink';
 
-
 // #ef Colors
 let clr_brightOrange = 'rgba(240,75,0,255)';
 let clr_brightOrange2 = '#ea4607';
@@ -509,7 +508,7 @@ let chooseIndex = function(choicesArr) {
 let generateFileNameWdate = function(name) {
   let t_now = new Date();
   let month = t_now.getMonth() + 1;
-  let fileName = name + '_' + t_now.getFullYear() + "_" + month + "_" + t_now.getUTCDate() + "_" + t_now.getHours() + "-" + t_now.getMinutes() + "-" + t_now.getSeconds() + '.txt';
+  let fileName = name + '-' + t_now.getFullYear() + "-" + month + "-" + t_now.getUTCDate() + "-" + t_now.getHours() + "-" + t_now.getMinutes() + "-" + t_now.getSeconds() + '.txt';
   return fileName
 }
 // #endef END generateFileNameWdate

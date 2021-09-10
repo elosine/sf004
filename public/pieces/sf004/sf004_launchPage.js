@@ -1,16 +1,20 @@
-// <editor-fold> VARS
+// #ef VARS
 // Panel Dimensions
-let w = 420;
-let h = 254;
+let w = 305;
+let h = 450;
 let center = w / 2;
+let btnW = w - 40;
+let btnPosX = center - (btnW / 2) - 7;
+
 // Boolean
 let launchBtnIsActive = false;
 //URL Args
 let partsToRunAsString = "";
 let pieceIdString = "";
-// </editor-fold> END Vars
+let scoreDataFileNameToLoad = "";
+// #endef END Vars
 
-// <editor-fold> Main Panel
+// #ef Main Panel
 let panel = mkPanel({
   title: 'Soundflow #4 - Launch',
   onwindowresize: true,
@@ -18,9 +22,9 @@ let panel = mkPanel({
   h: h
 });
 let canvas = panel.content;
-// </editor-fold> END Main Panel
+// #endef END Main Panel
 
-// <editor-fold> Title Text
+// #ef Title Text
 let title = mkSpan({
   canvas: canvas,
   w: w,
@@ -34,9 +38,9 @@ let title = mkSpan({
 let titleW = title.getBoundingClientRect().width;
 let titlePosX = center - (titleW / 2);
 title.style.left = titlePosX.toString() + 'px';
-// </editor-fold>
+// #endef
 
-// <editor-fold> Piece ID Caption
+// #ef Piece ID Caption
 let pieceIDinstructions = mkSpan({
   canvas: canvas,
   top: 50,
@@ -45,71 +49,150 @@ let pieceIDinstructions = mkSpan({
   fontSize: 16,
   color: 'white'
 });
-// </editor-fold> END Piece ID Caption
+// #endef END Piece ID Caption
 
-//<editor-fold> PieceID Input Field
+//#ef PieceID Input Field
 let pieceIDinput = mkInputField({
   canvas: canvas,
   id: 'pieceIDinput',
   w: 90,
-  h: 26,
-  top: 43,
-  left: 302,
+  h: 20,
+  top: 76,
+  left: 15,
   color: 'black',
-  fontSize: 22,
+  fontSize: 18,
 });
 
-// </editor-fold> END PieceID Input Field
+// #endef END PieceID Input Field
 
-// <editor-fold> Select Parts Caption
+// #ef Select Parts Caption
 let selectPartsCaption = mkSpan({
   canvas: canvas,
-  top: 95,
+  top: 114,
   left: 15,
   text: 'Please select the parts to display:',
   fontSize: 16,
   color: 'white'
 });
-// </editor-fold> END Select Parts Caption
+// #endef END Select Parts Caption
 
-// <editor-fold> Select Parts Checkboxes
+// #ef Select Parts Checkboxes
 let selectPartsCBs = mkCheckboxesHoriz({
   canvas: canvas,
   numBoxes: 5,
   boxSz: 25,
   gap: 20,
-  top: 122,
+  top: 136,
   left: 20,
   lblArray: ['1', '2', '3', '4', '5'],
   lblClr: 'rgb(153,255,0)',
 
 });
-// </editor-fold> END Select Parts Checkboxes
+// #endef END Select Parts Checkboxes
 
-// <editor-fold> Launch Button
-let btnW = w - 40;
+//#ef Load Score Data from Server Button
+
+//#ef SOCKET IO
+let ioConnection;
+
+if (window.location.hostname == 'localhost') {
+  ioConnection = io();
+} else {
+  ioConnection = io.connect(window.location.hostname);
+}
+const SOCKET = ioConnection;
+//#endef > END SOCKET IO
+
+let loadScoreDataTop = 184;
+let loadScoreDataFromServerButton = mkButton({
+  canvas: canvas,
+  w: w - 40,
+  h: 45,
+  top: loadScoreDataTop,
+  left: 12,
+  label: 'Load Score Data',
+  fontSize: 24,
+  action: function() { // Step 1: send msg to server to request list of names of score data files stored on the server
+    if (launchBtnIsActive) {
+      SOCKET.emit('sf004_loadPieceFromServer', {
+        pieceId: pieceIDinput.value
+      });
+    }
+  }
+});
+loadScoreDataFromServerButton.style.left = btnPosX.toString() + 'px';
+loadScoreDataFromServerButton.className = 'btn btn-1_inactive';
+
+SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) {
+
+  let requestingId = data.pieceId;
+
+  if (requestingId == pieceIDinput.value) {
+
+    let arrayOfFileNamesFromServer = data.availableScoreDataFiles; // data from SOCKET msg
+    let arrayOfMenuItems_lbl_action = [];
+
+    arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) => {
+
+      let temp_label_func_Obj = {};
+
+      if (scoreDataFileNameFromServer != '.DS_Store') { //eliminate the ever present Macintosh hidden file .DS_Store
+
+        temp_label_func_Obj['label'] = scoreDataFileNameFromServer;
+
+        // Step 3: When menu item is chosen, this func loads score data to scoreData variable
+        temp_label_func_Obj['action'] = function() {
+
+          scoreDataFileNameToLoad = scoreDataFileNameFromServer;
+
+        } //temp_label_func_Obj['action'] = function() END
+
+        arrayOfMenuItems_lbl_action.push(temp_label_func_Obj);
+
+      } //if (scoreDataFileNameFromServer != '.DS_Store') end
+
+    }); // arrayOfFileNamesFromServer.forEach((scoreDataFileNameFromServer) END
+
+    // Make Drop Down Menu
+    let loadScoreDataFromServerMenu = mkMenu({
+      canvas: canvas,
+      w: w - 48,
+      h: 127,
+      top: loadScoreDataTop + 63,
+      left: 25,
+      menuLbl_ActionArray: arrayOfMenuItems_lbl_action
+    });
+    loadScoreDataFromServerMenu.classList.toggle("show");
+
+  } //if (requestingId == PIECE_ID) end
+
+}); // SOCKET.on('sf004_loadPieceFromServerBroadcast', function(data) end
+
+
+//#endef END Load Score Data from Server Button
+
+// #ef Launch Button
 let launchBtn = mkButton({
   canvas: canvas,
   w: btnW,
   h: 45,
-  top: 175,
-  left: 20,
+  top: 380,
+  left: 12,
   label: 'Launch Score',
   fontSize: 24,
   action: function() {
     if (launchBtnIsActive) {
-      location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString;
+      location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString + "&sdfile=" + scoreDataFileNameToLoad;
     }
   }
 });
-let btnPosX = center - (btnW / 2) - 7;
 launchBtn.style.left = btnPosX.toString() + 'px';
 launchBtn.className = 'btn btn-1_inactive';
-// </editor-fold> END Launch Button
+// #endef END Launch Button
 
-// <editor-fold> Window Event Listeners
+// #ef Window Event Listeners
 //Only activate launch score button if there are inputs to id and parts to display cbs
-// <editor-fold> checkInputs Func
+// #ef checkInputs Func
 let checkInputs = function() {
   let pieceIDisEntered = false;
   let partsCbsAreChecked = false;
@@ -119,6 +202,8 @@ let checkInputs = function() {
   });
   if (pieceIDisEntered && partsCbsAreChecked) {
     launchBtn.className = 'btn btn-1';
+    loadScoreDataFromServerButton.className = 'btn btn-1';
+
     launchBtnIsActive = true;
     pieceIdString = pieceIDinput.value;
     partsToRunAsString = "";
@@ -130,10 +215,11 @@ let checkInputs = function() {
     launchBtnIsActive = false;
 
     launchBtn.className = 'btn btn-1_inactive';
+    loadScoreDataFromServerButton.className = 'btn btn-1_inactive';
   }
 
 }
-// </editor-fold> END checkInputs Func
+// #endef END checkInputs Func
 
 window.onclick = function(event) {
   checkInputs();
@@ -141,4 +227,4 @@ window.onclick = function(event) {
 window.onkeyup = function(event) {
   checkInputs();
 }
-// </editor-fold> END Window Event Listeners
+// #endef END Window Event Listeners
