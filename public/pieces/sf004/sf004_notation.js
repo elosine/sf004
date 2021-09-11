@@ -29,7 +29,6 @@ let startTime_epochTime_MS = 0;
 let pauseState = 0;
 let timePaused = 0;
 let pieceClockAdjustment = 0;
-
 //##endef Timing
 
 //##ef World Canvas Variables
@@ -432,11 +431,11 @@ const CTRLPANEL_BTN_W = 63;
 const CTRLPANEL_BTN_H = 35;
 const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
 const CTRLPANEL_MARGIN = 7;
-let piece_hasStarted = false;
 let piece_canStart = true;
 let startBtn_isActive = true;
 let stopBtn_isActive = false;
 let pauseBtn_isActive = false;
+let gotoBtn_isActive = false;
 //#endef END Control Panel Vars
 
 //#ef SOCKET IO
@@ -3162,6 +3161,103 @@ function makeControlPanel() {
   controlPanelObj['pauseBtn'] = pauseButton;
   //###endef Pause Button
 
+  //###ef Stop Button
+  let stopButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_MARGIN + (cpDistBtwnButts * 2),
+    left: CTRLPANEL_MARGIN,
+    label: 'Stop',
+    fontSize: 14,
+    action: function() {
+      stopBtnFunc();
+    }
+  });
+  stopButton.className = 'btn btn-1_inactive';
+  controlPanelObj['stopBtn'] = stopButton;
+  //###endef Stop Button
+
+  //###ef GoTo Input Fields & Button
+
+  let goToField_w = 18;
+  let goToField_h = 18;
+  let goToField_top = CTRLPANEL_MARGIN + (cpDistBtwnButts * 3) + 8;
+  let goToField_left = CTRLPANEL_W - CTRLPANEL_MARGIN - goToField_w - 4;
+
+  //###ef GoTo Input Fields
+  let goTo_secondsInput = mkInputField({
+    canvas: controlPanelPanel.content,
+    id: 'gotoSecInput',
+    w: goToField_w,
+    h: goToField_h,
+    top: goToField_top,
+    left: goToField_left,
+    fontSize: 15,
+  }); // let goTo_secondsInput = mkInputField
+  goTo_secondsInput.style.textAlign = 'right';
+  goTo_secondsInput.value = 0;
+  controlPanelObj['gotoSecInput'] = goTo_secondsInput;
+  goTo_secondsInput.addEventListener("blur", function(e) { //function for when inputfield loses focus; make sure the number is between 0-59
+    if (goTo_secondsInput.value > 59) goTo_secondsInput.value = 59;
+    if (goTo_secondsInput.value < 0) goTo_secondsInput.value = 0;
+  });
+
+  let goTo_minutesInput = mkInputField({
+    canvas: controlPanelPanel.content,
+    id: 'gotoMinInput',
+    w: goToField_w,
+    h: goToField_h,
+    top: goToField_top,
+    left: goToField_left - goToField_w - 10,
+    fontSize: 15,
+  }); // let goTo_minutesInput = mkInputField
+  goTo_minutesInput.style.textAlign = 'right';
+  goTo_minutesInput.value = 0;
+  controlPanelObj['gotoMinInput'] = goTo_minutesInput;
+  goTo_minutesInput.addEventListener("blur", function(e) { //function for when inputfield loses focus; make sure the number is between 0-59
+    if (goTo_minutesInput.value > 59) goTo_minutesInput.value = 59;
+    if (goTo_minutesInput.value < 0) goTo_minutesInput.value = 0;
+  });
+
+  let goTo_hoursInput = mkInputField({
+    canvas: controlPanelPanel.content,
+    id: 'gotoHrInput',
+    w: goToField_w,
+    h: goToField_h,
+    top: goToField_top,
+    left: goToField_left - goToField_w - 10 - goToField_w - 10,
+    fontSize: 15,
+  }); // let goTo_hoursInput = mkInputField
+  goTo_hoursInput.style.textAlign = 'right';
+  goTo_hoursInput.value = 0;
+  controlPanelObj['gotoHrInput'] = goTo_hoursInput;
+  goTo_hoursInput.addEventListener("blur", function(e) { //function for when inputfield loses focus; make sure the number is between 0-59
+    if (goTo_hoursInput.value < 0) goTo_hoursInput.value = 0;
+  });
+  //###endef GoTo Input Fields
+
+  //###ef GoTo Button
+  let gotoButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: goToField_top + goToField_h + 5,
+    left: CTRLPANEL_MARGIN,
+    label: 'Go To',
+    fontSize: 14,
+    action: function() {
+      gotoBtnFunc();
+    }
+  });
+  gotoButton.className = 'btn btn-1_inactive';
+  controlPanelObj['gotoBtn'] = gotoButton;
+  //###endef GoTo Button
+
+
+
+  //###endef GoTo Input Fields & Button
+
   return controlPanelObj;
 
 } // function makeControlPanel() END
@@ -3197,10 +3293,10 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
       pauseBtn_isActive = true; //activate pause button
       animationEngineCanRun = true; //unlock animation gate
 
-      // scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
       scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
       scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
-      // scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
+      scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
 
       startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
       epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
@@ -3276,6 +3372,90 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
 
 //##endef Pause Button Function & Socket
 
+//##ef Stop Piece Button Function & Socket
+// Broadcast Start Time when Start Button is pressed
+// This function is run from the start button above in Make Control Panel
+let stopBtnFunc = function() {
+  if (stopBtn_isActive) {
+
+    // Send stop command to server to broadcast to rest of players
+    SOCKET.emit('sf004_stop', {
+      pieceId: PIECE_ID,
+    });
+
+  } // if (startBtn_isActive)
+} // stopBtnFunc = function() END
+
+//STOP PIECE RECEIVE SOCKET FROM SERVER BROADCAST
+SOCKET.on('sf004_stop_broadcastFromServer', function(data) {
+  if (data.pieceId == PIECE_ID) {
+    location.reload();
+  } //if (data.pieceId == PIECE_ID)
+}); // SOCKET.on('sf004_stop_broadcastFromServer', function(data) END
+//##endef Stop Piece Button Function & Socket
+
+//##ef Goto Button Function & Socket
+
+let gotoBtnFunc = function() {
+  if (gotoBtn_isActive) { //gate
+
+    //Get Goto time and convert to MS
+
+    /*
+
+    if (thisPress_pauseState == 1) { //Paused
+      SOCKET.emit('sf004_pause', {
+        pieceId: PIECE_ID,
+        thisPress_pauseState: thisPress_pauseState,
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      });
+    } // if (pauseState == 1) { //Paused
+    //
+    else if (thisPress_pauseState == 0) { //unpaused
+      SOCKET.emit('sf004_pause', {
+        pieceId: PIECE_ID,
+        thisPress_pauseState: thisPress_pauseState,
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      });
+    } // else if (pauseState == 0) { //unpaused
+
+  } // if (gotoBtn_isActive)
+} // gotoBtnFunc = function()
+
+//PAUSE PIECE RECEIVE SOCKET FROM SERVER BROADCAST
+SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
+
+  let requestingId = data.pieceId;
+  let thisPress_pauseState = data.thisPress_pauseState;
+  let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+
+  if (requestingId == PIECE_ID) {
+
+    if (thisPress_pauseState == 1) { //paused
+      timePaused = timeAtPauseBtnPress_MS; //update local global variables
+      pauseState = thisPress_pauseState;
+      animationEngineCanRun = false;
+      scoreCtrlPanel.pauseBtn.innerText = 'Resume';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
+    } //if (pauseState == 1) { //paused
+    //
+    else if (thisPress_pauseState == 0) { //unpaused
+      pauseState = thisPress_pauseState;
+      let tsNow_Date = new Date(TS.now());
+      let t_currTime_MS = tsNow_Date.getTime();
+      pieceClockAdjustment = t_currTime_MS - timePaused + pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
+      scoreCtrlPanel.pauseBtn.innerText = 'Pause';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
+      scoreCtrlPanel.panel.smallify();
+      animationEngineCanRun = true;
+      requestAnimationFrame(animationEngine);
+    } //else if (pauseState == 0) { //unpaused
+
+  } //if (requestingId == PIECE_ID)
+
+}); // SOCKET.on('sf004_pauseBroadcast', function(data)
+*/
+//##endef Goto Button Function & Socket
 
 
 //#endef CONTROL PANEL

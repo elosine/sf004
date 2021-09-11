@@ -255,7 +255,7 @@ function mkInputField({
   h = 20,
   top = 0,
   left = 0,
-  color = 'yellow',
+  color = 'black',
   fontSize = 11,
   clickAction = function() {},
   keyUpAction = function() {}
@@ -266,7 +266,7 @@ function mkInputField({
   h: 20,
   top: 0,
   left: 0,
-  color: 'yellow',
+  color: 'black',
   fontSize: 11,
   clickAction: function() {},
   keyUpAction: function() {}

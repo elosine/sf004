@@ -28,7 +28,7 @@ app.use('/timesync', timesyncServer.requestHandler);
 io.on('connection', function(socket) {
 
 
-  //##ef LOAD PIECE FROM SERVER
+  //##ef Load Piece from Server Receive and Broadcast
   // Request for load piece from splash page
   socket.on('sf004_loadPieceFromServer', function(data) {
     let pieceId = data.pieceId;
@@ -49,11 +49,11 @@ io.on('connection', function(socket) {
         pieceId: pieceId,
         availableScoreDataFiles: files
       });
-    });
-  });
-  //##endef END LOAD PIECE FROM SERVER
+    }); // fs.readdir(directoryPath, function(err, files)
+  }); //socket.on('sf004_loadPieceFromServer', function(data)
+  //##endef Load Piece from Server Receive and Broadcast
 
-  //##ef Set Start Time Broadcast
+  //##ef Start Receive and Broadcast
   socket.on('sf004_newStartTimeBroadcast_toServer', function(data) {
 
     let pieceId = data.pieceId;
@@ -70,7 +70,7 @@ io.on('connection', function(socket) {
     });
 
   }); // socket.on('sf004_newStartTimeBroadcast_send', function(data) END
-  //##endef END Set Start Time Broadcast
+  //##endef Start Receive and Broadcast
 
   //##ef Pause Broadcast
   socket.on('sf004_pause', function(data) {
@@ -92,6 +92,21 @@ io.on('connection', function(socket) {
 
   }); // socket.on('sf004_pause', function(data) END
   //##endef Pause Broadcast
+
+  //##ef Stop Broadcast
+  socket.on('sf004_stop', function(data) {
+    let pieceId = data.pieceId;
+
+    socket.broadcast.emit('sf004_stop_broadcastFromServer', {
+      pieceId: pieceId,
+    });
+
+    socket.emit('sf004_stop_broadcastFromServer', {
+      pieceId: pieceId,
+    });
+
+  }); // socket.on('sf004_stop', function(data) END
+  //##endef Stop Broadcast
 
 
 }); // End Socket IO

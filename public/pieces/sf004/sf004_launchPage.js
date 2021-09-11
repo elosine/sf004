@@ -1,7 +1,7 @@
 //#ef VARS
 
 let w = 305;
-let h = 450;
+let h = 430;
 let center = w / 2;
 let btnW = w - 40;
 let btnPosX = center - (btnW / 2) - 7;
@@ -41,7 +41,7 @@ let title = mkSpan({
   h: 24,
   top: 8,
   text: 'Soundflow #4 - Justin Yang',
-  fontSize: 18,
+  fontSize: 17,
   color: 'rgb(153,255,0)'
 });
 //Center in panel
@@ -53,7 +53,7 @@ title.style.left = titlePosX.toString() + 'px';
 //#ef Piece ID Caption
 let pieceIDinstructions = mkSpan({
   canvas: canvas,
-  top: 50,
+  top: 38,
   left: 15,
   text: 'Please enter an ID for this performance:',
   fontSize: 16,
@@ -67,7 +67,7 @@ let pieceIDinput = mkInputField({
   id: 'pieceIDinput',
   w: 90,
   h: 20,
-  top: 76,
+  top: 64,
   left: 15,
   color: 'black',
   fontSize: 18,
@@ -77,7 +77,7 @@ let pieceIDinput = mkInputField({
 //#ef Select Parts Caption
 let selectPartsCaption = mkSpan({
   canvas: canvas,
-  top: 114,
+  top: 98,
   left: 15,
   text: 'Please select the parts to display:',
   fontSize: 16,
@@ -91,7 +91,7 @@ let selectPartsCBs = mkCheckboxesHoriz({
   numBoxes: 5,
   boxSz: 25,
   gap: 20,
-  top: 136,
+  top: 120,
   left: 20,
   lblArray: ['1', '2', '3', '4', '5'],
   lblClr: 'rgb(153,255,0)',
@@ -99,7 +99,7 @@ let selectPartsCBs = mkCheckboxesHoriz({
 //#endef Select Parts Checkboxes
 
 //#ef Load Score Data from Server Button
-let loadScoreDataTop = 184;
+let loadScoreDataTop = 168;
 
 //Make Load Score Data Button
 let loadScoreDataFromServerButton = mkButton({
@@ -109,7 +109,7 @@ let loadScoreDataFromServerButton = mkButton({
   top: loadScoreDataTop,
   left: 12,
   label: 'Load Score Data',
-  fontSize: 24,
+  fontSize: 20,
   action: function() { // Step 1: send msg to server to request list of names of score data files stored on the server
     if (launchBtnIsActive) { //only activates after a pieceID is entered and a part is checked
       SOCKET.emit('sf004_loadPieceFromServer', {
@@ -166,10 +166,10 @@ let launchBtn = mkButton({
   canvas: canvas,
   w: btnW,
   h: 45,
-  top: 380,
+  top: 360,
   left: 12,
   label: 'Launch Score',
-  fontSize: 24,
+  fontSize: 20,
   action: function() {
     if (launchBtnIsActive) {
       location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString + "&sdfile=" + scoreDataFileNameToLoad; //this is the string that will be sent as URL arg
