@@ -426,7 +426,7 @@ let animationEngineCanRun = true;
 //#ef Control Panel Vars
 let scoreCtrlPanel;
 const CTRLPANEL_W = 92;
-const CTRLPANEL_H = 400;
+const CTRLPANEL_H = CANVAS_H;
 const CTRLPANEL_BTN_W = 63;
 const CTRLPANEL_BTN_H = 35;
 const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
@@ -436,6 +436,10 @@ let startBtn_isActive = true;
 let stopBtn_isActive = false;
 let pauseBtn_isActive = false;
 let gotoBtn_isActive = false;
+let joinBtn_isActive = true;
+let joinGoBtn_isActive = false;
+let restartBtn_isActive = true;
+let makeRestartButton;
 //#endef END Control Panel Vars
 
 //#ef SOCKET IO
@@ -3109,7 +3113,7 @@ function pieceClock(nowEpochTime) {
 function makeControlPanel() {
 
   let controlPanelObj = {};
-  let cpDistBtwnButts = CTRLPANEL_BTN_H + CTRLPANEL_MARGIN + 11;
+  let cpDistBtwnButts = CTRLPANEL_BTN_H + CTRLPANEL_MARGIN + 18;
 
   //###ef Control Panel Panel
   let controlPanelPanel = mkPanel({
@@ -3182,7 +3186,7 @@ function makeControlPanel() {
 
   let goToField_w = 18;
   let goToField_h = 18;
-  let goToField_top = CTRLPANEL_MARGIN + (cpDistBtwnButts * 3) + 8;
+  let goToField_top = CTRLPANEL_MARGIN + (cpDistBtwnButts * 3) + 18;
   let goToField_left = CTRLPANEL_W - CTRLPANEL_MARGIN - goToField_w - 4;
 
   //###ef GoTo Input Fields
@@ -3251,7 +3255,7 @@ function makeControlPanel() {
     canvas: controlPanelPanel.content,
     w: CTRLPANEL_BTN_W,
     h: CTRLPANEL_BTN_H,
-    top: goToField_top + goToField_h + 5,
+    top: goToField_top + goToField_h + 11,
     left: CTRLPANEL_MARGIN,
     label: 'Go To',
     fontSize: 14,
@@ -3264,6 +3268,59 @@ function makeControlPanel() {
   //###endef GoTo Button
 
   //###endef GoTo Input Fields & Button
+
+  //###ef Join Button
+  let joinButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_H - CTRLPANEL_BTN_H - CTRLPANEL_MARGIN - CTRLPANEL_BTN_W - 15,
+    left: CTRLPANEL_MARGIN,
+    label: 'Join',
+    fontSize: 14,
+    action: function() {
+      joinBtnFunc();
+    }
+  });
+  joinButton.className = 'btn btn-1';
+  controlPanelObj['joinBtn'] = joinButton;
+  //###endef Join Button
+
+  //###ef Join Go Button
+  let joinGoButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_H - CTRLPANEL_BTN_H - CTRLPANEL_MARGIN - 21,
+    left: CTRLPANEL_MARGIN,
+    label: 'Go',
+    fontSize: 14,
+    action: function() {
+      joinGoBtnFunc();
+    }
+  });
+  joinGoButton.className = 'btn btn-1_inactive';
+  controlPanelObj['joinGoBtn'] = joinGoButton;
+  //###endef Join Go Button
+
+  //###ef Restart Button
+  makeRestartButton = function() {
+    let restartButton = mkButton({
+      canvas: controlPanelPanel.content,
+      w: CTRLPANEL_BTN_W,
+      h: CTRLPANEL_BTN_H,
+      top: CTRLPANEL_MARGIN,
+      left: CTRLPANEL_MARGIN,
+      label: 'Restart?',
+      fontSize: 13,
+      action: function() {
+        restartBtnFunc();
+      }
+    });
+    restartButton.className = 'btn btn-1';
+    controlPanelObj['restartBtn'] = restartButton;
+  }
+  //###endef Restart Button
 
   return controlPanelObj;
 
@@ -3282,7 +3339,10 @@ let markStartTime_startAnimation = function() {
     // Send start time to server to broadcast to rest of players
     SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
       pieceId: PIECE_ID,
-      startTime_epochTime_MS: t_startTime_epoch
+      startTime_epochTime_MS: t_startTime_epoch,
+      pieceClockAdjustment: pieceClockAdjustment,
+      pauseState: pauseState,
+      timePaused: timePaused
     });
 
   } // if (startBtn_isActive)
@@ -3292,6 +3352,7 @@ let markStartTime_startAnimation = function() {
 // Receive new start time from server broadcast and set startTime_epochTime_MS
 SOCKET.on('sf004_newStartTime_fromServer', function(data) {
   if (data.pieceId == PIECE_ID) {
+    console.log(data.serverSidePieceData);
     if (piece_canStart) { //Gate so the start functions aren't activated inadverently
 
       piece_canStart = false;
@@ -3299,11 +3360,14 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
       stopBtn_isActive = true;
       pauseBtn_isActive = true; //activate pause button
       gotoBtn_isActive = true;
+      joinBtn_isActive = false;
       animationEngineCanRun = true; //unlock animation gate
 
-      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
       scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
       scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
       scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
 
       startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
@@ -3365,8 +3429,8 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
   if (requestingId == PIECE_ID) {
 
     if (thisPress_pauseState == 1) { //paused
-      timePaused = timeAtPauseBtnPress_MS; //update local global variables
-      pauseState = thisPress_pauseState;
+      timePaused = timeAtPauseBtnPress_MS; //update local global variables //store in server
+      pauseState = thisPress_pauseState; //store in server for join
       animationEngineCanRun = false;
       scoreCtrlPanel.pauseBtn.innerText = 'Resume';
       scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
@@ -3389,13 +3453,12 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
 //##endef Pause Button Function & Socket
 
 //##ef Stop Piece Button Function & Socket
-// Broadcast Start Time when Start Button is pressed
-// This function is run from the start button above in Make Control Panel
+
 let stopBtnFunc = function() {
   if (stopBtn_isActive) {
 
     // Send stop command to server to broadcast to rest of players
-    SOCKET.emit('sf004_stop', {
+    SOCKET.emit('sf004_stop', { //stop also deletes this pieceId's score data on the server
       pieceId: PIECE_ID,
     });
 
@@ -3408,6 +3471,7 @@ SOCKET.on('sf004_stop_broadcastFromServer', function(data) {
     location.reload();
   } //if (data.pieceId == PIECE_ID)
 }); // SOCKET.on('sf004_stop_broadcastFromServer', function(data) END
+
 //##endef Stop Piece Button Function & Socket
 
 //##ef Goto Button Function & Socket
@@ -3440,11 +3504,142 @@ SOCKET.on('sf004_goto_broadcastFromServer', function(data) {
 
   if (requestingId == PIECE_ID) {
     pieceClockAdjustment = newPieceClockAdjustment;
+    scoreCtrlPanel.panel.smallify();
   } //if (requestingId == PIECE_ID)
 
 }); // SOCKET.on('sf004_goto_broadcastFromServer', function(data)
 
 //##endef Goto Button Function & Socket
+
+//##ef Join Button Function & Socket
+
+let joinBtnFunc = function() {
+  if (joinBtn_isActive) {
+
+    // Send stop command to server to broadcast to rest of players
+    SOCKET.emit('sf004_join', {
+      pieceId: PIECE_ID,
+    });
+
+  } // if (joinBtn_isActive)
+} // joinBtnFunc = function() END
+
+//STOP PIECE RECEIVE SOCKET FROM SERVER BROADCAST
+SOCKET.on('sf004_join_broadcastFromServer', function(data) {
+  if (data.pieceId == PIECE_ID) {
+    if (piece_canStart) { //since this is broadcast all players receive; if your score is started then you won't get this join info
+
+      //Deactivate Start Button
+      piece_canStart = false;
+      startBtn_isActive = false;
+      scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+
+      //Populate the synced data
+      startTime_epochTime_MS = data.startTime_epochTime_MS;
+      pieceClockAdjustment = data.pieceClockAdjustment;
+      pauseState = data.pauseState;
+      timePaused = data.timePaused;
+
+      //Activate Go Button
+      scoreCtrlPanel.joinGoBtn.className = 'btn btn-1';
+      joinGoBtn_isActive = true;
+
+    } //  if (piece_canStart) { //since this is broadcast all players receive; if your score is started then you won't get this join info
+  } //if (data.pieceId == PIECE_ID)
+}); // SOCKET.on('sf004_join_broadcastFromServer', function(data) END
+
+//JOIN GO BUTTON FUNCTION
+let joinGoBtnFunc = function() {
+  if (joinGoBtn_isActive) {
+
+    piece_canStart = false;
+    startBtn_isActive = false;
+    stopBtn_isActive = true;
+    pauseBtn_isActive = true; //activate pause button
+    gotoBtn_isActive = true;
+    joinBtn_isActive = false;
+    joinGoBtn_isActive = false;
+    animationEngineCanRun = true; //unlock animation gate
+
+    scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+    scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+    scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+    scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+    scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
+    scoreCtrlPanel.joinGoBtn.className = 'btn btn-1_inactive';
+
+    scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
+
+    epochTimeOfLastFrame_MS = startTime_epochTime_MS
+
+    requestAnimationFrame(animationEngine); //kick off animation
+
+  } // if (joinGoBtn_isActive)
+} // joinGoBtnFunc = function() END
+
+//##endef Join Button Function & Socket
+
+//##ef Restart Piece Button Function & Socket
+
+//RESTART PIECE PREP RECEIVE SOCKET FROM SERVER BROADCAST
+//If the pieceId already exsists on the server, when you press start, nothing happens except you get back sf004_restartPrep_fromServer
+SOCKET.on('sf004_restartPrep_broadcastFromServer', function(data) {
+  if (data.pieceId == PIECE_ID) {
+    //deactivate start button and create restart button
+    startBtn_isActive = false;
+    scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+    makeRestartButton();
+  } //if (data.pieceId == PIECE_ID)
+}); // SOCKET.on('sf004_stop_broadcastFromServer', function(data) END
+
+let restartBtnFunc = function() {
+  if (restartBtn_isActive) {
+
+    let ts_Date = new Date(TS.now());
+    let t_startTime_epoch = ts_Date.getTime(); //send your current time to server to relay as the start time for everyone when received back from server
+
+    // Send start time to server to broadcast to rest of players
+    SOCKET.emit('sf004_restart', {
+      pieceId: PIECE_ID,
+      startTime_epochTime_MS: t_startTime_epoch,
+      pieceClockAdjustment: pieceClockAdjustment,
+      pauseState: pauseState,
+      timePaused: timePaused
+    }); //SOCKET.emit('sf004_restart'
+
+  } // if (restartBtn_isActive)
+} // restartBtnFunc = function() END
+
+SOCKET.on('sf004_restart_broadcastFromServer', function(data) {
+  if (data.pieceId == PIECE_ID) {
+    console.log(data.serverSidePieceData);
+    if (piece_canStart) { //Gate so the start functions aren't activated inadverently
+
+      piece_canStart = false;
+      restartBtn_isActive = false;
+      stopBtn_isActive = true;
+      pauseBtn_isActive = true; //activate pause button
+      gotoBtn_isActive = true;
+      joinBtn_isActive = false;
+      animationEngineCanRun = true; //unlock animation gate
+
+      scoreCtrlPanel.restartBtn.className = 'btn btn-1_inactive';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
+      scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
+
+      startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
+      epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
+
+      requestAnimationFrame(animationEngine); //kick off animation
+
+    } // if (piece_canStart)
+  } //if (data.pieceId == PIECE_ID)
+}); // SOCKET.on('sf004_restart_broadcastFromServer' END
+
+//##endef Restart Piece Button Function & Socket
 
 
 //#endef CONTROL PANEL
