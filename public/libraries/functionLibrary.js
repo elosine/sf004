@@ -1466,6 +1466,12 @@ let conditionalChoose = function(cSet, condition){
 }
 //#endef conditionalChoose
 
+//#ef pad
+let pad = function (num, size) {
+  let s = "000000000" + num;
+  return s.substr(s.length - size);
+}
+//#endef pad
 
 
 

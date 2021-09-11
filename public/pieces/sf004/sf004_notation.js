@@ -25,6 +25,11 @@ const LEAD_IN_TIME_SEC = 2;
 const LEAD_IN_TIME_MS = LEAD_IN_TIME_SEC * 1000;
 const LEAD_IN_FRAMES = LEAD_IN_TIME_SEC * FRAMERATE;
 let startTime_epochTime_MS = 0;
+
+let pauseState = 0;
+let timePaused = 0;
+let pieceClockAdjustment = 0;
+
 //##endef Timing
 
 //##ef World Canvas Variables
@@ -416,16 +421,22 @@ articulationPosByMotive.forEach((partialSet, mNum) => {
 //#ef Animation Engine Variables
 let cumulativeChangeBtwnFrames_MS = 0;
 let epochTimeOfLastFrame_MS;
-let animationEngineIsRunning = true;
+let animationEngineCanRun = true;
 //#endef END Animation Engine Variables
 
 //#ef Control Panel Vars
-const CTRLPANEL_W = 89;
-const CTRLPANEL_H = 200;
-const CTRLPANEL_BTN_W = 60;
+let scoreCtrlPanel;
+const CTRLPANEL_W = 92;
+const CTRLPANEL_H = 400;
+const CTRLPANEL_BTN_W = 63;
 const CTRLPANEL_BTN_H = 35;
 const CTRLPANEL_BTN_L = (CTRLPANEL_W / 2) - (CTRLPANEL_BTN_W / 2);
 const CTRLPANEL_MARGIN = 7;
+let piece_hasStarted = false;
+let piece_canStart = true;
+let startBtn_isActive = true;
+let stopBtn_isActive = false;
+let pauseBtn_isActive = false;
 //#endef END Control Panel Vars
 
 //#ef SOCKET IO
@@ -458,7 +469,7 @@ function init() {
 
   //#ef Load Initial Score Data From Public Folder
   let tRequest = new XMLHttpRequest();
-  let scoreDataFileNameToLoad =  SCORE_DATA_FILE_TO_LOAD == "" ? '/scoreData/sf004-2021-9-10-20-1-48.txt' : '/scoreData/' + SCORE_DATA_FILE_TO_LOAD;
+  let scoreDataFileNameToLoad = SCORE_DATA_FILE_TO_LOAD == "" ? '/scoreData/sf004-2021-9-10-20-1-48.txt' : '/scoreData/' + SCORE_DATA_FILE_TO_LOAD;
   tRequest.open('GET', scoreDataFileNameToLoad, true); //This is the default file for the score data. This is served with the public folder when the app is run
   tRequest.responseType = 'text';
 
@@ -476,6 +487,7 @@ function init() {
   //#endef Load Initial Score Data From Public Folder //Run above in tRequest.onload = () => { function
 
   function runAfterScoreDataIsLoaded() {
+
     makeScoreDataManager();
     makeWorldPanel();
     makeThreeJsScene();
@@ -493,11 +505,12 @@ function init() {
     makeUnisonToken();
     makePitchSets();
     makeArticulations();
-    makeControlPanel();
-
 
     RENDERER.render(SCENE, CAMERA);
-  }
+
+    scoreCtrlPanel = makeControlPanel();
+
+  } //function runAfterScoreDataIsLoaded()
 
 } // function init() END
 
@@ -505,10 +518,6 @@ function init() {
 //#endef INIT
 
 //#ef PROCESS URL ARGS
-
-
-
-
 function processUrlArgs() {
 
   let urlArgs = getUrlArgs();
@@ -523,9 +532,7 @@ function processUrlArgs() {
 
   TOTAL_NUM_PARTS_TO_RUN = partsToRun.length;
 
-}
-
-
+} // function processUrlArgs()
 //#endef PROCESS URL ARGS
 
 //#ef GENERATE SCORE DATA
@@ -957,7 +964,7 @@ function generateScoreData() {
 
 
     //An Array length = to tempoFlagLocs_thisPlr, that contains the current tempo for this player for this frame
-    //In Update look up that frame's scrolling cursor location for the right tempo listed here; incorporate toplevel var so player token can see all scrolling cursor locations for that frame
+    //In Update look up that frame's scrolling cursor location for the right tempo listed here; incorporate toplevel let so player token can see all scrolling cursor locations for that frame
     let playerTokenTempoNum_thisPlr = new Array(tempoFlagLocs_thisPlr.length).fill(-1);
 
     tempoChanges_thisPlayer.forEach((tempoChgObj, tchgIx) => {
@@ -1280,7 +1287,7 @@ function generateScoreData() {
   let articulationChgByFrame = [];
   let articulationGap = Math.round(rrand(7, 16));
   let articulationGapFrames = articulationGap * FRAMERATE;
-  // next 3 var for knowing whether to add or subtract an articulation
+  // next 3 let for knowing whether to add or subtract an articulation
   let articulationCounter = 0;
   let numArtToAddSub = 9; //add for numArtToAddSub then subtract for numArtToAddSub
   let addSubtractArtType = 1;
@@ -3078,16 +3085,17 @@ function animationEngine(timestamp) { //timestamp not used; timeSync server libr
 
   } // while (cumulativeChangeBtwnFrames_MS >= MS_PER_FRAME) END
 
-  if (animationEngineIsRunning) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
-  // if (FRAMECOUNT < 120) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineIsRunning
+  if (animationEngineCanRun) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineCanRun
+  // if (FRAMECOUNT < 120) requestAnimationFrame(animationEngine); //animation engine gate: animationEngineCanRun
 } // function animationEngine(timestamp) END
 //##endef Animation Engine END
 
 //##ef Piece Clock
 function pieceClock(nowEpochTime) {
 
-  PIECE_TIME_MS = nowEpochTime - startTime_epochTime_MS - LEAD_IN_TIME_MS; //total MS transpired since peace begun, not including lead-in time
+  PIECE_TIME_MS = nowEpochTime - startTime_epochTime_MS - LEAD_IN_TIME_MS - pieceClockAdjustment;
   FRAMECOUNT = Math.round((PIECE_TIME_MS / 1000) * FRAMERATE); //Update FRAMECOUNT based on timeSync Time //if in lead-in FRAMECOUNT will be negative
+  calcDisplayClock(PIECE_TIME_MS);
 
 }
 //##endef Piece Clock
@@ -3098,8 +3106,11 @@ function pieceClock(nowEpochTime) {
 //#ef CONTROL PANEL
 
 
-//##ef Make Control Panel Function
+//##ef Make Control Panel
 function makeControlPanel() {
+
+  let controlPanelObj = {};
+  let cpDistBtwnButts = CTRLPANEL_BTN_H + CTRLPANEL_MARGIN + 11;
 
   //###ef Control Panel Panel
   let controlPanelPanel = mkPanel({
@@ -3115,6 +3126,7 @@ function makeControlPanel() {
     contentOverflow: 'hidden',
     clr: 'black'
   });
+  controlPanelObj['panel'] = controlPanelPanel;
   //###endef Control Panel Panel
 
   //###ef Start Piece Button
@@ -3125,51 +3137,168 @@ function makeControlPanel() {
     top: CTRLPANEL_MARGIN,
     left: CTRLPANEL_MARGIN,
     label: 'Start',
-    fontSize: 16,
+    fontSize: 14,
     action: function() {
       markStartTime_startAnimation();
     }
   });
+  controlPanelObj['startBtn'] = startButton;
   //###endef Start Piece Button
 
+  //###ef Pause Button
+  let pauseButton = mkButton({
+    canvas: controlPanelPanel.content,
+    w: CTRLPANEL_BTN_W,
+    h: CTRLPANEL_BTN_H,
+    top: CTRLPANEL_MARGIN + cpDistBtwnButts,
+    left: CTRLPANEL_MARGIN,
+    label: 'Pause',
+    fontSize: 14,
+    action: function() {
+      pauseBtnFunc();
+    }
+  });
+  pauseButton.className = 'btn btn-1_inactive';
+  controlPanelObj['pauseBtn'] = pauseButton;
+  //###endef Pause Button
+
+  return controlPanelObj;
+
 } // function makeControlPanel() END
-//##endef Make Control Panel Function
+//##endef Make Control Panel
 
 //##ef Start Piece Button Function & Socket
-
-
 // Broadcast Start Time when Start Button is pressed
+// This function is run from the start button above in Make Control Panel
 let markStartTime_startAnimation = function() {
+  if (startBtn_isActive) {
 
-  let ts_Date = new Date(TS.now());
-  let t_startTime_epoch = ts_Date.getTime();
+    let ts_Date = new Date(TS.now());
+    let t_startTime_epoch = ts_Date.getTime(); //send your current time to server to relay as the start time for everyone when received back from server
 
-  // Send start time to server to broadcast to rest of players
-  SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
-    pieceId: PIECE_ID,
-    startTime_epochTime_MS: t_startTime_epoch
-  });
+    // Send start time to server to broadcast to rest of players
+    SOCKET.emit('sf004_newStartTimeBroadcast_toServer', {
+      pieceId: PIECE_ID,
+      startTime_epochTime_MS: t_startTime_epoch
+    });
 
+  } // if (startBtn_isActive)
 } // let markStartTime = function() END
 
+//START PIECE RECEIVE SOCKET FROM SERVER BROADCAST
 // Receive new start time from server broadcast and set startTime_epochTime_MS
 SOCKET.on('sf004_newStartTime_fromServer', function(data) {
-
   if (data.pieceId == PIECE_ID) {
+    if (piece_canStart) { //Gate so the start functions aren't activated inadverently
 
-    startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with current epochTime
-    epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
-    animationEngineIsRunning = true; //unlock gate
-    requestAnimationFrame(animationEngine); //kick off animation
+      piece_canStart = false;
+      startBtn_isActive = false;
+      stopBtn_isActive = true;
+      pauseBtn_isActive = true; //activate pause button
+      animationEngineCanRun = true; //unlock animation gate
 
+      // scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+      // scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
+
+      startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
+      epochTimeOfLastFrame_MS = data.startTime_epochTime_MS; //update epochTimeOfLastFrame_MS so animation engine runs properly
+
+      requestAnimationFrame(animationEngine); //kick off animation
+
+    } // if (piece_canStart)
   } //if (data.pieceId == PIECE_ID)
-
 }); // SOCKET.on('sf004_newStartTime_fromServer', function(data) END
-
 //##endef Start Piece function & socket
+
+//##ef Pause Button Function & Socket
+// This function is run from the pause button above in Make Control Panel
+let pauseBtnFunc = function() {
+  if (pauseBtn_isActive) { //gate
+
+    //increment the pause state here locally, but don't update global variable pauseState until received back from server
+    let thisPress_pauseState = (pauseState + 1) % 2; //pause button is a toggle, change state each time it is pressed
+    let tsNow_Date = new Date(TS.now());
+    let timeAtPauseBtnPress_MS = tsNow_Date.getTime(); //timeAtPauseBtnPress_MS
+
+    if (thisPress_pauseState == 1) { //Paused
+      SOCKET.emit('sf004_pause', {
+        pieceId: PIECE_ID,
+        thisPress_pauseState: thisPress_pauseState,
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      });
+    } // if (pauseState == 1) { //Paused
+    //
+    else if (thisPress_pauseState == 0) { //unpaused
+      SOCKET.emit('sf004_pause', {
+        pieceId: PIECE_ID,
+        thisPress_pauseState: thisPress_pauseState,
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      });
+    } // else if (pauseState == 0) { //unpaused
+
+  } // if (pauseBtn_isActive)
+} //let pauseBtnFunc = function()
+
+//PAUSE PIECE RECEIVE SOCKET FROM SERVER BROADCAST
+SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
+
+  let requestingId = data.pieceId;
+  let thisPress_pauseState = data.thisPress_pauseState;
+  let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+
+  if (requestingId == PIECE_ID) {
+
+    if (thisPress_pauseState == 1) { //paused
+      timePaused = timeAtPauseBtnPress_MS; //update local global variables
+      pauseState = thisPress_pauseState;
+      animationEngineCanRun = false;
+      scoreCtrlPanel.pauseBtn.innerText = 'Resume';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
+    } //if (pauseState == 1) { //paused
+    //
+    else if (thisPress_pauseState == 0) { //unpaused
+      pauseState = thisPress_pauseState;
+      let tsNow_Date = new Date(TS.now());
+      let t_currTime_MS = tsNow_Date.getTime();
+      pieceClockAdjustment = t_currTime_MS - timePaused + pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
+      scoreCtrlPanel.pauseBtn.innerText = 'Pause';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
+      scoreCtrlPanel.panel.smallify();
+      animationEngineCanRun = true;
+      requestAnimationFrame(animationEngine);
+    } //else if (pauseState == 0) { //unpaused
+
+  } //if (requestingId == PIECE_ID)
+
+}); // SOCKET.on('sf004_pauseBroadcast', function(data)
+
+//##endef Pause Button Function & Socket
+
 
 
 //#endef CONTROL PANEL
+
+//#ef CLOCK
+let displayClock = mkPanel({
+  w: 65,
+  h: 20,
+  title: 'Clock',
+  ipos: 'right-top',
+  clr: 'white',
+  onwindowresize: true
+})
+// displayClock.smallify();
+
+function calcDisplayClock(pieceTimeMS) {
+  let displayClock_TimeMS = pieceTimeMS % 1000;
+  let displayClock_TimeSec = Math.floor(pieceTimeMS / 1000) % 60;
+  let displayClock_TimeMin = Math.floor(pieceTimeMS / 60000) % 60;
+  let displayClock_TimeHrs = Math.floor(pieceTimeMS / 3600000);
+  displayClock.content.innerHTML = pad(displayClock_TimeHrs, 2) + ":" + pad(displayClock_TimeMin, 2) + ":" + pad(displayClock_TimeSec, 2);
+}
+//#endef CLOCK
 
 
 

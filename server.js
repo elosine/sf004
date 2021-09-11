@@ -40,7 +40,7 @@ io.on('connection', function(socket) {
       if (err) {
         return console.log('Unable to scan directory: ' + err);
       }
-      //Send list of files in directory to Splash page
+      //Broadcast list of files in directory
       socket.broadcast.emit('sf004_loadPieceFromServerBroadcast', {
         pieceId: pieceId,
         availableScoreData: files
@@ -71,6 +71,27 @@ io.on('connection', function(socket) {
 
   }); // socket.on('sf004_newStartTimeBroadcast_send', function(data) END
   //##endef END Set Start Time Broadcast
+
+  //##ef Pause Broadcast
+  socket.on('sf004_pause', function(data) {
+    let pieceId = data.pieceId;
+    let thisPress_pauseState = data.thisPress_pauseState;
+    let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+
+    socket.broadcast.emit('sf004_pause_broadcastFromServer', {
+      pieceId: pieceId,
+      thisPress_pauseState: thisPress_pauseState,
+      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+    });
+
+    socket.emit('sf004_pause_broadcastFromServer', {
+      pieceId: pieceId,
+      thisPress_pauseState: thisPress_pauseState,
+      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+    });
+
+  }); // socket.on('sf004_pause', function(data) END
+  //##endef Pause Broadcast
 
 
 }); // End Socket IO
