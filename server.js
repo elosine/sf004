@@ -77,17 +77,20 @@ io.on('connection', function(socket) {
     let pieceId = data.pieceId;
     let thisPress_pauseState = data.thisPress_pauseState;
     let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+    let new_pieceClockAdjustment = data.new_pieceClockAdjustment;
 
     socket.broadcast.emit('sf004_pause_broadcastFromServer', {
       pieceId: pieceId,
       thisPress_pauseState: thisPress_pauseState,
-      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS,
+      new_pieceClockAdjustment: new_pieceClockAdjustment
     });
 
     socket.emit('sf004_pause_broadcastFromServer', {
       pieceId: pieceId,
       thisPress_pauseState: thisPress_pauseState,
-      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+      timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS,
+      new_pieceClockAdjustment: new_pieceClockAdjustment
     });
 
   }); // socket.on('sf004_pause', function(data) END
@@ -107,6 +110,25 @@ io.on('connection', function(socket) {
 
   }); // socket.on('sf004_stop', function(data) END
   //##endef Stop Broadcast
+
+  //##ef Goto Broadcast
+  socket.on('sf004_goto', function(data) {
+
+    let pieceId = data.pieceId;
+    let newPieceClockAdjustment = data.newPieceClockAdjustment;
+
+    socket.broadcast.emit('sf004_goto_broadcastFromServer', {
+      pieceId: pieceId,
+      newPieceClockAdjustment: newPieceClockAdjustment
+    });
+
+    socket.emit('sf004_goto_broadcastFromServer', {
+      pieceId: pieceId,
+      newPieceClockAdjustment: newPieceClockAdjustment
+    });
+
+  }); // socket.on('sf004_goto' END
+  //##endef Goto Broadcast
 
 
 }); // End Socket IO

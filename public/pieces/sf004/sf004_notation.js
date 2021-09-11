@@ -3202,6 +3202,9 @@ function makeControlPanel() {
     if (goTo_secondsInput.value > 59) goTo_secondsInput.value = 59;
     if (goTo_secondsInput.value < 0) goTo_secondsInput.value = 0;
   });
+  goTo_secondsInput.addEventListener("click", function(e) { // selects text when clicked
+    this.select();
+  });
 
   let goTo_minutesInput = mkInputField({
     canvas: controlPanelPanel.content,
@@ -3219,6 +3222,9 @@ function makeControlPanel() {
     if (goTo_minutesInput.value > 59) goTo_minutesInput.value = 59;
     if (goTo_minutesInput.value < 0) goTo_minutesInput.value = 0;
   });
+  goTo_minutesInput.addEventListener("click", function(e) { // selects text when clicked
+    this.select();
+  });
 
   let goTo_hoursInput = mkInputField({
     canvas: controlPanelPanel.content,
@@ -3234,6 +3240,9 @@ function makeControlPanel() {
   controlPanelObj['gotoHrInput'] = goTo_hoursInput;
   goTo_hoursInput.addEventListener("blur", function(e) { //function for when inputfield loses focus; make sure the number is between 0-59
     if (goTo_hoursInput.value < 0) goTo_hoursInput.value = 0;
+  });
+  goTo_hoursInput.addEventListener("click", function(e) { // selects text when clicked
+    this.select();
   });
   //###endef GoTo Input Fields
 
@@ -3253,8 +3262,6 @@ function makeControlPanel() {
   gotoButton.className = 'btn btn-1_inactive';
   controlPanelObj['gotoBtn'] = gotoButton;
   //###endef GoTo Button
-
-
 
   //###endef GoTo Input Fields & Button
 
@@ -3291,6 +3298,7 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
       startBtn_isActive = false;
       stopBtn_isActive = true;
       pauseBtn_isActive = true; //activate pause button
+      gotoBtn_isActive = true;
       animationEngineCanRun = true; //unlock animation gate
 
       scoreCtrlPanel.stopBtn.className = 'btn btn-1';
@@ -3322,15 +3330,24 @@ let pauseBtnFunc = function() {
       SOCKET.emit('sf004_pause', {
         pieceId: PIECE_ID,
         thisPress_pauseState: thisPress_pauseState,
-        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS,
+        new_pieceClockAdjustment: pieceClockAdjustment //only used for unpause
       });
     } // if (pauseState == 1) { //Paused
     //
     else if (thisPress_pauseState == 0) { //unpaused
+
+      let tsNow_Date = new Date(TS.now());
+      let t_currTime_MS = tsNow_Date.getTime();
+      //For here and in goto, you want the pieceClockAdjustment to be the same for all clients
+      //Calculate here before sending to server to broadcast, and when received, set this number to pieceClockAdjustment for everyone
+      let new_pieceClockAdjustment = t_currTime_MS - timePaused + pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
+
       SOCKET.emit('sf004_pause', {
         pieceId: PIECE_ID,
         thisPress_pauseState: thisPress_pauseState,
-        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
+        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS,
+        new_pieceClockAdjustment: new_pieceClockAdjustment
       });
     } // else if (pauseState == 0) { //unpaused
 
@@ -3343,6 +3360,7 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
   let requestingId = data.pieceId;
   let thisPress_pauseState = data.thisPress_pauseState;
   let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+  let new_pieceClockAdjustment = data.new_pieceClockAdjustment;
 
   if (requestingId == PIECE_ID) {
 
@@ -3356,9 +3374,7 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
     //
     else if (thisPress_pauseState == 0) { //unpaused
       pauseState = thisPress_pauseState;
-      let tsNow_Date = new Date(TS.now());
-      let t_currTime_MS = tsNow_Date.getTime();
-      pieceClockAdjustment = t_currTime_MS - timePaused + pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
+      pieceClockAdjustment = new_pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
       scoreCtrlPanel.pauseBtn.innerText = 'Pause';
       scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
       scoreCtrlPanel.panel.smallify();
@@ -3400,61 +3416,34 @@ let gotoBtnFunc = function() {
   if (gotoBtn_isActive) { //gate
 
     //Get Goto time and convert to MS
+    let goToTimeMS = (scoreCtrlPanel.gotoHrInput.value * 60 * 60 * 1000) + (scoreCtrlPanel.gotoMinInput.value * 60 * 1000) + (scoreCtrlPanel.gotoSecInput.value * 1000);
+    let tsNow_Date = new Date(TS.now());
+    let t_currTime_MS = tsNow_Date.getTime();
+    let timeAdjustmentToGetToGotoTime = PIECE_TIME_MS - goToTimeMS;
+    //For here and in pause, you want the pieceClockAdjustment to be the same for all clients
+    //Calculate here before sending to server to broadcast, and when received, set this number to pieceClockAdjustment for everyone
+    let newPieceClockAdjustment = pieceClockAdjustment + timeAdjustmentToGetToGotoTime;
 
-    /*
-
-    if (thisPress_pauseState == 1) { //Paused
-      SOCKET.emit('sf004_pause', {
-        pieceId: PIECE_ID,
-        thisPress_pauseState: thisPress_pauseState,
-        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
-      });
-    } // if (pauseState == 1) { //Paused
-    //
-    else if (thisPress_pauseState == 0) { //unpaused
-      SOCKET.emit('sf004_pause', {
-        pieceId: PIECE_ID,
-        thisPress_pauseState: thisPress_pauseState,
-        timeAtPauseBtnPress_MS: timeAtPauseBtnPress_MS
-      });
-    } // else if (pauseState == 0) { //unpaused
+    SOCKET.emit('sf004_goto', {
+      pieceId: PIECE_ID,
+      newPieceClockAdjustment: newPieceClockAdjustment
+    });
 
   } // if (gotoBtn_isActive)
 } // gotoBtnFunc = function()
 
 //PAUSE PIECE RECEIVE SOCKET FROM SERVER BROADCAST
-SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
+SOCKET.on('sf004_goto_broadcastFromServer', function(data) {
 
   let requestingId = data.pieceId;
-  let thisPress_pauseState = data.thisPress_pauseState;
-  let timeAtPauseBtnPress_MS = data.timeAtPauseBtnPress_MS;
+  let newPieceClockAdjustment = data.newPieceClockAdjustment;
 
   if (requestingId == PIECE_ID) {
-
-    if (thisPress_pauseState == 1) { //paused
-      timePaused = timeAtPauseBtnPress_MS; //update local global variables
-      pauseState = thisPress_pauseState;
-      animationEngineCanRun = false;
-      scoreCtrlPanel.pauseBtn.innerText = 'Resume';
-      scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
-    } //if (pauseState == 1) { //paused
-    //
-    else if (thisPress_pauseState == 0) { //unpaused
-      pauseState = thisPress_pauseState;
-      let tsNow_Date = new Date(TS.now());
-      let t_currTime_MS = tsNow_Date.getTime();
-      pieceClockAdjustment = t_currTime_MS - timePaused + pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
-      scoreCtrlPanel.pauseBtn.innerText = 'Pause';
-      scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
-      scoreCtrlPanel.panel.smallify();
-      animationEngineCanRun = true;
-      requestAnimationFrame(animationEngine);
-    } //else if (pauseState == 0) { //unpaused
-
+    pieceClockAdjustment = newPieceClockAdjustment;
   } //if (requestingId == PIECE_ID)
 
-}); // SOCKET.on('sf004_pauseBroadcast', function(data)
-*/
+}); // SOCKET.on('sf004_goto_broadcastFromServer', function(data)
+
 //##endef Goto Button Function & Socket
 
 
