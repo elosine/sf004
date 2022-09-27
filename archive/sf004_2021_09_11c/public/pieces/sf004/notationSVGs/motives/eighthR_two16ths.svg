@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.2"
+   width="10.972398mm"
+   height="10.318155mm"
+   viewBox="0 0 6.2439021 5.8715979"
+   id="svg399">
+  <metadata
+     id="metadata405">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs403" />
+  <style
+     text="style/css"
+     id="style21"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <g
+     transform="translate(-43.7075,-17.7146)"
+     id="g953">
+    <text
+       id="text25"
+       fill="currentColor"
+       text-anchor="start"
+       font-size="2.2001px"
+       font-family="serif"
+       transform="translate(0.5691)"><tspan
+         id="tspan23" /></text>
+    <a
+       id="a209"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:85:86"
+       style="color:inherit">
+      <path
+         id="path207"
+         fill="currentColor"
+         d="M 72,-250 189,76 C 155,64 120,54 84,54 38,54 -3,87 -3,133 c 0,40 33,72 73,72 25,0 48,-15 56,-39 10,-28 6,-59 35,-59 16,0 54,48 61,63 6,12 23,12 28,0 L 127,-250 c -8,-7 -17,-10 -27,-10 -10,0 -20,3 -28,10 z"
+         transform="matrix(0.004,0,0,-0.004,43.7195,21.1446)" />
+    </a>
+    <a
+       id="a213"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:89:90"
+       style="color:inherit">
+      <path
+         id="path211"
+         fill="currentColor"
+         d="m 212,138 c 59,0 113,-31 113,-95 0,-71 -52,-120 -99,-148 -34,-21 -73,-33 -113,-33 -59,0 -113,31 -113,95 0,71 53,120 100,148 34,21 72,33 112,33 z"
+         transform="matrix(0.0032,0,0,-0.0032,47.2258,23.1446)" />
+    </a>
+    <rect
+       id="rect215"
+       fill="currentColor"
+       ry="0.039999999"
+       height="5.0539999"
+       width="0.13"
+       y="-3.1900001"
+       x="-0.064999998"
+       transform="translate(48.1932,21.1446)" />
+    <rect
+       id="rect231"
+       fill="currentColor"
+       ry="0.039999999"
+       height="5.0539999"
+       width="0.13"
+       y="-3.1900001"
+       x="-0.064999998"
+       transform="translate(49.8789,21.1446)" />
+    <a
+       id="a243"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:88:89"
+       style="color:inherit">
+      <polygon
+         id="polygon239"
+         points="0.04,0.2 0.04,-0.2 5.7494,-0.2 5.7494,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(44.1545,17.9546)" />
+      <polygon
+         id="polygon241"
+         points="0.04,0.2 0.04,-0.2 1.7756,-0.2 1.7756,0.2 "
+         stroke="currentColor"
+         fill="currentColor"
+         stroke-width="0.08"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         transform="translate(48.1282,18.7646)" />
+    </a>
+    <a
+       id="a287"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:94:95"
+       style="color:inherit">
+      <path
+         id="path285"
+         fill="currentColor"
+         d="m 212,138 c 59,0 113,-31 113,-95 0,-71 -52,-120 -99,-148 -34,-21 -73,-33 -113,-33 -59,0 -113,31 -113,95 0,71 53,120 100,148 34,21 72,33 112,33 z"
+         transform="matrix(0.0032,0,0,-0.0032,48.9114,23.1446)" />
+    </a>
+  </g>
+</svg>

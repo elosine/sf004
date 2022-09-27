@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2" width="13.00mm" height="30.00mm" viewBox="0 0 7.3977 17.0717">
+<style text="style/css">
+<![CDATA[
+tspan { white-space: pre; }
+]]>
+</style>
+<!-- Page: 1/1 -->
+<text transform="translate(0.5691, -0.0000)" font-family="serif" font-size="2.2001" text-anchor="start" fill="currentColor">
+<tspan/>
+</text>
+<line transform="translate(0.5691, 6.6997)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="15.4426" y2="-0.0000"/>
+<line transform="translate(0.5691, 5.1997)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="15.4426" y2="-0.0000"/>
+<line transform="translate(0.5691, 3.6997)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="15.4426" y2="-0.0000"/>
+<line transform="translate(0.5691, 2.1997)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="15.4426" y2="-0.0000"/>
+<line transform="translate(0.5691, 0.6997)" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.1171" stroke="currentColor" x1="0.0586" y1="-0.0000" x2="15.4426" y2="-0.0000"/>
+<path transform="translate(2.1855, 2.1997) scale(0.0038, -0.0038)" d="M216 -312c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 15 13 18l46 17v158
+c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17v-158zM96 65v-160l83 30v160z" fill="currentColor"/>
+<path transform="translate(1.1691, 4.4497) scale(0.0038, -0.0038)" d="M216 -312c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 15 13 18l46 17v158
+c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17v-158zM96 65v-160l83 30v160z" fill="currentColor"/>
+<path transform="translate(2.1855, 7.4497) scale(0.0038, -0.0038)" d="M216 -312c0 -10 -8 -19 -18 -19s-19 9 -19 19v145l-83 -31v-158c0 -10 -9 -19 -19 -19s-18 9 -18 19v145l-32 -12c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 16 13 19l46 16v160l-32 -11c-2 -1 -5 -1 -7 -1c-11 0 -20 9 -20 20v60c0 8 5 15 13 18l46 17v158
+c0 10 8 19 18 19s19 -9 19 -19v-145l83 31v158c0 10 9 19 19 19s18 -9 18 -19v-145l32 12c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -16 -13 -19l-46 -16v-160l32 11c2 1 5 1 7 1c11 0 20 -9 20 -20v-60c0 -8 -5 -15 -13 -18l-46 -17v-158zM96 65v-160l83 30v160z" fill="currentColor"/>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:42:43">
+<path transform="translate(3.5749, 1.4497) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:10:11">
+<path transform="translate(3.5749, 7.4497) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:16:17">
+<path transform="translate(5.1941, 6.6997) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:19:20">
+<path transform="translate(3.5749, 5.9497) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:23:24">
+<path transform="translate(3.5749, 4.4497) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:28:29">
+<path transform="translate(5.1941, 3.6997) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:31:32">
+<path transform="translate(3.5749, 2.9497) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:36:37">
+<path transform="translate(5.1941, 2.1997) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+<a style="color:inherit;" xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/e4cluster_e5cluster_b4cluster.ly:96:46:47">
+<path transform="translate(5.1941, 0.6997) scale(0.0052, -0.0052)" d="M222 135c53 0 104 -27 104 -86c0 -71 -56 -120 -103 -148c-36 -22 -76 -36 -118 -36c-53 0 -105 27 -105 86c0 71 57 120 104 148c36 22 76 36 118 36z" fill="currentColor"/>
+</a>
+</svg>

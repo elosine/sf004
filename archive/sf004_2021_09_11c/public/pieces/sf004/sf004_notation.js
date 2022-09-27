@@ -13,7 +13,6 @@ let PIECE_ID;
 let partsToRun = [];
 let TOTAL_NUM_PARTS_TO_RUN;
 let SCORE_DATA_FILE_TO_LOAD = "";
-let scoreControlsAreOn = true;
 //##endef URL Args
 
 //##ef Timing
@@ -30,7 +29,6 @@ let startTime_epochTime_MS = 0;
 let pauseState = 0;
 let timePaused = 0;
 let pieceClockAdjustment = 0;
-let displayClock;
 //##endef Timing
 
 //##ef World Canvas Variables
@@ -514,7 +512,6 @@ function init() {
     RENDERER.render(SCENE, CAMERA);
 
     scoreCtrlPanel = makeControlPanel();
-    makeClock();
 
   } //function runAfterScoreDataIsLoaded()
 
@@ -537,8 +534,6 @@ function processUrlArgs() {
   });
 
   TOTAL_NUM_PARTS_TO_RUN = partsToRun.length;
-
-  if (urlArgs.ctls == 'no') scoreControlsAreOn = false;
 
 } // function processUrlArgs()
 //#endef PROCESS URL ARGS
@@ -3137,7 +3132,6 @@ function makeControlPanel() {
   controlPanelObj['panel'] = controlPanelPanel;
   //###endef Control Panel Panel
 
-
   //###ef Start Piece Button
   let startButton = mkButton({
     canvas: controlPanelPanel.content,
@@ -3153,25 +3147,6 @@ function makeControlPanel() {
   });
   controlPanelObj['startBtn'] = startButton;
   //###endef Start Piece Button
-
-  //###ef Restart Button
-  makeRestartButton = function() {
-    let restartButton = mkButton({
-      canvas: controlPanelPanel.content,
-      w: CTRLPANEL_BTN_W,
-      h: CTRLPANEL_BTN_H,
-      top: CTRLPANEL_MARGIN,
-      left: CTRLPANEL_MARGIN,
-      label: 'Restart?',
-      fontSize: 13,
-      action: function() {
-        restartBtnFunc();
-      }
-    });
-    restartButton.className = 'btn btn-1';
-    controlPanelObj['restartBtn'] = restartButton;
-  }
-  //###endef Restart Button
 
   //###ef Pause Button
   let pauseButton = mkButton({
@@ -3294,25 +3269,6 @@ function makeControlPanel() {
 
   //###endef GoTo Input Fields & Button
 
-  //##ef Piece ID Caption
-  let pieceIdDisplayLbl = mkSpan({
-    canvas: controlPanelPanel.content,
-    top: CTRLPANEL_MARGIN + (cpDistBtwnButts * 3) + 18 + 18 + 11 + cpDistBtwnButts + 4,
-    left: CTRLPANEL_MARGIN + 11,
-    text: 'Piece ID:',
-    fontSize: 13,
-    color: 'white'
-  });
-  let pieceIdDisplay = mkSpan({
-    canvas: controlPanelPanel.content,
-    top: CTRLPANEL_MARGIN + (cpDistBtwnButts * 3) + 18 + 18 + 11 + cpDistBtwnButts + 4 + 15,
-    left: CTRLPANEL_MARGIN + 11,
-    text: PIECE_ID.toString(),
-    fontSize: 13,
-    color: 'white'
-  });
-  //##endef Piece ID Caption
-
   //###ef Join Button
   let joinButton = mkButton({
     canvas: controlPanelPanel.content,
@@ -3347,10 +3303,24 @@ function makeControlPanel() {
   controlPanelObj['joinGoBtn'] = joinGoButton;
   //###endef Join Go Button
 
-  if (!scoreControlsAreOn) {
-    startBtn_isActive = false;
-    startButton.className = 'btn btn-1_inactive';
+  //###ef Restart Button
+  makeRestartButton = function() {
+    let restartButton = mkButton({
+      canvas: controlPanelPanel.content,
+      w: CTRLPANEL_BTN_W,
+      h: CTRLPANEL_BTN_H,
+      top: CTRLPANEL_MARGIN,
+      left: CTRLPANEL_MARGIN,
+      label: 'Restart?',
+      fontSize: 13,
+      action: function() {
+        restartBtnFunc();
+      }
+    });
+    restartButton.className = 'btn btn-1';
+    controlPanelObj['restartBtn'] = restartButton;
   }
+  //###endef Restart Button
 
   return controlPanelObj;
 
@@ -3387,20 +3357,17 @@ SOCKET.on('sf004_newStartTime_fromServer', function(data) {
 
       piece_canStart = false;
       startBtn_isActive = false;
-      scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
-      if (scoreControlsAreOn) {
-        stopBtn_isActive = true;
-        scoreCtrlPanel.stopBtn.className = 'btn btn-1';
-        pauseBtn_isActive = true; //activate pause button
-        scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
-        gotoBtn_isActive = true;
-        scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
-      }
+      stopBtn_isActive = true;
+      pauseBtn_isActive = true; //activate pause button
+      gotoBtn_isActive = true;
       joinBtn_isActive = false;
-      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
       animationEngineCanRun = true; //unlock animation gate
 
-
+      scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
       scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
 
       startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
@@ -3465,19 +3432,15 @@ SOCKET.on('sf004_pause_broadcastFromServer', function(data) {
       timePaused = timeAtPauseBtnPress_MS; //update local global variables //store in server
       pauseState = thisPress_pauseState; //store in server for join
       animationEngineCanRun = false;
-      if (scoreControlsAreOn) {
-        scoreCtrlPanel.pauseBtn.innerText = 'Resume';
-        scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
-      }
+      scoreCtrlPanel.pauseBtn.innerText = 'Resume';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-2';
     } //if (pauseState == 1) { //paused
     //
     else if (thisPress_pauseState == 0) { //unpaused
       pauseState = thisPress_pauseState;
       pieceClockAdjustment = new_pieceClockAdjustment; //t_currTime_MS - timePaused will be the amount of time to subtract off current time to get back to time when the piece was paused; + pieceClockAdjustment to add to any previous addjustments
-      if (scoreControlsAreOn) {
-        scoreCtrlPanel.pauseBtn.innerText = 'Pause';
-        scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
-      }
+      scoreCtrlPanel.pauseBtn.innerText = 'Pause';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1';
       scoreCtrlPanel.panel.smallify();
       animationEngineCanRun = true;
       requestAnimationFrame(animationEngine);
@@ -3591,23 +3554,19 @@ let joinGoBtnFunc = function() {
 
     piece_canStart = false;
     startBtn_isActive = false;
-    scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
-    if (scoreControlsAreOn) {
-      stopBtn_isActive = true;
-      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
-      pauseBtn_isActive = true; //activate pause button
-      scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
-      gotoBtn_isActive = true;
-      scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
-    }
+    stopBtn_isActive = true;
+    pauseBtn_isActive = true; //activate pause button
+    gotoBtn_isActive = true;
     joinBtn_isActive = false;
     joinGoBtn_isActive = false;
-    scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
-
-    scoreCtrlPanel.joinGoBtn.className = 'btn btn-1_inactive';
-
     animationEngineCanRun = true; //unlock animation gate
 
+    scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+    scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+    scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+    scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+    scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
+    scoreCtrlPanel.joinGoBtn.className = 'btn btn-1_inactive';
 
     scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
 
@@ -3627,11 +3586,9 @@ let joinGoBtnFunc = function() {
 SOCKET.on('sf004_restartPrep_broadcastFromServer', function(data) {
   if (data.pieceId == PIECE_ID) {
     //deactivate start button and create restart button
-    if (scoreControlsAreOn) {
-      startBtn_isActive = false;
-      scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
-      makeRestartButton();
-    }
+    startBtn_isActive = false;
+    scoreCtrlPanel.startBtn.className = 'btn btn-1_inactive';
+    makeRestartButton();
   } //if (data.pieceId == PIECE_ID)
 }); // SOCKET.on('sf004_stop_broadcastFromServer', function(data) END
 
@@ -3659,20 +3616,18 @@ SOCKET.on('sf004_restart_broadcastFromServer', function(data) {
     if (piece_canStart) { //Gate so the start functions aren't activated inadverently
 
       piece_canStart = false;
-      if (scoreControlsAreOn) {
-        restartBtn_isActive = false;
-        scoreCtrlPanel.restartBtn.className = 'btn btn-1_inactive';
-        stopBtn_isActive = true;
-        scoreCtrlPanel.stopBtn.className = 'btn btn-1';
-        pauseBtn_isActive = true; //activate pause button
-        scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
-        gotoBtn_isActive = true;
-        scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
-      }
+      restartBtn_isActive = false;
+      stopBtn_isActive = true;
+      pauseBtn_isActive = true; //activate pause button
+      gotoBtn_isActive = true;
       joinBtn_isActive = false;
-      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
-
       animationEngineCanRun = true; //unlock animation gate
+
+      scoreCtrlPanel.restartBtn.className = 'btn btn-1_inactive';
+      scoreCtrlPanel.pauseBtn.className = 'btn btn-1'; //activate pause button
+      scoreCtrlPanel.stopBtn.className = 'btn btn-1';
+      scoreCtrlPanel.gotoBtn.className = 'btn btn-1';
+      scoreCtrlPanel.joinBtn.className = 'btn btn-1_inactive';
       scoreCtrlPanel.panel.smallify(); //minimize control panel when start button is pressed
 
       startTime_epochTime_MS = data.startTime_epochTime_MS; //stamp start time of this piece with timestamp relayed from server
@@ -3686,26 +3641,19 @@ SOCKET.on('sf004_restart_broadcastFromServer', function(data) {
 
 //##endef Restart Piece Button Function & Socket
 
+
 //#endef CONTROL PANEL
 
 //#ef CLOCK
-function makeClock() {
-  displayClock = mkPanel({
-    w: 66,
-    h: 20,
-    // w: 57,
-    // h: 18,
-    title: 'Clock',
-    ipos: 'right-top',
-    // offsetX: '97px',
-    // offsetY: '207px',
-    clr: 'white',
-    onwindowresize: true
-  })
-  displayClock.content.style.fontSize = "16px";
-  // displayClock.content.style.fontSize = "14px";
-  displayClock.smallify();
-}
+let displayClock = mkPanel({
+  w: 65,
+  h: 20,
+  title: 'Clock',
+  ipos: 'right-top',
+  clr: 'white',
+  onwindowresize: true
+})
+// displayClock.smallify();
 
 function calcDisplayClock(pieceTimeMS) {
   let displayClock_TimeMS = pieceTimeMS % 1000;

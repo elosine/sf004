@@ -1,7 +1,7 @@
 //#ef VARS
 
 let w = 305;
-let h = 472;
+let h = 430;
 let center = w / 2;
 let btnW = w - 40;
 let btnPosX = center - (btnW / 2) - 7;
@@ -10,7 +10,7 @@ let launchBtnIsActive = false;
 let partsToRunAsString = "";
 let pieceIdString = "";
 let scoreDataFileNameToLoad = "";
-let scoreControlsString = "";
+let scoreControls = "yes";
 
 //##ef SOCKET IO
 let ioConnection;
@@ -75,6 +75,17 @@ let pieceIDinput = mkInputField({
 });
 //#endef PieceID Input Field
 
+//#ef Score Controls Caption & CB
+let scoreCtlCaption = mkSpan({
+  canvas: canvas,
+  top: 65,
+  left: 15,
+  text: 'Please enter an ID for this performance:',
+  fontSize: 16,
+  color: 'white'
+});
+//#endef Score Controls Caption & CB
+
 //#ef Select Parts Caption
 let selectPartsCaption = mkSpan({
   canvas: canvas,
@@ -95,27 +106,12 @@ let selectPartsCBs = mkCheckboxesHoriz({
   top: 120,
   left: 20,
   lblArray: ['1', '2', '3', '4', '5'],
-  lblClr: 'rgb(153,255,0)'
+  lblClr: 'rgb(153,255,0)',
 });
 //#endef Select Parts Checkboxes
 
-//#ef Score Controls CB
-let scoreCtlCb = mkCheckboxesVert({
-  canvas: canvas,
-  numBoxes: 1,
-  boxSz: 25,
-  gap: 0,
-  top: 180,
-  left: 20,
-  lblArray: ['Score Controls?'],
-  lblClr: 'rgb(153,255,0)',
-  lblFontSz: 16
-});
-scoreCtlCb[0].cb.checked = true;
-//#endef Score Controls CB
-
 //#ef Load Score Data from Server Button
-let loadScoreDataTop = 210;
+let loadScoreDataTop = 168;
 
 //Make Load Score Data Button
 let loadScoreDataFromServerButton = mkButton({
@@ -182,13 +178,13 @@ let launchBtn = mkButton({
   canvas: canvas,
   w: btnW,
   h: 45,
-  top: 402,
+  top: 360,
   left: 12,
   label: 'Launch Score',
   fontSize: 20,
   action: function() {
     if (launchBtnIsActive) {
-      location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString + "&sdfile=" + scoreDataFileNameToLoad + "&ctls=" + scoreControlsString; //this is the string that will be sent as URL arg
+      location.href = "/pieces/sf004/sf004.html?parts=" + partsToRunAsString + "&id=" + pieceIdString + "&sdfile=" + scoreDataFileNameToLoad; //this is the string that will be sent as URL arg
     }
   }
 });
@@ -225,9 +221,6 @@ let checkInputs = function() {
       if (cbDic.cb.checked) partsToRunAsString = partsToRunAsString + cbix + ';';
     });
     partsToRunAsString = partsToRunAsString.slice(0, -1); //remove final semi-colon
-
-    //Use Score Controls?
-    scoreControlsString = scoreCtlCb[0].cb.checked == true ? 'yes' : 'no';
   }
   //
   else { //required data is not entered, do not activate launch and load data buttons

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4f, 2020-05-01)"
+   sodipodi:docname="quarter.svg"
+   id="svg388"
+   viewBox="0 0 1.0400004 5.9415982"
+   height="10.441167mm"
+   width="1.8275908mm"
+   version="1.2">
+  <metadata
+     id="metadata394">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs392" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:current-layer="svg388"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="614"
+     inkscape:cy="-27.841197"
+     inkscape:cx="235.24771"
+     inkscape:zoom="2.0896684"
+     showgrid="false"
+     id="namedview390"
+     inkscape:window-height="1006"
+     inkscape:window-width="1530"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <style
+     id="style10"
+     text="style/css"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <text
+     y="-32.6446"
+     x="-1"
+     id="text14"
+     fill="currentColor"
+     text-anchor="start"
+     font-size="2.2001px"
+     font-family="serif"><tspan
+       id="tspan12" /></text>
+  <g
+     transform="translate(-1.5691,-32.6446)"
+     id="g417">
+    <a
+       style="color:inherit"
+       xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:8:9"
+       id="a350">
+      <path
+         transform="matrix(0.0032,0,0,-0.0032,1.5691,38.1446)"
+         d="m 212,138 c 59,0 113,-31 113,-95 0,-71 -52,-120 -99,-148 -34,-21 -73,-33 -113,-33 -59,0 -113,31 -113,95 0,71 53,120 100,148 34,21 72,33 112,33 z"
+         fill="currentColor"
+         id="path348" />
+    </a>
+    <rect
+       transform="translate(2.5365,36.1446)"
+       x="-0.064999998"
+       y="-3.5"
+       width="0.13"
+       height="5.3639998"
+       ry="0.039999999"
+       fill="currentColor"
+       id="rect352" />
+  </g>
+</svg>

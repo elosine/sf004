@@ -1,0 +1,1240 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   id="svg399"
+   viewBox="0 0 73.9772 56.9055"
+   height="100.00mm"
+   width="130.00mm"
+   version="1.2">
+  <metadata
+     id="metadata405">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs403" />
+  <style
+     id="style21"
+     text="style/css"><![CDATA[
+tspan { white-space: pre; }
+]]></style>
+  <!-- Page: 1/1 -->
+  <text
+     id="text25"
+     fill="currentColor"
+     text-anchor="start"
+     font-size="2.2001"
+     font-family="serif"
+     transform="translate(0.5691, -0.0000)"><tspan
+       id="tspan23" /></text>
+  <a
+     id="a29"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:104:105"
+     style="color:inherit;">
+    <path
+       id="path27"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(49.0676, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect31"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(50.0351, 6.1446)" />
+  <rect
+     id="rect33"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(48.3807, 6.1446)" />
+  <a
+     id="a37"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:112:113"
+     style="color:inherit;">
+    <path
+       id="path35"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(50.7220, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect39"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(51.6895, 6.1446)" />
+  <a
+     id="a43"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:14:15"
+     style="color:inherit;">
+    <path
+       id="path41"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(9.6067, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a47"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:118:119"
+     style="color:inherit;">
+    <path
+       id="path45"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(52.3764, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect49"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(53.3439, 6.1446)" />
+  <rect
+     id="rect51"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(41.4606, 6.1446)" />
+  <a
+     id="a55"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:95:96"
+     style="color:inherit;">
+    <path
+       id="path53"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(43.9695, 6.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a59"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:99:100"
+     style="color:inherit;">
+    <path
+       id="path57"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(47.4133, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a65"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:117:118"
+     style="color:inherit;">
+    <polygon
+       id="polygon61"
+       points="2.9313 -0.2000 2.9313 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(51.6245, 2.9546)" />
+    <polygon
+       id="polygon63"
+       points="1.7444 -0.2000 1.7444 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(51.6245, 3.7646)" />
+  </a>
+  <a
+     id="a69"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:39:40"
+     style="color:inherit;">
+    <path
+       id="path67"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(16.7267, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a77"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:44:45"
+     style="color:inherit;">
+    <g
+       id="g75"
+       transform="translate(16.4065, 11.2801)">
+      <path
+         id="path71"
+         fill="currentColor"
+         d="M180 217c0 9 8 16 8 25c0 12 -8 22 -19 22c-24 0 -45 -17 -45 -40c0 -17 16 -28 31 -36c34 -18 69 -41 69 -78c0 -63 -56 -110 -121 -110c-43 0 -80 31 -80 72c0 21 12 42 31 42c18 0 33 -15 33 -33c0 -13 -22 -15 -22 -28c0 -14 17 -21 33 -21c34 0 66 18 66 49 c0 57 -100 59 -100 115c0 53 42 96 95 96c57 0 81 -35 81 -63c0 -19 -11 -34 -29 -34s-31 11 -31 22z"
+         transform="scale(0.0032, -0.0032)" />
+      <path
+         id="path73"
+         fill="currentColor"
+         d="M252 237l-49 -160c-30 -99 -121 -255 -218 -255c-46 0 -87 32 -87 76c0 39 17 77 52 77c24 0 44 -20 44 -44c0 -30 -38 -25 -38 -55c0 -10 11 -10 23 -10h6c46 0 61 54 73 102l67 269h-45c-12 0 -22 10 -22 22s10 23 22 23h58c32 95 118 187 212 187c46 0 87 -31 87 -75 c0 -39 -17 -78 -52 -78c-24 0 -44 20 -44 44c0 30 38 25 38 55c0 10 -10 11 -22 11h-7c-58 0 -69 -81 -85 -144h50c12 0 23 -11 23 -23s-11 -22 -23 -22h-63z"
+         transform="translate(0.6487, 0.0000) scale(0.0032, -0.0032)" />
+    </g>
+  </a>
+  <a
+     id="a81"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:42:43"
+     style="color:inherit;">
+    <path
+       id="path79"
+       fill="currentColor"
+       d="M112 0c7 0 13 -5 13 -12c0 -2 0 -4 -1 -6l-113 -250c-2 -4 -6 -7 -11 -7s-9 3 -11 7l-113 250c-1 2 -1 4 -1 6c0 7 6 12 13 12h66c5 0 10 -3 12 -7l68 -150l67 150c2 4 6 7 11 7z"
+       transform="translate(17.2430, 8.7833) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a87"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:98:99"
+     style="color:inherit;">
+    <polygon
+       id="polygon83"
+       points="5.6557 -0.2000 5.6557 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(44.4045, 2.9546)" />
+    <polygon
+       id="polygon85"
+       points="1.7444 -0.2000 1.7444 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(48.3157, 3.7646)" />
+  </a>
+  <a
+     id="a91"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:87:88"
+     style="color:inherit;">
+    <polygon
+       id="polygon89"
+       points="4.0013 -0.2000 4.0013 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(37.4844, 2.9546)" />
+  </a>
+  <polygon
+     id="polygon93"
+     points="5.0531 -0.2000 5.0531 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(24.4143, 2.9546)" />
+  <polygon
+     id="polygon95"
+     points="5.0531 -0.2000 5.0531 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(24.4143, 3.7646)" />
+  <a
+     id="a101"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:75:76"
+     style="color:inherit;">
+    <polygon
+       id="polygon97"
+       points="5.8232 -0.2000 5.8232 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(30.5643, 2.9546)" />
+    <polygon
+       id="polygon99"
+       points="1.1250 -0.2000 1.1250 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(35.2625, 3.7646)" />
+  </a>
+  <polygon
+     id="polygon103"
+     points="4.6134 -0.2000 4.6134 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(17.6292, 2.9546)" />
+  <a
+     id="a109"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:26:27"
+     style="color:inherit;">
+    <text
+       id="text107"
+       fill="currentColor"
+       text-anchor="start"
+       font-size="1.7461"
+       font-style="italic"
+       font-family="serif"
+       transform="translate(19.5120, 2.1950)"><tspan
+         id="tspan105">3</tspan></text>
+  </a>
+  <a
+     id="a119"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:26:27"
+     style="color:inherit;">
+    <line
+       id="line111"
+       y2="0.7000"
+       x2="4.8534"
+       y1="-0.0000"
+       x1="4.8534"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(17.6292, 1.6146)" />
+    <line
+       id="line113"
+       y2="0.7000"
+       x2="-0.2000"
+       y1="-0.0000"
+       x1="-0.2000"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(17.6292, 1.6146)" />
+    <line
+       id="line115"
+       y2="-0.0000"
+       x2="3.3705"
+       y1="-0.0000"
+       x1="4.8534"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(17.6292, 1.6146)" />
+    <line
+       id="line117"
+       y2="-0.0000"
+       x2="1.4828"
+       y1="-0.0000"
+       x1="-0.2000"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(17.6292, 1.6146)" />
+  </a>
+  <a
+     id="a123"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:17:18"
+     style="color:inherit;">
+    <path
+       id="path121"
+       fill="currentColor"
+       d="M112 0c7 0 13 -5 13 -12c0 -2 0 -4 -1 -6l-113 -250c-2 -4 -6 -7 -11 -7s-9 3 -11 7l-113 250c-1 2 -1 4 -1 6c0 7 6 12 13 12h66c5 0 10 -3 12 -7l68 -150l67 150c2 4 6 7 11 7z"
+       transform="translate(10.1229, 8.7833) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a127"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:88:89"
+     style="color:inherit;">
+    <path
+       id="path125"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(40.4932, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a135"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:19:20"
+     style="color:inherit;">
+    <g
+       id="g133"
+       transform="translate(9.2864, 11.2801)">
+      <path
+         id="path129"
+         fill="currentColor"
+         d="M180 217c0 9 8 16 8 25c0 12 -8 22 -19 22c-24 0 -45 -17 -45 -40c0 -17 16 -28 31 -36c34 -18 69 -41 69 -78c0 -63 -56 -110 -121 -110c-43 0 -80 31 -80 72c0 21 12 42 31 42c18 0 33 -15 33 -33c0 -13 -22 -15 -22 -28c0 -14 17 -21 33 -21c34 0 66 18 66 49 c0 57 -100 59 -100 115c0 53 42 96 95 96c57 0 81 -35 81 -63c0 -19 -11 -34 -29 -34s-31 11 -31 22z"
+         transform="scale(0.0032, -0.0032)" />
+      <path
+         id="path131"
+         fill="currentColor"
+         d="M252 237l-49 -160c-30 -99 -121 -255 -218 -255c-46 0 -87 32 -87 76c0 39 17 77 52 77c24 0 44 -20 44 -44c0 -30 -38 -25 -38 -55c0 -10 11 -10 23 -10h6c46 0 61 54 73 102l67 269h-45c-12 0 -22 10 -22 22s10 23 22 23h58c32 95 118 187 212 187c46 0 87 -31 87 -75 c0 -39 -17 -78 -52 -78c-24 0 -44 20 -44 44c0 30 38 25 38 55c0 10 -10 11 -22 11h-7c-58 0 -69 -81 -85 -144h50c12 0 23 -11 23 -23s-11 -22 -23 -22h-63z"
+         transform="translate(0.6487, 0.0000) scale(0.0032, -0.0032)" />
+    </g>
+  </a>
+  <a
+     id="a139"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:121:122"
+     style="color:inherit;">
+    <path
+       id="path137"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(54.0308, 6.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <rect
+     id="rect141"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(10.5741, 6.1446)" />
+  <a
+     id="a145"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:8:9"
+     style="color:inherit;">
+    <path
+       id="path143"
+       fill="currentColor"
+       d="M-23 -116c0 28 11 42 40 42c33 0 78 -13 119 -31l-132 158c-7 9 -10 17 -10 25c0 34 50 66 87 99c25 22 37 52 37 83c0 24 -8 49 -25 69l-35 42c-3 3 -4 7 -4 10c0 9 9 15 17 15c4 0 8 -1 11 -5l151 -180c7 -9 10 -17 10 -25c0 -34 -50 -66 -87 -99 c-25 -22 -37 -52 -37 -83c0 -24 7 -49 24 -69l84 -99c3 -3 4 -7 4 -10c0 -9 -8 -16 -16 -16c-4 0 -9 2 -12 6c-18 21 -63 38 -97 38c-41 0 -53 -26 -53 -67c0 -35 11 -74 28 -94c5 -6 0 -13 -6 -13c-2 0 -4 0 -6 2c-45 54 -92 148 -92 202z"
+       transform="translate(2.5691, 6.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a149"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:57:58"
+     style="color:inherit;">
+    <path
+       id="path147"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(23.5118, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect151"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(24.4793, 6.1446)" />
+  <a
+     id="a155"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:62:63"
+     style="color:inherit;">
+    <path
+       id="path153"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(25.1662, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect157"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(26.1336, 6.1446)" />
+  <a
+     id="a161"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:64:65"
+     style="color:inherit;">
+    <path
+       id="path159"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(26.8205, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect163"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(27.7880, 6.1446)" />
+  <a
+     id="a167"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:48:49"
+     style="color:inherit;">
+    <path
+       id="path165"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(18.9884, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect169"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(17.6942, 6.1446)" />
+  <rect
+     id="rect171"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(19.9559, 6.1446)" />
+  <a
+     id="a175"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:51:52"
+     style="color:inherit;">
+    <path
+       id="path173"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(21.2501, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect177"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(22.2176, 6.1446)" />
+  <path
+     id="path179"
+     fill="currentColor"
+     d="M0 0c0 31 25 56 56 56s56 -25 56 -56s-25 -56 -56 -56s-56 25 -56 56z"
+     transform="translate(31.5793, 6.1446) scale(0.0040, -0.0040)" />
+  <a
+     id="a183"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:71:72"
+     style="color:inherit;">
+    <path
+       id="path181"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(30.1293, 6.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a187"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:76:77"
+     style="color:inherit;">
+    <path
+       id="path185"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(35.3950, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect189"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(36.3625, 6.1446)" />
+  <a
+     id="a193"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:84:85"
+     style="color:inherit;">
+    <path
+       id="path191"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(37.0494, 6.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <rect
+     id="rect195"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(29.4424, 6.1446)" />
+  <a
+     id="a199"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:63:66:67"
+     style="color:inherit;">
+    <path
+       id="path197"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(28.4749, 8.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a203"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:78:79"
+     style="color:inherit;">
+    <path
+       id="path201"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(40.1807, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect205"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(41.1481, 21.1446)" />
+  <a
+     id="a209"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:85:86"
+     style="color:inherit;">
+    <path
+       id="path207"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(43.7195, 21.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a213"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:89:90"
+     style="color:inherit;">
+    <path
+       id="path211"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(47.2258, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect215"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(48.1932, 21.1446)" />
+  <a
+     id="a219"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:66:67"
+     style="color:inherit;">
+    <path
+       id="path217"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(34.9887, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a223"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:61:62"
+     style="color:inherit;">
+    <path
+       id="path221"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(29.6293, 21.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <rect
+     id="rect225"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(35.9562, 21.1446)" />
+  <a
+     id="a229"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:74:75"
+     style="color:inherit;">
+    <path
+       id="path227"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(36.6744, 21.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <rect
+     id="rect231"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(49.8789, 21.1446)" />
+  <a
+     id="a237"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:107:108"
+     style="color:inherit;">
+    <polygon
+       id="polygon233"
+       points="2.9938 -0.2000 2.9938 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(51.4995, 17.9546)" />
+    <polygon
+       id="polygon235"
+       points="1.7756 -0.2000 1.7756 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(51.4995, 18.7646)" />
+  </a>
+  <a
+     id="a243"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:88:89"
+     style="color:inherit;">
+    <polygon
+       id="polygon239"
+       points="5.7494 -0.2000 5.7494 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(44.1545, 17.9546)" />
+    <polygon
+       id="polygon241"
+       points="1.7756 -0.2000 1.7756 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(48.1282, 18.7646)" />
+  </a>
+  <a
+     id="a247"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:77:78"
+     style="color:inherit;">
+    <polygon
+       id="polygon245"
+       points="4.0638 -0.2000 4.0638 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(37.1094, 17.9546)" />
+  </a>
+  <polygon
+     id="polygon249"
+     points="5.1469 -0.2000 5.1469 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(23.7893, 17.9546)" />
+  <polygon
+     id="polygon251"
+     points="5.1469 -0.2000 5.1469 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(23.7893, 18.7646)" />
+  <a
+     id="a257"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:65:66"
+     style="color:inherit;">
+    <polygon
+       id="polygon253"
+       points="5.9169 -0.2000 5.9169 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(30.0643, 17.9546)" />
+    <polygon
+       id="polygon255"
+       points="1.1250 -0.2000 1.1250 0.2000 0.0400 0.2000 0.0400 -0.2000"
+       stroke="currentColor"
+       fill="currentColor"
+       stroke-width="0.0800"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(34.8562, 18.7646)" />
+  </a>
+  <polygon
+     id="polygon259"
+     points="4.6967 -0.2000 4.6967 0.2000 0.0400 0.2000 0.0400 -0.2000"
+     stroke="currentColor"
+     fill="currentColor"
+     stroke-width="0.0800"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     transform="translate(16.8792, 17.9546)" />
+  <a
+     id="a265"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:21:22"
+     style="color:inherit;">
+    <text
+       id="text263"
+       fill="currentColor"
+       text-anchor="start"
+       font-size="1.7461"
+       font-style="italic"
+       font-family="serif"
+       transform="translate(18.8037, 17.1950)"><tspan
+         id="tspan261">3</tspan></text>
+  </a>
+  <a
+     id="a275"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:21:22"
+     style="color:inherit;">
+    <line
+       id="line267"
+       y2="0.7000"
+       x2="4.9367"
+       y1="-0.0000"
+       x1="4.9367"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(16.8792, 16.6146)" />
+    <line
+       id="line269"
+       y2="0.7000"
+       x2="-0.2000"
+       y1="-0.0000"
+       x1="-0.2000"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(16.8792, 16.6146)" />
+    <line
+       id="line271"
+       y2="-0.0000"
+       x2="3.4122"
+       y1="-0.0000"
+       x1="4.9367"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(16.8792, 16.6146)" />
+    <line
+       id="line273"
+       y2="-0.0000"
+       x2="1.5245"
+       y1="-0.0000"
+       x1="-0.2000"
+       stroke="currentColor"
+       stroke-width="0.1600"
+       stroke-linecap="round"
+       stroke-linejoin="round"
+       transform="translate(16.8792, 16.6146)" />
+  </a>
+  <path
+     id="path277"
+     fill="currentColor"
+     d="M0 0c0 31 25 56 56 56s56 -25 56 -56s-25 -56 -56 -56s-56 25 -56 56z"
+     transform="translate(31.0793, 21.1446) scale(0.0040, -0.0040)" />
+  <a
+     id="a281"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:102:103"
+     style="color:inherit;">
+    <path
+       id="path279"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(50.5970, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect283"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(51.5645, 21.1446)" />
+  <a
+     id="a287"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:94:95"
+     style="color:inherit;">
+    <path
+       id="path285"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(48.9114, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a291"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:108:109"
+     style="color:inherit;">
+    <path
+       id="path289"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(52.2826, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect293"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(53.2501, 21.1446)" />
+  <a
+     id="a297"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:111:112"
+     style="color:inherit;">
+    <path
+       id="path295"
+       fill="currentColor"
+       d="M72 -250l117 326c-34 -12 -69 -22 -105 -22c-46 0 -87 33 -87 79c0 40 33 72 73 72c25 0 48 -15 56 -39c10 -28 6 -59 35 -59c16 0 54 48 61 63c6 12 23 12 28 0l-123 -420c-8 -7 -17 -10 -27 -10s-20 3 -28 10z"
+       transform="translate(53.9683, 21.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <rect
+     id="rect299"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(16.9442, 21.1446)" />
+  <a
+     id="a303"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:14:15"
+     style="color:inherit;">
+    <path
+       id="path301"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(8.7317, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect305"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(9.6991, 21.1446)" />
+  <a
+     id="a309"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:34:35"
+     style="color:inherit;">
+    <path
+       id="path307"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(15.9767, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a313"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:38:39"
+     style="color:inherit;">
+    <path
+       id="path311"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(18.2801, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect315"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(19.2476, 21.1446)" />
+  <a
+     id="a319"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:8:9"
+     style="color:inherit;">
+    <path
+       id="path317"
+       fill="currentColor"
+       d="M-23 -116c0 28 11 42 40 42c33 0 78 -13 119 -31l-132 158c-7 9 -10 17 -10 25c0 34 50 66 87 99c25 22 37 52 37 83c0 24 -8 49 -25 69l-35 42c-3 3 -4 7 -4 10c0 9 9 15 17 15c4 0 8 -1 11 -5l151 -180c7 -9 10 -17 10 -25c0 -34 -50 -66 -87 -99 c-25 -22 -37 -52 -37 -83c0 -24 7 -49 24 -69l84 -99c3 -3 4 -7 4 -10c0 -9 -8 -16 -16 -16c-4 0 -9 2 -12 6c-18 21 -63 38 -97 38c-41 0 -53 -26 -53 -67c0 -35 11 -74 28 -94c5 -6 0 -13 -6 -13c-2 0 -4 0 -6 2c-45 54 -92 148 -92 202z"
+       transform="translate(1.5691, 21.1446) scale(0.0040, -0.0040)" />
+  </a>
+  <a
+     id="a323"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:54:55"
+     style="color:inherit;">
+    <path
+       id="path321"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(26.2580, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect325"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(25.5399, 21.1446)" />
+  <a
+     id="a329"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:52:53"
+     style="color:inherit;">
+    <path
+       id="path327"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(24.5724, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect331"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(27.2255, 21.1446)" />
+  <rect
+     id="rect333"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(23.8543, 21.1446)" />
+  <a
+     id="a337"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:47:48"
+     style="color:inherit;">
+    <path
+       id="path335"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(22.8868, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect339"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(28.9111, 21.1446)" />
+  <a
+     id="a343"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:56:57"
+     style="color:inherit;">
+    <path
+       id="path341"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(27.9437, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a347"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:64:41:42"
+     style="color:inherit;">
+    <path
+       id="path345"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(20.5834, 23.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect349"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.0540"
+     width="0.1300"
+     y="-3.1900"
+     x="-0.0650"
+     transform="translate(21.5509, 21.1446)" />
+  <rect
+     id="rect351"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(23.5011, 36.1446)" />
+  <a
+     id="a355"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:16:17"
+     style="color:inherit;">
+    <path
+       id="path353"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(22.5336, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect357"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(51.4539, 36.1446)" />
+  <a
+     id="a361"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:8:9"
+     style="color:inherit;">
+    <path
+       id="path359"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(1.5691, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect363"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(2.5365, 36.1446)" />
+  <a
+     id="a367"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:12:13"
+     style="color:inherit;">
+    <path
+       id="path365"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(8.5572, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect369"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(9.5247, 36.1446)" />
+  <a
+     id="a373"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:24:25"
+     style="color:inherit;">
+    <path
+       id="path371"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(50.4864, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <a
+     id="a377"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:14:15"
+     style="color:inherit;">
+    <path
+       id="path375"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(15.5454, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect379"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(16.5129, 36.1446)" />
+  <a
+     id="a383"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:18:19"
+     style="color:inherit;">
+    <path
+       id="path381"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(29.5218, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect385"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(44.4657, 36.1446)" />
+  <a
+     id="a389"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:22:23"
+     style="color:inherit;">
+    <path
+       id="path387"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(43.4982, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+  <rect
+     id="rect391"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(30.4893, 36.1446)" />
+  <rect
+     id="rect393"
+     fill="currentColor"
+     ry="0.0400"
+     height="5.3640"
+     width="0.1300"
+     y="-3.5000"
+     x="-0.0650"
+     transform="translate(37.4775, 36.1446)" />
+  <a
+     id="a397"
+     xlink:href="textedit:///Users/jwy/Documents/OPUS/GitHub/sf004/public/pieces/sf004/notation/sf004_ly_template.ly:65:20:21"
+     style="color:inherit;">
+    <path
+       id="path395"
+       fill="currentColor"
+       d="M212 138c59 0 113 -31 113 -95c0 -71 -52 -120 -99 -148c-34 -21 -73 -33 -113 -33c-59 0 -113 31 -113 95c0 71 53 120 100 148c34 21 72 33 112 33z"
+       transform="translate(36.5100, 38.1446) scale(0.0032, -0.0032)" />
+  </a>
+</svg>
